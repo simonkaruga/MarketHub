@@ -251,3 +251,224 @@ def verify_order(current_user, suborder_id):
                 'message': 'Order not found'
             }
         }), 404
+    
+     # Check if order belongs to this hub
+    if suborder.hub_id != hub_id:
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'FORBIDDEN',
+                'message': 'This order does not belong to your hub'
+            }
+        }), 403
+    
+    # Check current status
+    if suborder.status != SubOrderStatus.AT_HUB_VERIFICATION_PENDING:
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'INVALID_STATUS',
+                'message': f'Cannot verify order with status: {suborder.status.value}'
+            }
+        }), 400
+    
+    # Update status to ready for pickup
+    suborder.status = SubOrderStatus.AT_HUB_READY_FOR_PICKUP
+    
+    try:
+        db.session.commit()
+        
+        # TODO: Send notification to customer
+        # - Email: "Your order is ready for pickup at [hub name]"
+        # - SMS: "Order #[id] ready for pickup. Expires: [deadline]"
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'DATABASE_ERROR',
+                'message': 'Failed to verify order'
+            }
+        }), 500
+    
+    return jsonify({
+        'success': True,
+        'data': suborder.to_dict(),
+        'message': 'Product verified successfully. Customer can now pick up.'
+    }), 200
+
+
+@bp.route('/orders/<int:suborder_id>/reject', methods=['POST'])
+@hub_staff_required
+def reject_order(current_user, suborder_id):
+    """
+    Reject product delivery (quality issues)
+    
+    POST /api/v1/hub/orders/:id/reject
+    Headers: Authorization: Bearer <hub_staff_token>
+    Body: {
+        "rejection_reason": "Product damaged during delivery. Packaging torn."
+    }
+    """
+    hub_id = current_user.hub_id
+    
+    if not hub_id:
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'NO_HUB_ASSIGNED',
+                'message': 'You are not assigned to any hub'
+            }
+        }), 400
+    
+    try:
+        data = reject_schema.load(request.json)
+    except ValidationError as err:
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'VALIDATION_ERROR',
+                'message': 'Invalid input data',
+                'details': err.messages
+            }
+        }), 400
+    
+    # Get order
+    suborder = SubOrder.query.get(suborder_id)
+    
+    if not suborder:
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'ORDER_NOT_FOUND',
+                'message': 'Order not found'
+            }
+        }), 404
+    
+    # Check if order belongs to this hub
+    if suborder.hub_id != hub_id:
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'FORBIDDEN',
+                'message': 'This order does not belong to your hub'
+            }
+        }), 403
+    
+    # Check current status
+    if suborder.status != SubOrderStatus.AT_HUB_VERIFICATION_PENDING:
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'INVALID_STATUS',
+                'message': f'Cannot reject order with status: {suborder.status.value}'
+            }
+        }), 400
+    
+    # Update status and save rejection reason
+    suborder.status = SubOrderStatus.PENDING_MERCHANT_DELIVERY
+    suborder.rejection_reason = data['rejection_reason']
+    
+    try:
+        db.session.commit()
+        
+        # TODO: Send notifications
+        # - Email merchant: "Product rejected at hub. Reason: [reason]"
+        # - Email customer: "Order delayed due to quality issue. Merchant notified."
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'DATABASE_ERROR',
+                'message': 'Failed to reject order'
+            }
+        }), 500
+    
+    return jsonify({
+        'success': True,
+        'data': suborder.to_dict(),
+        'message': 'Product rejected. Merchant has been notified to re-deliver.'
+    }), 200
+
+
+@bp.route('/orders/<int:suborder_id>/pickup', methods=['POST'])
+@hub_staff_required
+def process_pickup(current_user, suborder_id):
+    """
+    Process customer pickup and COD payment
+    
+    POST /api/v1/hub/orders/:id/pickup
+    Headers: Authorization: Bearer <hub_staff_token>
+    Body: {
+        "payment_received": true,
+        "notes": "Customer paid KES 120,000 in cash"
+    }
+    """
+    hub_id = current_user.hub_id
+    
+    if not hub_id:
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'NO_HUB_ASSIGNED',
+                'message': 'You are not assigned to any hub'
+            }
+        }), 400
+    
+    try:
+        data = pickup_schema.load(request.json)
+    except ValidationError as err:
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'VALIDATION_ERROR',
+                'message': 'Invalid input data',
+                'details': err.messages
+            }
+        }), 400
+    
+    # Get order
+    suborder = SubOrder.query.get(suborder_id)
+    
+    if not suborder:
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'ORDER_NOT_FOUND',
+                'message': 'Order not found'
+            }
+        }), 404
+    
+    # Check if order belongs to this hub
+    if suborder.hub_id != hub_id:
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'FORBIDDEN',
+                'message': 'This order does not belong to your hub'
+            }
+        }), 403
+    
+    # Check current status
+    if suborder.status != SubOrderStatus.AT_HUB_READY_FOR_PICKUP:
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'INVALID_STATUS',
+                'message': f'Cannot process pickup for order with status: {suborder.status.value}'
+            }
+        }), 400
+    
+    # Check if payment received
+    if not data['payment_received']:
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'PAYMENT_REQUIRED',
+                'message': 'Payment must be received before completing pickup'
+            }
+        }), 400
+    
