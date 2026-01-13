@@ -266,3 +266,37 @@ def get_merchant_application_status_template(user_name, application):
     </body>
     </html>
     """
+def get_password_reset_template(user_name, reset_token):
+    """Password reset email"""
+    reset_link = f"https://markethub.co.ke/reset-password?token={reset_token}"
+    
+    return f"""
+    <html>
+    <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto;">
+        <div style="background-color: #dc2626; padding: 30px; text-align: center;">
+            <h1 style="color: white; margin: 0;">Reset Your Password</h1>
+        </div>
+        
+        <div style="padding: 30px;">
+            <p>Hi {user_name},</p>
+            
+            <p>We received a request to reset your password. Click the button below to create a new password:</p>
+            
+            <div style="text-align: center; margin: 30px 0;">
+                <a href="{reset_link}" style="background-color: #dc2626; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; display: inline-block;">Reset Password</a>
+            </div>
+            
+            <p><strong>This link expires in 1 hour.</strong></p>
+            
+            <p>If you didn't request a password reset, you can safely ignore this email.</p>
+            
+            <p style="margin-top: 30px;">Best regards,<br>The MarketHub Team</p>
+        </div>
+        
+        <div style="background-color: #f3f4f6; padding: 20px; text-align: center; font-size: 12px; color: #6b7280;">
+            <p style="margin: 0;">If the button doesn't work, copy and paste this link:</p>
+            <p style="margin: 5px 0; word-break: break-all;">{reset_link}</p>
+        </div>
+    </body>
+    </html>
+    """
