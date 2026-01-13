@@ -1,22 +1,20 @@
 """
 Orders Routes
-Customer order management
+Order creation and management
 """
 from flask import Blueprint, request, jsonify
 from marshmallow import Schema, fields, validate, ValidationError
-from datetime import datetime, timedelta
+from datetime import datetime
 from app import db
-from app.models.cart import Cart, CartItem
+from app.models.user import User, UserRole
 from app.models.product import Product
+from app.models.cart import Cart
+from app.models.hub import Hub
 from app.models.order import (
     MasterOrder, SubOrder, OrderItem,
     PaymentMethod, PaymentStatus, SubOrderStatus
 )
-from app.models.hub import Hub
-from app.models.delivery_partner import DeliveryPartner
-from app.models.user import User
-from app.utils.decorators import role_required
-from app.models.user import UserRole
+from app.utils.decorators import login_required, role_required
 from app.services.mpesa_service import initiate_stk_push
 
 # Create blueprint
@@ -26,39 +24,32 @@ bp = Blueprint('orders', __name__)
 # Validation Schemas
 class CreateOrderSchema(Schema):
     """Schema for creating an order"""
-    payment_method = fields.Str(
-        required=True,
-        validate=validate.OneOf(['mpesa_delivery', 'cash_on_delivery'])
-    )
-    # M-Pesa fields
+    payment_method = fields.Str(required=True, validate=validate.OneOf(['mpesa_delivery', 'cash_on_delivery']))
     mpesa_phone_number = fields.Str()
-    delivery_address = fields.Str()
-    delivery_city = fields.Str()
-    # COD fields
     hub_id = fields.Int()
 
 
+class CancelOrderSchema(Schema):
+    """Schema for cancelling order"""
+    reason = fields.Str(required=True, validate=validate.Length(min=10, max=500))
+
+
 create_order_schema = CreateOrderSchema()
+cancel_order_schema = CancelOrderSchema()
 
 
 @bp.route('', methods=['POST'])
-@role_required(UserRole.CUSTOMER)
+@login_required
 def create_order(current_user):
     """
-    Create order from cart (checkout)
+    Create order from cart
     
     POST /api/v1/orders
     Headers: Authorization: Bearer <access_token>
     Body: {
-        "payment_method": "mpesa_delivery" or "cash_on_delivery",
-        
-        // If M-Pesa:
-        "mpesa_phone_number": "0712345678",
-        "delivery_address": "123 Main St, Apt 4B",
-        "delivery_city": "Nairobi",
-        
-        // If COD:
-        "hub_id": 1
+        "payment_method": "mpesa_delivery" | "cash_on_delivery",
+        "mpesa_phone_number": "254712345678" (required if mpesa_delivery),
+        "hub_id": 1 (required if cash_on_delivery)
     }
     """
     try:
@@ -73,87 +64,73 @@ def create_order(current_user):
             }
         }), 400
     
-    # Get user's cart
-    cart = Cart.query.filter_by(user_id=current_user.id).first()
-    
-    if not cart or cart.items.count() == 0:
-        return jsonify({
-            'success': False,
-            'error': {
-                'code': 'CART_EMPTY',
-                'message': 'Your cart is empty'
-            }
-        }), 400
-    
-    # Validate payment method specific fields
+    # Validate payment method specific requirements
     payment_method = PaymentMethod(data['payment_method'])
     
     if payment_method == PaymentMethod.MPESA_DELIVERY:
-        if not all([data.get('mpesa_phone_number'), data.get('delivery_address'), data.get('delivery_city')]):
+        if not data.get('mpesa_phone_number'):
             return jsonify({
                 'success': False,
                 'error': {
-                    'code': 'MISSING_FIELDS',
-                    'message': 'M-Pesa payment requires phone number, delivery address, and city'
+                    'code': 'PHONE_REQUIRED',
+                    'message': 'M-Pesa phone number is required'
                 }
             }), 400
     
-    elif payment_method == PaymentMethod.COD:
+    if payment_method == PaymentMethod.COD:
         if not data.get('hub_id'):
             return jsonify({
                 'success': False,
                 'error': {
-                    'code': 'MISSING_FIELDS',
-                    'message': 'COD payment requires hub selection'
+                    'code': 'HUB_REQUIRED',
+                    'message': 'Hub selection is required for Cash on Delivery'
                 }
             }), 400
         
-        # Validate hub exists and is active
-        hub = Hub.find_by_id(data['hub_id'])
-        if not hub or not hub.is_active:
+        # Verify hub exists
+        hub = Hub.query.get(data['hub_id'])
+        if not hub:
             return jsonify({
                 'success': False,
                 'error': {
-                    'code': 'INVALID_HUB',
-                    'message': 'Selected hub is not available'
+                    'code': 'HUB_NOT_FOUND',
+                    'message': 'Selected hub not found'
                 }
-            }), 400
+            }), 404
     
-    # Validate stock for all items
-    for cart_item in cart.items:
-        product = cart_item.product
-        
-        if not product.is_active:
-            return jsonify({
-                'success': False,
-                'error': {
-                    'code': 'PRODUCT_UNAVAILABLE',
-                    'message': f'Product "{product.name}" is no longer available'
-                }
-            }), 400
-        
-        if product.stock_quantity < cart_item.quantity:
+    # Get user's cart
+    cart = Cart.get_or_create(current_user.id)
+    
+    if not cart.items:
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'EMPTY_CART',
+                'message': 'Cart is empty'
+            }
+        }), 400
+    
+    # Validate stock availability
+    for item in cart.items:
+        if item.product.stock_quantity < item.quantity:
             return jsonify({
                 'success': False,
                 'error': {
                     'code': 'INSUFFICIENT_STOCK',
-                    'message': f'Product "{product.name}" has insufficient stock. Only {product.stock_quantity} available.'
+                    'message': f'Insufficient stock for {item.product.name}'
                 }
             }), 400
     
     # Calculate total
     total_amount = cart.get_total()
     
-    # Create Master Order
+    # Create master order
     master_order = MasterOrder(
         customer_id=current_user.id,
         total_amount=total_amount,
         payment_method=payment_method,
-        payment_status=PaymentStatus.PENDING,
         mpesa_phone_number=data.get('mpesa_phone_number'),
-        delivery_address=data.get('delivery_address'),
-        delivery_city=data.get('delivery_city'),
-        selected_hub_id=data.get('hub_id')
+        payment_status=PaymentStatus.PENDING
     )
     
     try:
@@ -161,51 +138,43 @@ def create_order(current_user):
         db.session.flush()  # Get master_order.id
         
         # Group cart items by merchant
-        merchant_items = {}
-        for cart_item in cart.items:
-            merchant_id = cart_item.product.merchant_id
-            if merchant_id not in merchant_items:
-                merchant_items[merchant_id] = []
-            merchant_items[merchant_id].append(cart_item)
+        items_by_merchant = {}
+        for item in cart.items:
+            merchant_id = item.product.merchant_id
+            if merchant_id not in items_by_merchant:
+                items_by_merchant[merchant_id] = []
+            items_by_merchant[merchant_id].append(item)
         
-        # Create SubOrders for each merchant
-        for merchant_id, items in merchant_items.items():
+        # Create suborders for each merchant
+        for merchant_id, items in items_by_merchant.items():
             # Calculate subtotal for this merchant
-            subtotal = sum(float(item.product.price) * item.quantity for item in items)
+            subtotal = sum(item.product.price * item.quantity for item in items)
             
             # Calculate commission (25%)
-            commission_rate = current_app.config.get('COMMISSION_RATE', 0.25)
-            commission = subtotal * commission_rate
+            commission = subtotal * 0.25
             merchant_payout = subtotal - commission
             
-            # Determine initial status
+            # Determine initial status based on payment method
             if payment_method == PaymentMethod.MPESA_DELIVERY:
                 status = SubOrderStatus.PENDING_PAYMENT
-            else:
+            else:  # COD
                 status = SubOrderStatus.PENDING_MERCHANT_DELIVERY
             
-            # Set pickup deadline for COD
-            pickup_deadline = None
-            if payment_method == PaymentMethod.COD:
-                pickup_window_days = current_app.config.get('PICKUP_WINDOW_DAYS', 5)
-                pickup_deadline = datetime.utcnow() + timedelta(days=pickup_window_days)
-            
-            # Create SubOrder
+            # Create suborder
             suborder = SubOrder(
                 master_order_id=master_order.id,
                 merchant_id=merchant_id,
-                hub_id=data.get('hub_id') if payment_method == PaymentMethod.COD else None,
-                status=status,
+                hub_id=data.get('hub_id'),
                 subtotal_amount=subtotal,
                 commission_amount=commission,
                 merchant_payout_amount=merchant_payout,
-                pickup_deadline=pickup_deadline
+                status=status
             )
             
             db.session.add(suborder)
             db.session.flush()  # Get suborder.id
             
-            # Create OrderItems
+            # Create order items
             for cart_item in items:
                 order_item = OrderItem(
                     suborder_id=suborder.id,
@@ -213,81 +182,69 @@ def create_order(current_user):
                     quantity=cart_item.quantity,
                     price_at_purchase=cart_item.product.price
                 )
+                
                 db.session.add(order_item)
                 
                 # Reduce stock
                 cart_item.product.stock_quantity -= cart_item.quantity
         
         # Clear cart
-        CartItem.query.filter_by(cart_id=cart.id).delete()
+        for item in cart.items:
+            db.session.delete(item)
         
         db.session.commit()
         
-        # If M-Pesa, initiate STK Push
+        # If M-Pesa, initiate STK push
         if payment_method == PaymentMethod.MPESA_DELIVERY:
-            stk_result = initiate_stk_push(
+            mpesa_response = initiate_stk_push(
                 phone_number=data['mpesa_phone_number'],
-                amount=total_amount,
+                amount=int(total_amount),
                 account_reference=f"ORDER-{master_order.id}",
                 transaction_desc=f"Payment for Order #{master_order.id}"
             )
             
-            if stk_result and stk_result.get('success'):
-                # Save checkout request ID
-                master_order.mpesa_checkout_request_id = stk_result.get('checkout_request_id')
+            if mpesa_response.get('success'):
+                master_order.mpesa_checkout_request_id = mpesa_response.get('checkout_request_id')
                 db.session.commit()
-                
-                return jsonify({
-                    'success': True,
-                    'data': {
-                        'order': master_order.to_dict(),
-                        'mpesa_prompt': 'Please check your phone for M-Pesa prompt',
-                        'checkout_request_id': stk_result.get('checkout_request_id')
-                    },
-                    'message': 'Order created. Please complete M-Pesa payment on your phone.'
-                }), 201
-            else:
-                # STK Push failed - mark order
-                master_order.payment_status = PaymentStatus.FAILED
-                db.session.commit()
-                
-                return jsonify({
-                    'success': False,
-                    'error': {
-                        'code': 'MPESA_ERROR',
-                        'message': f"Order created but M-Pesa payment failed: {stk_result.get('error') if stk_result else 'Unknown error'}"
-                    }
-                }), 500
         
-        # COD order created successfully
-        return jsonify({
-            'success': True,
-            'data': master_order.to_dict(),
-            'message': 'Order created successfully. Please pick up at selected hub within 5 days.'
-        }), 201
-    
+        # Send order confirmation email
+        from app.services.email_service import send_order_confirmation_email
+        send_order_confirmation_email(master_order)
+        
+        # Send notifications to merchants
+        from app.services.email_service import send_merchant_new_order_email
+        for suborder in master_order.suborders:
+            send_merchant_new_order_email(suborder.merchant, suborder)
+        
     except Exception as e:
         db.session.rollback()
-        print(f"Order creation error: {str(e)}")
         return jsonify({
             'success': False,
             'error': {
-                'code': 'ORDER_ERROR',
+                'code': 'DATABASE_ERROR',
                 'message': 'Failed to create order'
             }
         }), 500
+    
+    return jsonify({
+        'success': True,
+        'data': master_order.to_dict(),
+        'message': 'Order created successfully'
+    }), 201
 
 
 @bp.route('', methods=['GET'])
-@role_required(UserRole.CUSTOMER)
+@login_required
 def get_orders(current_user):
     """
-    Get customer's orders
+    Get user's orders
     
     GET /api/v1/orders
     Headers: Authorization: Bearer <access_token>
     """
-    orders = MasterOrder.query.filter_by(customer_id=current_user.id).order_by(MasterOrder.created_at.desc()).all()
+    orders = MasterOrder.query.filter_by(
+        customer_id=current_user.id
+    ).order_by(MasterOrder.created_at.desc()).all()
     
     return jsonify({
         'success': True,
@@ -296,7 +253,7 @@ def get_orders(current_user):
 
 
 @bp.route('/<int:order_id>', methods=['GET'])
-@role_required(UserRole.CUSTOMER)
+@login_required
 def get_order(current_user, order_id):
     """
     Get order details
@@ -328,4 +285,302 @@ def get_order(current_user, order_id):
     return jsonify({
         'success': True,
         'data': order.to_dict()
+    }), 200
+
+
+@bp.route('/<int:order_id>/cancel', methods=['POST'])
+@role_required(UserRole.CUSTOMER)
+def cancel_order(current_user, order_id):
+    """
+    Cancel an order
+    
+    POST /api/v1/orders/:id/cancel
+    Headers: Authorization: Bearer <customer_token>
+    Body: {
+        "reason": "Changed my mind / Found better price / etc."
+    }
+    """
+    try:
+        data = cancel_order_schema.load(request.json)
+    except ValidationError as err:
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'VALIDATION_ERROR',
+                'message': 'Invalid input data',
+                'details': err.messages
+            }
+        }), 400
+    
+    # Get order
+    order = MasterOrder.query.get(order_id)
+    
+    if not order:
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'ORDER_NOT_FOUND',
+                'message': 'Order not found'
+            }
+        }), 404
+    
+    # Check ownership
+    if order.customer_id != current_user.id:
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'FORBIDDEN',
+                'message': 'You can only cancel your own orders'
+            }
+        }), 403
+    
+    # Check if already cancelled
+    if order.is_cancelled:
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'ALREADY_CANCELLED',
+                'message': 'This order is already cancelled'
+            }
+        }), 400
+    
+    # Check if order can be cancelled
+    # Can only cancel if: pending_payment, paid_awaiting_shipment, or pending_merchant_delivery
+    cancellable_statuses = [
+        SubOrderStatus.PENDING_PAYMENT,
+        SubOrderStatus.PAID_AWAITING_SHIPMENT,
+        SubOrderStatus.PENDING_MERCHANT_DELIVERY,
+        SubOrderStatus.AT_HUB_VERIFICATION_PENDING
+    ]
+    
+    # Check all suborders
+    all_cancellable = all(
+        suborder.status in cancellable_statuses 
+        for suborder in order.suborders
+    )
+    
+    if not all_cancellable:
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'CANNOT_CANCEL',
+                'message': 'Order cannot be cancelled. Some items have already been shipped or delivered.'
+            }
+        }), 400
+    
+    # Mark order as cancelled
+    order.is_cancelled = True
+    order.cancelled_at = datetime.utcnow()
+    order.cancellation_reason = data['reason']
+    
+    # Cancel all suborders
+    for suborder in order.suborders:
+        suborder.status = SubOrderStatus.CANCELLED
+        
+        # Restore stock
+        for item in suborder.items:
+            item.product.stock_quantity += item.quantity
+    
+    # Handle refund for paid orders
+    if order.payment_status == PaymentStatus.PAID:
+        order.refund_status = 'pending'
+        order.refund_amount = order.total_amount
+        
+        # TODO: Integrate with M-Pesa B2C API for automatic refund
+        # For now, mark as pending for manual processing
+    
+    try:
+        db.session.commit()
+        
+        # Send cancellation email
+        from app.services.email_service import send_order_cancelled_email
+        send_order_cancelled_email(order, data['reason'])
+        
+        # TODO: Notify merchants about cancellation
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'DATABASE_ERROR',
+                'message': 'Failed to cancel order'
+            }
+        }), 500
+    
+    refund_message = ""
+    if order.refund_status == 'pending':
+        refund_message = " Your refund will be processed within 3-5 business days."
+    
+    return jsonify({
+        'success': True,
+        'data': order.to_dict(),
+        'message': f'Order cancelled successfully.{refund_message}'
+    }), 200
+
+
+@bp.route('/<int:order_id>/refund-status', methods=['GET'])
+@role_required(UserRole.CUSTOMER)
+def get_refund_status(current_user, order_id):
+    """
+    Get refund status for cancelled order
+    
+    GET /api/v1/orders/:id/refund-status
+    Headers: Authorization: Bearer <customer_token>
+    """
+    order = MasterOrder.query.get(order_id)
+    
+    if not order:
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'ORDER_NOT_FOUND',
+                'message': 'Order not found'
+            }
+        }), 404
+    
+    # Check ownership
+    if order.customer_id != current_user.id:
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'FORBIDDEN',
+                'message': 'You can only view your own orders'
+            }
+        }), 403
+    
+    if not order.is_cancelled:
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'ORDER_NOT_CANCELLED',
+                'message': 'This order is not cancelled'
+            }
+        }), 400
+    
+    return jsonify({
+        'success': True,
+        'data': {
+            'order_id': order.id,
+            'is_cancelled': order.is_cancelled,
+            'cancelled_at': order.cancelled_at.isoformat() if order.cancelled_at else None,
+            'cancellation_reason': order.cancellation_reason,
+            'refund_status': order.refund_status,
+            'refund_amount': float(order.refund_amount) if order.refund_amount else None,
+            'refund_processed_at': order.refund_processed_at.isoformat() if order.refund_processed_at else None
+        }
+    }), 200
+
+
+# Admin endpoint to process refunds
+@bp.route('/admin/orders/<int:order_id>/process-refund', methods=['POST'])
+@role_required(UserRole.ADMIN)
+def process_refund(current_user, order_id):
+    """
+    Process refund for cancelled order (Admin only)
+    
+    POST /api/v1/orders/admin/orders/:id/process-refund
+    Headers: Authorization: Bearer <admin_token>
+    """
+    order = MasterOrder.query.get(order_id)
+    
+    if not order:
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'ORDER_NOT_FOUND',
+                'message': 'Order not found'
+            }
+        }), 404
+    
+    if not order.is_cancelled:
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'ORDER_NOT_CANCELLED',
+                'message': 'This order is not cancelled'
+            }
+        }), 400
+    
+    if order.refund_status == 'completed':
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'ALREADY_REFUNDED',
+                'message': 'Refund has already been processed'
+            }
+        }), 400
+    
+    # Mark refund as processing
+    order.refund_status = 'processing'
+    
+    try:
+        # TODO: Integrate with M-Pesa B2C API for automatic refund
+        # For now, just mark as completed
+        
+        order.refund_status = 'completed'
+        order.refund_processed_at = datetime.utcnow()
+        
+        db.session.commit()
+        
+        # TODO: Send refund confirmation email
+        
+    except Exception as e:
+        db.session.rollback()
+        order.refund_status = 'failed'
+        db.session.commit()
+        
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'REFUND_ERROR',
+                'message': 'Failed to process refund'
+            }
+        }), 500
+    
+    return jsonify({
+        'success': True,
+        'data': {
+            'order_id': order.id,
+            'refund_status': order.refund_status,
+            'refund_amount': float(order.refund_amount),
+            'refund_processed_at': order.refund_processed_at.isoformat()
+        },
+        'message': 'Refund processed successfully'
+    }), 200
+
+
+# Admin endpoint to get all pending refunds
+@bp.route('/admin/refunds/pending', methods=['GET'])
+@role_required(UserRole.ADMIN)
+def get_pending_refunds(current_user):
+    """
+    Get all pending refunds (Admin only)
+    
+    GET /api/v1/orders/admin/refunds/pending
+    Headers: Authorization: Bearer <admin_token>
+    """
+    pending_refunds = MasterOrder.query.filter_by(
+        is_cancelled=True,
+        refund_status='pending'
+    ).order_by(MasterOrder.cancelled_at.desc()).all()
+    
+    return jsonify({
+        'success': True,
+        'data': [
+            {
+                'order_id': order.id,
+                'customer': {
+                    'id': order.customer.id,
+                    'name': order.customer.name,
+                    'email': order.customer.email
+                },
+                'refund_amount': float(order.refund_amount),
+                'cancelled_at': order.cancelled_at.isoformat(),
+                'cancellation_reason': order.cancellation_reason,
+                'payment_method': order.payment_method.value,
+                'mpesa_phone_number': order.mpesa_phone_number
+            }
+            for order in pending_refunds
+        ]
     }), 200

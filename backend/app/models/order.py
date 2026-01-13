@@ -81,6 +81,14 @@ class MasterOrder(db.Model):
     customer = db.relationship('User', backref='master_orders', foreign_keys=[customer_id])
     selected_hub = db.relationship('Hub', backref='master_orders', foreign_keys=[selected_hub_id])
     suborders = db.relationship('SubOrder', backref='master_order', lazy='dynamic', cascade='all, delete-orphan')
+
+       # Cancellation fields
+    is_cancelled = db.Column(db.Boolean, default=False, nullable=False)
+    cancelled_at = db.Column(db.DateTime, nullable=True)
+    cancellation_reason = db.Column(db.Text, nullable=True)
+    refund_status = db.Column(db.String(50), nullable=True)  # 'pending', 'processing', 'completed', 'failed'
+    refund_amount = db.Column(db.Numeric(10, 2), nullable=True)
+    refund_processed_at = db.Column(db.DateTime, nullable=True)
     
     def __repr__(self):
         """String representation"""
@@ -95,6 +103,11 @@ class MasterOrder(db.Model):
                 'name': self.customer.name,
                 'email': self.customer.email
             } if self.customer else None,
+            'is_cancelled': self.is_cancelled,
+            'cancelled_at': self.cancelled_at.isoformat() if self.cancelled_at else None,
+            'cancellation_reason': self.cancellation_reason,
+            'refund_status': self.refund_status,
+            'refund_amount': float(self.refund_amount) if self.refund_amount else None,
             'total_amount': float(self.total_amount),
             'payment_method': self.payment_method.value,
             'payment_status': self.payment_status.value,
