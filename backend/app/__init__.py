@@ -72,7 +72,7 @@ def create_app(config_name='development'):
         orders, payments, merchant_orders, admin_orders,
         hub_staff, admin_hub_staff, reviews, merchant_reviews,
         merchant_applications, admin_merchant_applications,
-        admin_analytics
+        admin_analytics, profile, merchant_analytics
     )
     app.register_blueprint(auth.bp, url_prefix='/api/v1/auth')
     app.register_blueprint(categories.bp, url_prefix='/api/v1/categories')
@@ -112,10 +112,9 @@ def create_app(config_name='development'):
     
     # Admin analytics dashboard
     app.register_blueprint(admin_analytics.bp, url_prefix='/api/v1/admin')
-
-    # Initialize Flask-Mail
-from app.services.email_service import mail
-mail.init_app(app)
+    
     # Profile routes
-from app.routes import profile
-app.register_blueprint(profile.bp, url_prefix='/api/v1')
+    app.register_blueprint(profile.bp, url_prefix='/api/v1')
+    
+    # Merchant analytics dashboard (NEW)
+    app.register_blueprint(merchant_analytics.bp, url_prefix='/api/v1/merchant')
