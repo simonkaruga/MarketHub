@@ -98,3 +98,7 @@ const ProductCard = ({ product }) => {
     </Link>
   );
 };
+
+export default ProductCard;
+
+
