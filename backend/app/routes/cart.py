@@ -1,167 +1,354 @@
 """
-Cart Models
-Shopping cart and cart items
+Cart Routes
+Shopping cart management endpoints
 """
-from datetime import datetime
+from flask import Blueprint, request, jsonify
+from marshmallow import Schema, fields, validate, ValidationError
 from app import db
+from app.models.cart import Cart, CartItem
+from app.models.product import Product
+from app.utils.decorators import customer_required, role_required
+from app.models.user import UserRole
+
+# Create blueprint
+bp = Blueprint('cart', __name__)
 
 
-class Cart(db.Model):
+# Validation Schemas
+class AddToCartSchema(Schema):
+    """Schema for adding item to cart"""
+    product_id = fields.Int(required=True)
+    quantity = fields.Int(required=True, validate=validate.Range(min=1, max=100))
+
+
+class UpdateCartItemSchema(Schema):
+    """Schema for updating cart item quantity"""
+    quantity = fields.Int(required=True, validate=validate.Range(min=1, max=100))
+
+
+# Initialize schemas
+add_to_cart_schema = AddToCartSchema()
+update_cart_item_schema = UpdateCartItemSchema()
+
+
+@bp.route('', methods=['GET'])
+@role_required(UserRole.CUSTOMER)
+def get_cart(current_user):
     """
-    Shopping cart - one per user
+    Get user's shopping cart
+    
+    GET /api/v1/cart
+    Headers: Authorization: Bearer <access_token>
     """
-    __tablename__ = 'carts'
+    # Get or create cart
+    cart = Cart.get_or_create_cart(current_user.id)
     
-    # Primary Key
-    id = db.Column(db.Integer, primary_key=True)
+    return jsonify({
+        'success': True,
+        'data': cart.to_dict()
+    }), 200
+
+
+@bp.route('/items', methods=['POST'])
+@role_required(UserRole.CUSTOMER)
+def add_to_cart(current_user):
+    """
+    Add item to cart
     
-    # Foreign Key
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), unique=True, nullable=False, index=True)
+    POST /api/v1/cart/items
+    Headers: Authorization: Bearer <access_token>
+    Body: {
+        "product_id": 1,
+        "quantity": 2
+    }
+    """
+    try:
+        # Validate request data
+        data = add_to_cart_schema.load(request.json)
+    except ValidationError as err:
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'VALIDATION_ERROR',
+                'message': 'Invalid input data',
+                'details': err.messages
+            }
+        }), 400
     
-    # Timestamps
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+    # Get product
+    product = Product.find_by_id(data['product_id'])
     
-    # Relationships
-    user = db.relationship('User', backref=db.backref('cart', uselist=False))
-    items = db.relationship('CartItem', backref='cart', lazy='dynamic', cascade='all, delete-orphan')
+    if not product:
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'PRODUCT_NOT_FOUND',
+                'message': 'Product not found'
+            }
+        }), 404
     
-    def __repr__(self):
-        """String representation"""
-        return f'<Cart for User {self.user_id}>'
+    # Check if product is active
+    if not product.is_active:
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'PRODUCT_INACTIVE',
+                'message': 'This product is not available'
+            }
+        }), 400
     
-    def get_total(self):
-        """
-        Calculate total cart value
+    # Check stock availability
+    if product.stock_quantity < data['quantity']:
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'INSUFFICIENT_STOCK',
+                'message': f'Only {product.stock_quantity} unit(s) available in stock'
+            }
+        }), 400
+    
+    # Get or create cart
+    cart = Cart.get_or_create_cart(current_user.id)
+    
+    # Check if product already in cart
+    existing_item = CartItem.find_in_cart(cart.id, product.id)
+    
+    if existing_item:
+        # Update quantity
+        new_quantity = existing_item.quantity + data['quantity']
         
-        Returns:
-            float: Total cart value
-        """
-        total = 0
-        for item in self.items:
-            total += float(item.product.price) * item.quantity
-        return total
-    
-    def get_item_count(self):
-        """
-        Get total number of items in cart
+        # Check if new quantity exceeds stock
+        if new_quantity > product.stock_quantity:
+            return jsonify({
+                'success': False,
+                'error': {
+                    'code': 'INSUFFICIENT_STOCK',
+                    'message': f'Cannot add {data["quantity"]} more. Only {product.stock_quantity - existing_item.quantity} more available.'
+                }
+            }), 400
         
-        Returns:
-            int: Total quantity of all items
-        """
-        return sum(item.quantity for item in self.items)
-    
-    def to_dict(self):
-        """Convert cart to dictionary"""
-        return {
-            'id': self.id,
-            'user_id': self.user_id,
-            'items': [item.to_dict() for item in self.items],
-            'total': self.get_total(),
-            'item_count': self.get_item_count(),
-            'created_at': self.created_at.isoformat() if self.created_at else None,
-            'updated_at': self.updated_at.isoformat() if self.updated_at else None
-        }
-    
-    @staticmethod
-    def get_or_create_cart(user_id):
-        """
-        Get user's cart or create if doesn't exist
+        existing_item.quantity = new_quantity
         
-        Args:
-            user_id: User ID
-            
-        Returns:
-            Cart: User's cart
-        """
-        cart = Cart.query.filter_by(user_id=user_id).first()
-        
-        if not cart:
-            cart = Cart(user_id=user_id)
-            db.session.add(cart)
+        try:
             db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({
+                'success': False,
+                'error': {
+                    'code': 'DATABASE_ERROR',
+                    'message': 'Failed to update cart'
+                }
+            }), 500
         
-        return cart
+        return jsonify({
+            'success': True,
+            'data': existing_item.to_dict(),
+            'message': 'Cart updated successfully'
+        }), 200
+    
+    else:
+        # Add new item to cart
+        cart_item = CartItem(
+            cart_id=cart.id,
+            product_id=product.id,
+            quantity=data['quantity']
+        )
+        
+        try:
+            db.session.add(cart_item)
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({
+                'success': False,
+                'error': {
+                    'code': 'DATABASE_ERROR',
+                    'message': 'Failed to add item to cart'
+                }
+            }), 500
+        
+        return jsonify({
+            'success': True,
+            'data': cart_item.to_dict(),
+            'message': 'Item added to cart successfully'
+        }), 201
 
 
-class CartItem(db.Model):
+@bp.route('/items/<int:cart_item_id>', methods=['PUT'])
+@role_required(UserRole.CUSTOMER)
+def update_cart_item(current_user, cart_item_id):
     """
-    Cart item - product in cart with quantity
+    Update cart item quantity
+    
+    PUT /api/v1/cart/items/:id
+    Headers: Authorization: Bearer <access_token>
+    Body: {
+        "quantity": 3
+    }
     """
-    __tablename__ = 'cart_items'
+    try:
+        # Validate request data
+        data = update_cart_item_schema.load(request.json)
+    except ValidationError as err:
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'VALIDATION_ERROR',
+                'message': 'Invalid input data',
+                'details': err.messages
+            }
+        }), 400
     
-    # Primary Key
-    id = db.Column(db.Integer, primary_key=True)
+    # Get cart item
+    cart_item = CartItem.find_by_id(cart_item_id)
     
-    # Foreign Keys
-    cart_id = db.Column(db.Integer, db.ForeignKey('carts.id'), nullable=False, index=True)
-    product_id = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=False, index=True)
+    if not cart_item:
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'CART_ITEM_NOT_FOUND',
+                'message': 'Cart item not found'
+            }
+        }), 404
     
-    # Cart Item Info
-    quantity = db.Column(db.Integer, nullable=False, default=1)
+    # Verify cart belongs to current user
+    if cart_item.cart.user_id != current_user.id:
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'FORBIDDEN',
+                'message': 'You can only modify your own cart'
+            }
+        }), 403
     
-    # Timestamps
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+    # Check product still exists and is active
+    product = cart_item.product
     
-    # Relationships
-    product = db.relationship('Product', backref='cart_items')
+    if not product or not product.is_active:
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'PRODUCT_UNAVAILABLE',
+                'message': 'This product is no longer available'
+            }
+        }), 400
     
-    # Unique constraint: one product per cart
-    __table_args__ = (
-        db.UniqueConstraint('cart_id', 'product_id', name='unique_cart_product'),
-    )
+    # Check stock availability
+    if product.stock_quantity < data['quantity']:
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'INSUFFICIENT_STOCK',
+                'message': f'Only {product.stock_quantity} unit(s) available in stock'
+            }
+        }), 400
     
-    def __repr__(self):
-        """String representation"""
-        return f'<CartItem {self.quantity}x Product {self.product_id} in Cart {self.cart_id}>'
+    # Update quantity
+    cart_item.quantity = data['quantity']
     
-    def get_subtotal(self):
-        """
-        Calculate subtotal for this cart item
-        
-        Returns:
-            float: Subtotal (price * quantity)
-        """
-        return float(self.product.price) * self.quantity
+    try:
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'DATABASE_ERROR',
+                'message': 'Failed to update cart item'
+            }
+        }), 500
     
-    def to_dict(self):
-        """Convert cart item to dictionary"""
-        return {
-            'id': self.id,
-            'product': {
-                'id': self.product.id,
-                'name': self.product.name,
-                'price': float(self.product.price),
-                'image_url': self.product.image_url,
-                'stock_quantity': self.product.stock_quantity,
-                'is_active': self.product.is_active,
-                'merchant': {
-                    'id': self.product.merchant.id,
-                    'name': self.product.merchant.name
-                } if self.product.merchant else None
-            },
-            'quantity': self.quantity,
-            'subtotal': self.get_subtotal(),
-            'created_at': self.created_at.isoformat() if self.created_at else None,
-            'updated_at': self.updated_at.isoformat() if self.updated_at else None
-        }
+    return jsonify({
+        'success': True,
+        'data': cart_item.to_dict(),
+        'message': 'Cart item updated successfully'
+    }), 200
+
+
+@bp.route('/items/<int:cart_item_id>', methods=['DELETE'])
+@role_required(UserRole.CUSTOMER)
+def remove_cart_item(current_user, cart_item_id):
+    """
+    Remove item from cart
     
-    @staticmethod
-    def find_by_id(cart_item_id):
-        """Find cart item by ID"""
-        return CartItem.query.get(cart_item_id)
+    DELETE /api/v1/cart/items/:id
+    Headers: Authorization: Bearer <access_token>
+    """
+    # Get cart item
+    cart_item = CartItem.find_by_id(cart_item_id)
     
-    @staticmethod
-    def find_in_cart(cart_id, product_id):
-        """
-        Find specific product in cart
-        
-        Args:
-            cart_id: Cart ID
-            product_id: Product ID
-            
-        Returns:
-            CartItem: Cart item or None
-        """
-        return CartItem.query.filter_by(cart_id=cart_id, product_id=product_id).first()
+    if not cart_item:
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'CART_ITEM_NOT_FOUND',
+                'message': 'Cart item not found'
+            }
+        }), 404
+    
+    # Verify cart belongs to current user
+    if cart_item.cart.user_id != current_user.id:
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'FORBIDDEN',
+                'message': 'You can only modify your own cart'
+            }
+        }), 403
+    
+    try:
+        db.session.delete(cart_item)
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'DATABASE_ERROR',
+                'message': 'Failed to remove item from cart'
+            }
+        }), 500
+    
+    return jsonify({
+        'success': True,
+        'message': 'Item removed from cart successfully'
+    }), 200
+
+
+@bp.route('', methods=['DELETE'])
+@role_required(UserRole.CUSTOMER)
+def clear_cart(current_user):
+    """
+    Clear all items from cart
+    
+    DELETE /api/v1/cart
+    Headers: Authorization: Bearer <access_token>
+    """
+    # Get user's cart
+    cart = Cart.query.filter_by(user_id=current_user.id).first()
+    
+    if not cart:
+        return jsonify({
+            'success': True,
+            'message': 'Cart is already empty'
+        }), 200
+    
+    try:
+        # Delete all cart items (cascade will handle this)
+        CartItem.query.filter_by(cart_id=cart.id).delete()
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'DATABASE_ERROR',
+                'message': 'Failed to clear cart'
+            }
+        }), 500
+    
+    return jsonify({
+        'success': True,
+        'message': 'Cart cleared successfully'
+    }), 200
