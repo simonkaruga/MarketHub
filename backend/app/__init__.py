@@ -66,10 +66,11 @@ def create_app(config_name='development'):
          origins=app.config.get('CORS_ORIGINS', '*'),
          supports_credentials=True)
     
-  # Register blueprints
+ # Register blueprints
     from app.routes import (
         auth, categories, products, merchant, admin, cart,
-        orders, payments, merchant_orders, admin_orders
+        orders, payments, merchant_orders, admin_orders,
+        hub_staff, admin_hub_staff
     )
     app.register_blueprint(auth.bp, url_prefix='/api/v1/auth')
     app.register_blueprint(categories.bp, url_prefix='/api/v1/categories')
@@ -88,6 +89,12 @@ def create_app(config_name='development'):
     from app.routes.admin_orders import bp as admin_orders_bp
     app.register_blueprint(admin_orders_bp, url_prefix='/api/v1')
     
+    # Hub staff routes
+    app.register_blueprint(hub_staff.bp, url_prefix='/api/v1/hub')
+    
+    # Admin hub staff management
+    app.register_blueprint(admin_hub_staff.bp, url_prefix='/api/v1')
+    
     # Other blueprints will be added as we create them:
-    # from app.routes import hub_staff, review
-    # app.register_blueprint(hub_staff.bp, url_prefix='/api/v1/hub')
+    # from app.routes import reviews
+    # app.register_blueprint(reviews.bp, url_prefix='/api/v1/reviews')
