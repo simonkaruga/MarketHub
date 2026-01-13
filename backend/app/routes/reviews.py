@@ -98,3 +98,59 @@ def create_review(current_user):
         }), 400
     
     order_item_id = result
+
+     # Handle image uploads (optional, up to 3 images)
+    image_urls = []
+    if 'images' in request.files:
+        images = request.files.getlist('images')
+        
+        if len(images) > 3:
+            return jsonify({
+                'success': False,
+                'error': {
+                    'code': 'TOO_MANY_IMAGES',
+                    'message': 'Maximum 3 images allowed'
+                }
+            }), 400
+        
+        for image_file in images:
+            if image_file.filename:
+                upload_result = upload_product_image(image_file)
+                if upload_result:
+                    image_urls.append(upload_result['url'])
+    
+    # Create review
+    review = Review(
+        product_id=validated_data['product_id'],
+        customer_id=current_user.id,
+        order_item_id=order_item_id,
+        rating=validated_data['rating'],
+        title=validated_data.get('title'),
+        comment=validated_data['comment'],
+        image_urls=image_urls if image_urls else None,
+        verified_purchase=True
+    )
+    
+    try:
+        db.session.add(review)
+        db.session.commit()
+        
+        # TODO: Send notification to merchant
+        # - Email merchant about new review
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'DATABASE_ERROR',
+                'message': 'Failed to create review'
+            }
+        }), 500
+    
+    return jsonify({
+        'success': True,
+        'data': review.to_dict(),
+        'message': 'Review created successfully'
+    }), 201
+
