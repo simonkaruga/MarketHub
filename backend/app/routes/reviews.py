@@ -154,3 +154,50 @@ def create_review(current_user):
         'message': 'Review created successfully'
     }), 201
 
+@bp.route('/<int:review_id>', methods=['PUT'])
+@role_required(UserRole.CUSTOMER)
+def update_review(current_user, review_id):
+    """
+    Update a review
+    
+    PUT /api/v1/reviews/:id
+    Headers: Authorization: Bearer <customer_token>
+    Body: {
+        "rating": 4,
+        "title": "Updated title",
+        "comment": "Updated comment"
+    }
+    """
+    review = Review.find_by_id(review_id)
+    
+    if not review:
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'REVIEW_NOT_FOUND',
+                'message': 'Review not found'
+            }
+        }), 404
+    
+    # Check ownership
+    if review.customer_id != current_user.id:
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'FORBIDDEN',
+                'message': 'You can only update your own reviews'
+            }
+        }), 403
+    
+    try:
+        data = update_review_schema.load(request.json)
+    except ValidationError as err:
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'VALIDATION_ERROR',
+                'message': 'Invalid input data',
+                'details': err.messages
+            }
+        }), 400
+
