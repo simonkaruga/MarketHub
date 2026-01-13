@@ -472,3 +472,127 @@ def process_pickup(current_user, suborder_id):
             }
         }), 400
     
+    # Update order status
+    suborder.status = SubOrderStatus.COMPLETED
+    
+    # Update master order payment status
+    master_order = suborder.master_order
+    master_order.payment_status = PaymentStatus.PAID
+    
+    try:
+        db.session.commit()
+        
+        # TODO: Send notifications
+        # - Email customer: "Thank you for your purchase! Order completed."
+        # - Email merchant: "Payment received. Payout will be processed."
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'DATABASE_ERROR',
+                'message': 'Failed to process pickup'
+            }
+        }), 500
+    
+    return jsonify({
+        'success': True,
+        'data': suborder.to_dict(),
+        'message': f'Pickup completed. Payment of KES {float(suborder.subtotal_amount):,.2f} received.'
+    }), 200
+
+
+@bp.route('/reports/daily', methods=['GET'])
+@hub_staff_required
+def get_daily_report(current_user):
+    """
+    Get daily activity report
+    
+    GET /api/v1/hub/reports/daily?date=2026-01-12
+    Headers: Authorization: Bearer <hub_staff_token>
+    
+    Query Parameters:
+    - date: Date for report (YYYY-MM-DD, default: today)
+    """
+    hub_id = current_user.hub_id
+    
+    if not hub_id:
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'NO_HUB_ASSIGNED',
+                'message': 'You are not assigned to any hub'
+            }
+        }), 400
+    
+    # Get date from query params or use today
+    date_str = request.args.get('date')
+    if date_str:
+        try:
+            report_date = datetime.strptime(date_str, '%Y-%m-%d').date()
+        except ValueError:
+            return jsonify({
+                'success': False,
+                'error': {
+                    'code': 'INVALID_DATE',
+                    'message': 'Invalid date format. Use YYYY-MM-DD'
+                }
+            }), 400
+    else:
+        report_date = date.today()
+    
+    # Get orders for the date
+    orders_verified = SubOrder.query.filter(
+        SubOrder.hub_id == hub_id,
+        SubOrder.status.in_([
+            SubOrderStatus.AT_HUB_READY_FOR_PICKUP,
+            SubOrderStatus.COMPLETED
+        ]),
+        func.date(SubOrder.updated_at) == report_date
+    ).all()
+    
+    orders_completed = SubOrder.query.filter(
+        SubOrder.hub_id == hub_id,
+        SubOrder.status == SubOrderStatus.COMPLETED,
+        func.date(SubOrder.updated_at) == report_date
+    ).all()
+    
+    orders_rejected = SubOrder.query.filter(
+        SubOrder.hub_id == hub_id,
+        SubOrder.status == SubOrderStatus.PENDING_MERCHANT_DELIVERY,
+        SubOrder.rejection_reason.isnot(None),
+        func.date(SubOrder.updated_at) == report_date
+    ).all()
+    
+    # Calculate totals
+    total_revenue = sum(float(order.subtotal_amount) for order in orders_completed)
+    total_commission = sum(float(order.commission_amount) for order in orders_completed)
+    
+    report = {
+        'date': report_date.isoformat(),
+        'hub_id': hub_id,
+        'hub_name': current_user.hub.name if current_user.hub else None,
+        'summary': {
+            'orders_verified': len(orders_verified),
+            'orders_completed': len(orders_completed),
+            'orders_rejected': len(orders_rejected),
+            'total_revenue': total_revenue,
+            'total_commission': total_commission
+        },
+        'completed_orders': [order.to_dict() for order in orders_completed],
+        'rejected_orders': [
+            {
+                'id': order.id,
+                'merchant': order.merchant.name if order.merchant else None,
+                'rejection_reason': order.rejection_reason,
+                'subtotal': float(order.subtotal_amount)
+            } for order in orders_rejected
+        ]
+    }
+    
+    return jsonify({
+        'success': True,
+        'data': report
+    }), 200
+    
