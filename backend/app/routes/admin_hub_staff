@@ -1,0 +1,262 @@
+Admin Hub Staff Routes
+Admin management of hub staff assignments
+"""
+from flask import Blueprint, request, jsonify
+from marshmallow import Schema, fields, validate, ValidationError
+from app import db
+from app.models.user import User, UserRole
+from app.models.hub import Hub
+from app.utils.decorators import admin_required
+
+# Create blueprint
+bp = Blueprint('admin_hub_staff', __name__)
+
+
+# Validation Schema
+class AssignHubStaffSchema(Schema):
+    """Schema for assigning hub staff"""
+    user_id = fields.Int(required=True)
+    hub_id = fields.Int(required=True)
+
+
+assign_schema = AssignHubStaffSchema()
+
+
+@bp.route('/admin/hub-staff', methods=['GET'])
+@admin_required
+def get_hub_staff(current_user):
+    """
+    Get all hub staff
+    
+    GET /api/v1/admin/hub-staff
+    Headers: Authorization: Bearer <admin_token>
+    """
+    hub_staff = User.query.filter_by(role=UserRole.HUB_STAFF).all()
+    
+    return jsonify({
+        'success': True,
+        'data': [
+            {
+                'id': staff.id,
+                'name': staff.name,
+                'email': staff.email,
+                'phone_number': staff.phone_number,
+                'hub': staff.hub.to_dict() if staff.hub else None,
+                'is_active': staff.is_active
+            } for staff in hub_staff
+        ]
+    }), 200
+
+
+@bp.route('/admin/hub-staff', methods=['POST'])
+@admin_required
+def assign_hub_staff(current_user):
+    """
+    Assign user as hub staff to a hub
+    
+    POST /api/v1/admin/hub-staff
+    Headers: Authorization: Bearer <admin_token>
+    Body: {
+        "user_id": 5,
+        "hub_id": 1
+    }
+    """
+    try:
+        data = assign_schema.load(request.json)
+    except ValidationError as err:
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'VALIDATION_ERROR',
+                'message': 'Invalid input data',
+                'details': err.messages
+            }
+        }), 400
+    
+    # Get user
+    user = User.find_by_id(data['user_id'])
+    
+    if not user:
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'USER_NOT_FOUND',
+                'message': 'User not found'
+            }
+        }), 404
+    
+    # Check if hub exists
+    hub = Hub.find_by_id(data['hub_id'])
+    
+    if not hub:
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'HUB_NOT_FOUND',
+                'message': 'Hub not found'
+            }
+        }), 404
+    
+    # Update user role and hub assignment
+    user.role = UserRole.HUB_STAFF
+    user.hub_id = data['hub_id']
+    
+    try:
+        db.session.commit()
+        
+        # TODO: Send email notification
+        # - Email user: "You've been assigned as hub staff at [hub name]"
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'DATABASE_ERROR',
+                'message': 'Failed to assign hub staff'
+            }
+        }), 500
+    
+    return jsonify({
+        'success': True,
+        'data': {
+            'id': user.id,
+            'name': user.name,
+            'email': user.email,
+            'role': user.role.value,
+            'hub': hub.to_dict()
+        },
+        'message': f'User assigned as hub staff at {hub.name}'
+    }), 200
+
+
+@bp.route('/admin/hub-staff/<int:user_id>', methods=['PUT'])
+@admin_required
+def update_hub_staff(current_user, user_id):
+    """
+    Update hub staff assignment
+    
+    PUT /api/v1/admin/hub-staff/:id
+    Headers: Authorization: Bearer <admin_token>
+    Body: {
+        "hub_id": 2
+    }
+    """
+    user = User.find_by_id(user_id)
+    
+    if not user:
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'USER_NOT_FOUND',
+                'message': 'User not found'
+            }
+        }), 404
+    
+    if user.role != UserRole.HUB_STAFF:
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'NOT_HUB_STAFF',
+                'message': 'User is not hub staff'
+            }
+        }), 400
+    
+    try:
+        data = assign_schema.load(request.json, partial=True)
+    except ValidationError as err:
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'VALIDATION_ERROR',
+                'message': 'Invalid input data',
+                'details': err.messages
+            }
+        }), 400
+    
+    if 'hub_id' in data:
+        hub = Hub.find_by_id(data['hub_id'])
+        if not hub:
+            return jsonify({
+                'success': False,
+                'error': {
+                    'code': 'HUB_NOT_FOUND',
+                    'message': 'Hub not found'
+                }
+            }), 404
+        
+        user.hub_id = data['hub_id']
+    
+    try:
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'DATABASE_ERROR',
+                'message': 'Failed to update hub staff'
+            }
+        }), 500
+    
+    return jsonify({
+        'success': True,
+        'data': {
+            'id': user.id,
+            'name': user.name,
+            'email': user.email,
+            'hub': user.hub.to_dict() if user.hub else None
+        },
+        'message': 'Hub staff updated successfully'
+    }), 200
+
+
+@bp.route('/admin/hub-staff/<int:user_id>', methods=['DELETE'])
+@admin_required
+def remove_hub_staff(current_user, user_id):
+    """
+    Remove hub staff assignment (change back to customer)
+    
+    DELETE /api/v1/admin/hub-staff/:id
+    Headers: Authorization: Bearer <admin_token>
+    """
+    user = User.find_by_id(user_id)
+    
+    if not user:
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'USER_NOT_FOUND',
+                'message': 'User not found'
+            }
+        }), 404
+    
+    if user.role != UserRole.HUB_STAFF:
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'NOT_HUB_STAFF',
+                'message': 'User is not hub staff'
+            }
+        }), 400
+    
+    # Change role back to customer and remove hub assignment
+    user.role = UserRole.CUSTOMER
+    user.hub_id = None
+    
+    try:
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'DATABASE_ERROR',
+                'message': 'Failed to remove hub staff'
+            }
+        }), 500
+    
+    return jsonify({
+        'success': True,
+        'message': 'Hub staff removed successfully'
+    }), 200
