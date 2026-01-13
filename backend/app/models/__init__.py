@@ -12,10 +12,8 @@ from app.models.order import (
     MasterOrder, SubOrder, OrderItem,
     PaymentMethod, PaymentStatus, SubOrderStatus
 )
-
-# Other models will be added as we create them:
-# from app.models.review import Review
-# from app.models.merchant_application import MerchantApplication
+from app.models.review import Review
+from app.models.merchant_application import MerchantApplication, ApplicationStatus
 
 __all__ = [
     'User', 'UserRole',
@@ -25,5 +23,7 @@ __all__ = [
     'Hub',
     'DeliveryPartner',
     'MasterOrder', 'SubOrder', 'OrderItem',
-    'PaymentMethod', 'PaymentStatus', 'SubOrderStatus'
+    'PaymentMethod', 'PaymentStatus', 'SubOrderStatus',
+    'Review',
+    'MerchantApplication', 'ApplicationStatus'
 ]

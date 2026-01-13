@@ -70,7 +70,9 @@ def create_app(config_name='development'):
     from app.routes import (
         auth, categories, products, merchant, admin, cart,
         orders, payments, merchant_orders, admin_orders,
-        hub_staff, admin_hub_staff
+        hub_staff, admin_hub_staff, reviews, merchant_reviews,
+        merchant_applications, admin_merchant_applications,
+        admin_analytics
     )
     app.register_blueprint(auth.bp, url_prefix='/api/v1/auth')
     app.register_blueprint(categories.bp, url_prefix='/api/v1/categories')
@@ -85,6 +87,10 @@ def create_app(config_name='development'):
     from app.routes.merchant_orders import bp as merchant_orders_bp
     app.register_blueprint(merchant_orders_bp, url_prefix='/api/v1/merchant')
     
+    # Merge merchant review routes into merchant blueprint prefix
+    from app.routes.merchant_reviews import bp as merchant_reviews_bp
+    app.register_blueprint(merchant_reviews_bp, url_prefix='/api/v1/merchant')
+    
     # Merge admin order routes with existing admin/public routes
     from app.routes.admin_orders import bp as admin_orders_bp
     app.register_blueprint(admin_orders_bp, url_prefix='/api/v1')
@@ -95,6 +101,21 @@ def create_app(config_name='development'):
     # Admin hub staff management
     app.register_blueprint(admin_hub_staff.bp, url_prefix='/api/v1')
     
-    # Other blueprints will be added as we create them:
-    # from app.routes import reviews
-    # app.register_blueprint(reviews.bp, url_prefix='/api/v1/reviews')
+    # Review routes (includes both public and customer routes)
+    app.register_blueprint(reviews.bp, url_prefix='/api/v1')
+    
+    # Merchant application routes
+    app.register_blueprint(merchant_applications.bp, url_prefix='/api/v1/merchant-applications')
+    
+    # Admin merchant application management
+    app.register_blueprint(admin_merchant_applications.bp, url_prefix='/api/v1')
+    
+    # Admin analytics dashboard
+    app.register_blueprint(admin_analytics.bp, url_prefix='/api/v1/admin')
+
+    # Initialize Flask-Mail
+from app.services.email_service import mail
+mail.init_app(app)
+    # Profile routes
+from app.routes import profile
+app.register_blueprint(profile.bp, url_prefix='/api/v1')
