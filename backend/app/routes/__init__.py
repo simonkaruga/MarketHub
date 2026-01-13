@@ -18,7 +18,8 @@ from app.routes import (
     reviews,
     merchant_reviews,
     merchant_applications,
-    admin_merchant_applications
+    admin_merchant_applications,
+    admin_analytics
 )
 
 __all__ = [
@@ -37,5 +38,6 @@ __all__ = [
     'reviews',
     'merchant_reviews',
     'merchant_applications',
-    'admin_merchant_applications'
+    'admin_merchant_applications',
+    'admin_analytics'
 ]
