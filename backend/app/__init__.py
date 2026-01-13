@@ -66,16 +66,28 @@ def create_app(config_name='development'):
          origins=app.config.get('CORS_ORIGINS', '*'),
          supports_credentials=True)
     
-   # Register blueprints
-    from app.routes import auth, categories, products, merchant, admin, cart
+  # Register blueprints
+    from app.routes import (
+        auth, categories, products, merchant, admin, cart,
+        orders, payments, merchant_orders, admin_orders
+    )
     app.register_blueprint(auth.bp, url_prefix='/api/v1/auth')
     app.register_blueprint(categories.bp, url_prefix='/api/v1/categories')
     app.register_blueprint(products.bp, url_prefix='/api/v1/products')
     app.register_blueprint(merchant.bp, url_prefix='/api/v1/merchant')
     app.register_blueprint(admin.bp, url_prefix='/api/v1/admin')
     app.register_blueprint(cart.bp, url_prefix='/api/v1/cart')
+    app.register_blueprint(orders.bp, url_prefix='/api/v1/orders')
+    app.register_blueprint(payments.bp, url_prefix='/api/v1/payments')
+    
+    # Merge merchant order routes into merchant blueprint prefix
+    from app.routes.merchant_orders import bp as merchant_orders_bp
+    app.register_blueprint(merchant_orders_bp, url_prefix='/api/v1/merchant')
+    
+    # Merge admin order routes with existing admin/public routes
+    from app.routes.admin_orders import bp as admin_orders_bp
+    app.register_blueprint(admin_orders_bp, url_prefix='/api/v1')
     
     # Other blueprints will be added as we create them:
-    # from app.routes import orders, hub_staff
-    # app.register_blueprint(orders.bp, url_prefix='/api/v1/orders')
+    # from app.routes import hub_staff, review
     # app.register_blueprint(hub_staff.bp, url_prefix='/api/v1/hub')
