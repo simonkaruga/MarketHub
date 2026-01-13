@@ -1,7 +1,3 @@
-"""
-API routes package
-Blueprints will be imported here as we create them
-"""
 from app.routes import (
     auth, 
     categories, 
@@ -19,7 +15,8 @@ from app.routes import (
     merchant_reviews,
     merchant_applications,
     admin_merchant_applications,
-    admin_analytics
+    admin_analytics,
+    profile  
 )
 
 __all__ = [
@@ -39,5 +36,6 @@ __all__ = [
     'merchant_reviews',
     'merchant_applications',
     'admin_merchant_applications',
-    'admin_analytics'
+    'admin_analytics',
+    'profile'  
 ]
