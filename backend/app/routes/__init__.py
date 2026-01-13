@@ -12,7 +12,9 @@ from app.routes import (
     orders,
     payments,
     merchant_orders,
-    admin_orders
+    admin_orders,
+    hub_staff,
+    admin_hub_staff
 )
 
 __all__ = [
@@ -25,5 +27,7 @@ __all__ = [
     'orders',
     'payments',
     'merchant_orders',
-    'admin_orders'
+    'admin_orders',
+    'hub_staff',
+    'admin_hub_staff'
 ]
