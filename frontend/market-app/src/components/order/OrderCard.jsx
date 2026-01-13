@@ -1,45 +1,46 @@
-import { formatCurrency } from '../../utils/formatters';
-import Button from '../common/Button';
+import { Link } from 'react-router-dom';
+import { formatCurrency, formatDate } from '../../utils/formatters';
+import OrderStatus from './OrderStatus';
 
-const CartSummary = ({ cart, onCheckout }) => {
-  if (!cart) return null;
-
+const OrderCard = ({ order }) => {
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md sticky top-20">
-      <h3 className="text-xl font-semibold mb-4">Order Summary</h3>
-      
-      <div className="space-y-3 mb-6">
-        <div className="flex justify-between">
-          <span className="text-gray-600">Subtotal</span>
-          <span className="font-semibold">{formatCurrency(cart.total)}</span>
+    <Link to={`/orders/${order.id}`}>
+      <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+        {/* Header */}
+        <div className="flex justify-between items-start mb-4">
+          <div>
+            <h3 className="font-semibold text-lg">Order #{order.id}</h3>
+            <p className="text-sm text-gray-600">{formatDate(order.created_at)}</p>
+          </div>
+          <OrderStatus status={order.suborders?.[0]?.status} />
         </div>
-        
-        <div className="flex justify-between">
-          <span className="text-gray-600">Delivery</span>
-          <span className="font-semibold">Calculated at checkout</span>
+
+        {/* Items */}
+        <div className="mb-4">
+          <p className="text-sm text-gray-600">
+            {order.suborders?.[0]?.items?.length || 0} item(s)
+          </p>
         </div>
-        
-        <div className="border-t pt-3 flex justify-between">
-          <span className="text-lg font-semibold">Total</span>
-          <span className="text-lg font-bold text-primary-600">
-            {formatCurrency(cart.total)}
-          </span>
+
+        {/* Footer */}
+        <div className="flex justify-between items-center pt-4 border-t">
+          <div>
+            <p className="text-sm text-gray-600">Total</p>
+            <p className="text-xl font-bold text-primary-600">
+              {formatCurrency(order.total_amount)}
+            </p>
+          </div>
+          
+          <div className="text-sm">
+            <span className="text-gray-600">Payment: </span>
+            <span className="font-semibold">
+              {order.payment_method === 'mpesa_delivery' ? 'M-Pesa' : 'Cash on Delivery'}
+            </span>
+          </div>
         </div>
       </div>
-
-      <Button
-        onClick={onCheckout}
-        className="w-full"
-        size="lg"
-      >
-        Proceed to Checkout
-      </Button>
-
-      <p className="text-xs text-gray-500 text-center mt-4">
-        Taxes and shipping calculated at checkout
-      </p>
-    </div>
+    </Link>
   );
 };
 
-export default CartSummary;
+export default OrderCard;
