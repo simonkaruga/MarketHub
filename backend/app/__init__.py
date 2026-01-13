@@ -15,6 +15,7 @@ from config import config
 import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
 
+# Initialize extensions (but don't bind to app yet)
 db = SQLAlchemy()
 migrate = Migrate()
 jwt = JWTManager()
@@ -39,10 +40,10 @@ def create_app(config_name='development'):
     """
     app = Flask(__name__)
     
- 
+    # Load configuration
     app.config.from_object(config[config_name])
     
-    
+    # Initialize Sentry (Error Monitoring) - only if DSN is provided
     if app.config.get('SENTRY_DSN'):
         sentry_sdk.init(
             dsn=app.config['SENTRY_DSN'],
@@ -51,7 +52,7 @@ def create_app(config_name='development'):
             traces_sample_rate=1.0 if config_name == 'development' else 0.1
         )
     
-    
+    # Initialize extensions with app
     db.init_app(app)
     migrate.init_app(app, db)
     jwt.init_app(app)
@@ -60,45 +61,21 @@ def create_app(config_name='development'):
     mail.init_app(app)
     limiter.init_app(app)
     
- 
+    # Configure CORS
     CORS(app, 
          origins=app.config.get('CORS_ORIGINS', '*'),
          supports_credentials=True)
     
-    from app.routes import auth
+   # Register blueprints
+    from app.routes import auth, categories, products, merchant, admin
     app.register_blueprint(auth.bp, url_prefix='/api/v1/auth')
+    app.register_blueprint(categories.bp, url_prefix='/api/v1/categories')
+    app.register_blueprint(products.bp, url_prefix='/api/v1/products')
+    app.register_blueprint(merchant.bp, url_prefix='/api/v1/merchant')
+    app.register_blueprint(admin.bp, url_prefix='/api/v1/admin')
     
-   
-    @app.route('/api/v1/health')
-    def health_check():
-        """Health check endpoint"""
-        return jsonify({
-            'status': 'healthy',
-            'message': 'MarketHub API is running',
-            'environment': config_name
-        }), 200
-
-    @app.errorhandler(404)
-    def not_found(error):
-        """Handle 404 errors"""
-        return jsonify({
-            'success': False,
-            'error': {
-                'code': 'NOT_FOUND',
-                'message': 'The requested resource was not found'
-            }
-        }), 404
-    
-    @app.errorhandler(500)
-    def internal_error(error):
-        """Handle 500 errors"""
-        db.session.rollback()
-        return jsonify({
-            'success': False,
-            'error': {
-                'code': 'INTERNAL_SERVER_ERROR',
-                'message': 'An internal server error occurred'
-            }
-        }), 500
-    
-    return app
+    # Other blueprints will be added as we create them:
+    # from app.routes import cart, orders, hub_staff
+    # app.register_blueprint(cart.bp, url_prefix='/api/v1/cart')
+    # app.register_blueprint(orders.bp, url_prefix='/api/v1/orders')
+    # app.register_blueprint(hub_staff.bp, url_prefix='/api/v1/hub')
