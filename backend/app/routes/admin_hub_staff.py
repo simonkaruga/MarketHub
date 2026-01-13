@@ -1,3 +1,4 @@
+"""
 Admin Hub Staff Routes
 Admin management of hub staff assignments
 """

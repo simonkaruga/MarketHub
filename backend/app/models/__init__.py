@@ -14,6 +14,7 @@ from app.models.order import (
 )
 from app.models.review import Review
 from app.models.merchant_application import MerchantApplication, ApplicationStatus
+from app.models.refund import Refund, RefundReason, RefundStatus
 
 __all__ = [
     'User', 'UserRole',
@@ -25,5 +26,6 @@ __all__ = [
     'MasterOrder', 'SubOrder', 'OrderItem',
     'PaymentMethod', 'PaymentStatus', 'SubOrderStatus',
     'Review',
-    'MerchantApplication', 'ApplicationStatus'
+    'MerchantApplication', 'ApplicationStatus',
+    'Refund', 'RefundReason', 'RefundStatus'
 ]
