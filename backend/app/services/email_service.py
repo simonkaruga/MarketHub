@@ -175,7 +175,7 @@ def send_low_stock_alert_email(merchant, product):
     html = f"""
     <html>
     <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-        <h2 style="color: #dc2626;">⚠️ Low Stock Alert</h2>
+        <h2 style="color: #dc2626;"> Low Stock Alert</h2>
         <p>Hi {merchant.name},</p>
         <p>One of your products is running low on stock:</p>
         

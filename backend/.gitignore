@@ -33,6 +33,11 @@ ENV/
 *.db
 *.sqlite3
 
+# Database Backups
+*.sql
+*.sql.gz
+backups/
+
 # IDE
 .vscode/
 .idea/

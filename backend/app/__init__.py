@@ -118,3 +118,5 @@ def create_app(config_name='development'):
     
     # Merchant analytics dashboard (NEW)
     app.register_blueprint(merchant_analytics.bp, url_prefix='/api/v1/merchant')
+
+    return app

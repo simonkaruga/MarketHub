@@ -113,10 +113,54 @@ def hub_staff_required(fn):
     return role_required(UserRole.HUB_STAFF)(fn)
 
 
+def login_required(fn):
+    """
+    Decorator to require authentication (any logged-in user)
+
+    Usage:
+        @login_required
+        def protected_route(current_user):
+            ...
+    """
+    @wraps(fn)
+    def wrapper(*args, **kwargs):
+        # Verify JWT token exists
+        verify_jwt_in_request()
+
+        # Get current user ID from JWT
+        current_user_id = get_jwt_identity()
+
+        # Fetch user from database
+        user = User.find_by_id(current_user_id)
+
+        if not user:
+            return jsonify({
+                'success': False,
+                'error': {
+                    'code': 'USER_NOT_FOUND',
+                    'message': 'User not found'
+                }
+            }), 404
+
+        if not user.is_active:
+            return jsonify({
+                'success': False,
+                'error': {
+                    'code': 'USER_INACTIVE',
+                    'message': 'Your account has been deactivated'
+                }
+            }), 403
+
+        # Pass user to the route function
+        return fn(current_user=user, *args, **kwargs)
+
+    return wrapper
+
+
 def get_current_user():
     """
     Helper function to get current authenticated user
-    
+
     Returns:
         User: Current user object or None
     """
