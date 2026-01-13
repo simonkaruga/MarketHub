@@ -35,3 +35,47 @@ class MerchantApplicationSchema(Schema):
 
 
 application_schema = MerchantApplicationSchema()
+
+@bp.route('', methods=['POST'])
+@login_required
+def submit_application(current_user):
+    """
+    Submit merchant application
+    
+    POST /api/v1/merchant-applications
+    Headers: Authorization: Bearer <access_token>
+    Content-Type: multipart/form-data
+    
+    Form Data:
+    - business_name, business_type, etc (all fields)
+    - business_license: File (optional)
+    - id_document: File (optional)
+    - tax_certificate: File (optional)
+    """
+    # Check if user is already a merchant
+    if current_user.role == UserRole.MERCHANT:
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'ALREADY_MERCHANT',
+                'message': 'You are already a merchant'
+            }
+        }), 400
+    
+    # Check if user has a pending application
+    existing_app = MerchantApplication.find_by_user(current_user.id)
+    if existing_app and existing_app.status in [ApplicationStatus.PENDING, ApplicationStatus.UNDER_REVIEW]:
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'APPLICATION_EXISTS',
+                'message': 'You already have a pending application'
+            }
+        }), 400
+    
+    try:
+        # Get form data
+        data = {
+            'business_name': request.form.get('business_name'),
+            'business_type': request.form.get('business_type'),
+            'business_registration_number':
