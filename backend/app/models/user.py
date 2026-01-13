@@ -114,20 +114,11 @@ class User(db.Model):
     def find_by_id(user_id):
         """
         Find user by ID
-        
+
         Args:
             user_id (int): User's ID
-            
+
         Returns:
             User: User object or None
         """
         return User.query.get(user_id)
-    
-    class User(db.Model):
-    # ... existing fields ...
-    
-    # Profile fields
-    profile_picture = db.Column(db.String(500), nullable=True)
-    addresses = db.Column(db.JSON, nullable=True)  # Array of shipping addresses
-    
-    # ... rest of the model ...

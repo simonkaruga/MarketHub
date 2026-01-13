@@ -1,4 +1,4 @@
-
+"""
 Validation Helpers
 Common validation functions
 """
