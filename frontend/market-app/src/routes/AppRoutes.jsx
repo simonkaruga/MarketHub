@@ -11,10 +11,11 @@ import Register from '../pages/public/Register';
 
 // Customer Pages
 import Cart from '../pages/customer/Cart';
-import Checkout from '../pages/customer/Checkout';
+import Checkout from '../pages/customer/CheckOut';
 import Orders from '../pages/customer/Orders';
 import OrderDetail from '../pages/customer/OrderDetail';
 import Profile from '../pages/customer/Profile';
+import ApplyMerchant from '../pages/customer/ApplyMerchant';
 
 // Merchant Pages
 import MerchantDashboard from '../pages/merchant/MerchantDashboard';
@@ -71,6 +72,14 @@ const AppRoutes = () => {
         element={
           <PrivateRoute>
             <Profile />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/apply-merchant"
+        element={
+          <PrivateRoute>
+            <ApplyMerchant />
           </PrivateRoute>
         }
       />

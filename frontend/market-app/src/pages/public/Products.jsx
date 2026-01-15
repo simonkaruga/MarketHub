@@ -20,8 +20,9 @@ const Products = () => {
 
   const fetchCategories = async () => {
     try {
-      const data = await productService.getCategories();
-      setCategories(data);
+      const response = await productService.getCategories();
+      // API returns { success: true, data: [...] }
+      setCategories(response.data || []);
     } catch (error) {
       console.error('Failed to fetch categories:', error);
     }
@@ -47,7 +48,8 @@ const Products = () => {
         data = await productService.getProducts(params);
       }
 
-      setProducts(data.products || data || []);
+      // API returns { success: true, data: { products: [...], pagination: {...} } }
+      setProducts(data.data?.products || []);
     } catch (error) {
       setError('Failed to load products');
       console.error('Error:', error);
