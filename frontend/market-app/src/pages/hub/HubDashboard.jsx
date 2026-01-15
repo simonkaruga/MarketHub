@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { FiPackage, FiCheckCircle, FiClock, FiQrCode, FiSearch } from 'react-icons/fi';
+import { FiPackage, FiCheckCircle, FiClock, FiCamera, FiSearch } from 'react-icons/fi';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { formatCurrency } from '../../utils/formatters';
@@ -269,7 +269,7 @@ const HubDashboard = () => {
                 onClick={() => setShowQrScanner(true)}
                 className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
               >
-                <FiQrCode />
+                <FiCamera />
                 Scan QR
               </button>
             </div>
@@ -368,7 +368,7 @@ const HubDashboard = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
             <div className="text-center">
-              <FiQrCode className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+              <FiCamera className="mx-auto h-12 w-12 text-gray-400 mb-4" />
               <h3 className="text-lg font-semibold mb-2">QR Code Scanner</h3>
               <p className="text-gray-600 mb-4">
                 QR code scanning functionality will be integrated here. This will allow you to quickly verify orders by scanning the customer's QR code.

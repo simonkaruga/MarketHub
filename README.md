@@ -49,20 +49,47 @@ MarketHub/
 
 ### Core Functionality
 - Multi-vendor marketplace with merchant management
-- Product catalog with categories and search
-- Shopping cart and checkout
+- Product catalog with categories, search, and advanced filtering
+- Shopping cart and checkout with multiple payment options
 - Order management with merchant-based splitting
 - M-Pesa payment integration (STK Push)
-- Cash on Delivery (COD) support
-- Hub-based delivery coordination
-- Product reviews and ratings
-- Refund request system
+- Cash on Delivery (COD) with hub-based pickup
+- Hub-based delivery coordination and verification
+- Product reviews and ratings system
+- Merchant application workflow
+- Password reset and account management
 
-### User Roles
-- **Customer**: Browse, purchase, review products
-- **Merchant**: Manage products, view orders and analytics
-- **Hub Staff**: Coordinate deliveries, manage logistics
-- **Admin**: Platform management, analytics, merchant approvals
+### User Roles & Capabilities
+
+#### Customer
+- Browse products with filtering (category, price, search)
+- Shopping cart management
+- Checkout with M-Pesa or Cash on Delivery
+- Order tracking and history
+- Product reviews with photos (verified purchases)
+- Apply to become a merchant
+- Profile management
+
+#### Merchant
+- **Dashboard**: Quick stats overview (revenue, orders, products, ratings)
+- **Products**: Full CRUD operations with image uploads
+- **Orders**: View and manage orders, update status, mark ready for pickup
+- **Analytics**: Revenue tracking, top products, growth metrics, charts
+- **Reviews**: View customer reviews, respond to feedback, flag inappropriate content
+
+#### Hub Staff
+- **Dashboard**: Order verification and pickup management
+- QR code scanning for quick verification (placeholder)
+- Approve/reject orders after quality checks
+- Mark orders as picked up by customers
+- Track daily statistics (pending, ready, completed)
+
+#### Admin
+- **Dashboard**: Platform overview with quick actions
+- **Merchant Applications**: Review, approve, or reject merchant applications
+- **Orders**: Platform-wide order management and dispute resolution
+- **Analytics**: Revenue trends, user growth, top merchants, top products
+- **Hub Staff Management**: Create, edit, assign staff to hubs
 
 ### Security
 - JWT token authentication
