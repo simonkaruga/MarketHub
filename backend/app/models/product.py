@@ -36,7 +36,6 @@ class Product(db.Model):
 
     # Relationships
     merchant = db.relationship('User', backref='products', foreign_keys=[merchant_id])
-    category = db.relationship('Category', backref='products', foreign_keys=[category_id])
 
     # Constraints
     __table_args__ = (
@@ -119,3 +118,58 @@ class Product(db.Model):
     def find_by_id(product_id):
         """Find product by ID"""
         return Product.query.get(product_id)
+
+    @staticmethod
+    def search_products(query=None, category_id=None, min_price=None, max_price=None,
+                       in_stock_only=True, page=1, per_page=20):
+        """
+        Search and filter products with pagination
+
+        Args:
+            query: Search term for name/description
+            category_id: Filter by category
+            min_price: Minimum price filter
+            max_price: Maximum price filter
+            in_stock_only: Only show products in stock
+            page: Page number
+            per_page: Items per page
+
+        Returns:
+            Pagination object with filtered products
+        """
+        # Start with base query - only active products
+        products_query = Product.query.filter_by(is_active=True)
+
+        # Apply search query
+        if query:
+            search_term = f'%{query}%'
+            products_query = products_query.filter(
+                db.or_(
+                    Product.name.ilike(search_term),
+                    Product.description.ilike(search_term)
+                )
+            )
+
+        # Filter by category
+        if category_id:
+            products_query = products_query.filter_by(category_id=category_id)
+
+        # Filter by price range
+        if min_price is not None:
+            products_query = products_query.filter(Product.price >= min_price)
+        if max_price is not None:
+            products_query = products_query.filter(Product.price <= max_price)
+
+        # Filter by stock
+        if in_stock_only:
+            products_query = products_query.filter(Product.stock_quantity > 0)
+
+        # Order by newest first
+        products_query = products_query.order_by(Product.created_at.desc())
+
+        # Paginate
+        return products_query.paginate(
+            page=page,
+            per_page=per_page,
+            error_out=False
+        )
