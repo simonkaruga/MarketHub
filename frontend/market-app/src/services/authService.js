@@ -46,12 +46,29 @@ export const authService = {
   uploadProfilePicture: async (file) => {
     const formData = new FormData();
     formData.append('picture', file);
-    
+
     const response = await api.post('/profile/picture', formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
     });
+    return response.data.data;
+  },
+
+  // OTP Verification
+  verifyEmail: async (otp) => {
+    const response = await api.post('/auth/verify-email', { otp });
+    return response.data;
+  },
+
+  resendVerification: async () => {
+    const response = await api.post('/auth/resend-verification');
+    return response.data;
+  },
+
+  // Google OAuth
+  googleAuth: async (token) => {
+    const response = await api.post('/auth/google', { token });
     return response.data.data;
   }
 };

@@ -9,9 +9,12 @@ const ProductCard = ({ product }) => {
   const { addToCart } = useCart();
   const { isAuthenticated } = useAuth();
 
+  // Blue placeholder for broken images
+  const BLUE_PLACEHOLDER = 'https://placehold.co/800x800/5B7EE5/white/png?text=Product+Image';
+
   const handleAddToCart = async (e) => {
     e.preventDefault();
-    
+
     if (!isAuthenticated) {
       toast.error('Please login to add items to cart');
       return;
@@ -24,15 +27,20 @@ const ProductCard = ({ product }) => {
     }
   };
 
+  const handleImageError = (e) => {
+    e.target.src = BLUE_PLACEHOLDER;
+  };
+
   return (
     <Link to={`/products/${product.id}`} className="group">
       <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow">
         {/* Image */}
         <div className="relative h-64 bg-gray-200 overflow-hidden">
           <img
-            src={product.image_url || '/placeholder.png'}
+            src={product.image_url || BLUE_PLACEHOLDER}
             alt={product.name}
             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+            onError={handleImageError}
           />
           
           {product.stock_quantity === 0 && (

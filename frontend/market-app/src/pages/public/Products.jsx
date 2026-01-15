@@ -11,6 +11,7 @@ const Products = () => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [pagination, setPagination] = useState(null);
   const [searchParams, setSearchParams] = useSearchParams();
 
   useEffect(() => {
@@ -40,16 +41,19 @@ const Products = () => {
         data = await productService.searchProducts(searchQuery);
       } else {
         const params = {
-          category_id: searchParams.get('category'),
+          category: searchParams.get('category'),
           min_price: searchParams.get('min_price'),
           max_price: searchParams.get('max_price'),
-          sort_by: searchParams.get('sort_by')
+          sort_by: searchParams.get('sort_by'),
+          page: searchParams.get('page') || 1,
+          per_page: 50  // Increase to show more products per page
         };
         data = await productService.getProducts(params);
       }
 
       // API returns { success: true, data: { products: [...], pagination: {...} } }
       setProducts(data.data?.products || []);
+      setPagination(data.data?.pagination || null);
     } catch (error) {
       setError('Failed to load products');
       console.error('Error:', error);
@@ -93,6 +97,39 @@ const Products = () => {
               loading={loading}
               error={error}
             />
+
+            {/* Pagination */}
+            {pagination && pagination.total_pages > 1 && (
+              <div className="mt-8 flex justify-center items-center gap-2">
+                <button
+                  onClick={() => {
+                    const params = new URLSearchParams(searchParams);
+                    params.set('page', pagination.page - 1);
+                    setSearchParams(params);
+                  }}
+                  disabled={!pagination.has_prev}
+                  className="px-4 py-2 border rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100"
+                >
+                  Previous
+                </button>
+
+                <span className="text-sm text-gray-600">
+                  Page {pagination.page} of {pagination.total_pages}
+                </span>
+
+                <button
+                  onClick={() => {
+                    const params = new URLSearchParams(searchParams);
+                    params.set('page', pagination.page + 1);
+                    setSearchParams(params);
+                  }}
+                  disabled={!pagination.has_next}
+                  className="px-4 py-2 border rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100"
+                >
+                  Next
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
