@@ -8,6 +8,7 @@ import Footer from '../../components/layout/Footer';
 import Button from '../../components/common/Button';
 import Input from '../../components/common/Input';
 import ErrorMessage from '../../components/common/ErrorMessage';
+import MpesaPaymentModal from '../../components/payment/MpesaPaymentModal';
 import toast from 'react-hot-toast';
 
 const Checkout = () => {
@@ -18,6 +19,8 @@ const Checkout = () => {
   const [paymentMethod, setPaymentMethod] = useState('mpesa_delivery');
   const [mpesaPhone, setMpesaPhone] = useState('');
   const [hubId, setHubId] = useState('');
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [createdOrderId, setCreatedOrderId] = useState(null);
 
   useEffect(() => {
     if (!cart || cart.items?.length === 0) {
@@ -52,15 +55,28 @@ const Checkout = () => {
       }
 
       const order = await orderService.createOrder(orderData);
-      
-      await clearCart();
-      toast.success('Order placed successfully!');
-      navigate(`/orders/${order.id}`);
+      setCreatedOrderId(order.id);
+
+      // If M-Pesa payment, show payment modal
+      if (paymentMethod === 'mpesa_delivery') {
+        setShowPaymentModal(true);
+      } else {
+        // For cash on delivery, just redirect
+        await clearCart();
+        toast.success('Order placed successfully!');
+        navigate(`/orders/${order.id}`);
+      }
     } catch (err) {
       setError(err.response?.data?.error?.message || 'Failed to create order');
     } finally {
       setLoading(false);
     }
+  };
+
+  const handlePaymentSuccess = async () => {
+    await clearCart();
+    toast.success('Payment successful! Order placed.');
+    navigate(`/orders/${createdOrderId}`);
   };
 
   if (!cart || cart.items?.length === 0) {
@@ -192,6 +208,15 @@ const Checkout = () => {
       </div>
 
       <Footer />
+
+      {/* M-Pesa Payment Modal */}
+      <MpesaPaymentModal
+        isOpen={showPaymentModal}
+        onClose={() => setShowPaymentModal(false)}
+        orderId={createdOrderId}
+        amount={cart?.total || 0}
+        onSuccess={handlePaymentSuccess}
+      />
     </div>
   );
 };
