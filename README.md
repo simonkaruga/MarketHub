@@ -258,7 +258,7 @@ MIT
 
 ## Support
 
-For issues and questions:
+For issues and questions :
 - Create an issue in the repository
 - Email: support@markethub.com
 
