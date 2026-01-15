@@ -23,6 +23,8 @@ import ApplyMerchant from '../pages/customer/ApplyMerchant';
 import MerchantDashboard from '../pages/merchant/MerchantDashboard';
 import MerchantProducts from '../pages/merchant/MerchantProducts';
 import MerchantOrders from '../pages/merchant/MerchantOrders';
+import MerchantAnalytics from '../pages/merchant/MerchantAnalytics';
+import MerchantReviews from '../pages/merchant/MerchantReviews';
 
 // Admin Pages
 import AdminDashboard from '../pages/admin/AdminDashboard';
@@ -115,6 +117,22 @@ const AppRoutes = () => {
         element={
           <RoleRoute allowedRoles={['merchant']}>
             <MerchantOrders />
+          </RoleRoute>
+        }
+      />
+      <Route
+        path="/merchant/analytics"
+        element={
+          <RoleRoute allowedRoles={['merchant']}>
+            <MerchantAnalytics />
+          </RoleRoute>
+        }
+      />
+      <Route
+        path="/merchant/reviews"
+        element={
+          <RoleRoute allowedRoles={['merchant']}>
+            <MerchantReviews />
           </RoleRoute>
         }
       />
