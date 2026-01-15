@@ -1,63 +1,112 @@
-import { FiUsers, FiPackage, FiShoppingBag, FiDollarSign } from 'react-icons/fi';
-import Navbar from '../../components/layout/Navbar';
-import Sidebar from '../../components/layout/Sidebar';
-
 const AdminDashboard = () => {
   return (
-    <div className="min-h-screen flex flex-col">
-      <Navbar />
-      <div className="flex flex-1">
-        <Sidebar />
-        <main className="flex-1 p-8 bg-gray-50">
-          <h1 className="text-3xl font-bold mb-8">Admin Dashboard</h1>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-600 text-sm">Total Users</p>
-                  <p className="text-2xl font-bold">1,234</p>
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <div className="px-4 py-6 sm:px-0">
+          <h1 className="text-3xl font-bold text-gray-900 mb-6">Admin Dashboard</h1>
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="bg-white overflow-hidden shadow rounded-lg">
+              <div className="p-5">
+                <div className="flex items-center">
+                  <div className="flex-shrink-0">
+                    <svg className="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                  </div>
+                  <div className="ml-5 w-0 flex-1">
+                    <dl>
+                      <dt className="text-sm font-medium text-gray-500 truncate">Total Users</dt>
+                      <dd className="text-lg font-medium text-gray-900">-</dd>
+                    </dl>
+                  </div>
                 </div>
-                <FiUsers className="text-primary-600" size={32} />
               </div>
             </div>
 
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-600 text-sm">Total Products</p>
-                  <p className="text-2xl font-bold">5,678</p>
+            <div className="bg-white overflow-hidden shadow rounded-lg">
+              <div className="p-5">
+                <div className="flex items-center">
+                  <div className="flex-shrink-0">
+                    <svg className="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                    </svg>
+                  </div>
+                  <div className="ml-5 w-0 flex-1">
+                    <dl>
+                      <dt className="text-sm font-medium text-gray-500 truncate">Total Orders</dt>
+                      <dd className="text-lg font-medium text-gray-900">-</dd>
+                    </dl>
+                  </div>
                 </div>
-                <FiPackage className="text-green-600" size={32} />
               </div>
             </div>
 
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-600 text-sm">Total Orders</p>
-                  <p className="text-2xl font-bold">9,012</p>
+            <div className="bg-white overflow-hidden shadow rounded-lg">
+              <div className="p-5">
+                <div className="flex items-center">
+                  <div className="flex-shrink-0">
+                    <svg className="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <div className="ml-5 w-0 flex-1">
+                    <dl>
+                      <dt className="text-sm font-medium text-gray-500 truncate">Total Revenue</dt>
+                      <dd className="text-lg font-medium text-gray-900">KES -</dd>
+                    </dl>
+                  </div>
                 </div>
-                <FiShoppingBag className="text-blue-600" size={32} />
-              </div>
-            </div>
-
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-600 text-sm">Revenue</p>
-                  <p className="text-2xl font-bold">KES 12.5M</p>
-                </div>
-                <FiDollarSign className="text-yellow-500" size={32} />
               </div>
             </div>
           </div>
 
-          <div className="mt-8 bg-white p-6 rounded-lg shadow-md">
-            <h2 className="text-xl font-semibold mb-4">Recent Activity</h2>
-            <p className="text-gray-600">Admin features coming soon...</p>
+          <div className="mt-8 bg-white shadow overflow-hidden sm:rounded-lg">
+            <div className="px-4 py-5 sm:px-6">
+              <h3 className="text-lg leading-6 font-medium text-gray-900">
+                Admin Functions
+              </h3>
+              <p className="mt-1 max-w-2xl text-sm text-gray-500">
+                Manage your marketplace
+              </p>
+            </div>
+            <div className="border-t border-gray-200">
+              <ul className="divide-y divide-gray-200">
+                <li className="px-4 py-4 sm:px-6 hover:bg-gray-50 cursor-pointer">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm font-medium text-primary-600">Manage Users</p>
+                    <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
+                </li>
+                <li className="px-4 py-4 sm:px-6 hover:bg-gray-50 cursor-pointer">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm font-medium text-primary-600">Merchant Applications</p>
+                    <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
+                </li>
+                <li className="px-4 py-4 sm:px-6 hover:bg-gray-50 cursor-pointer">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm font-medium text-primary-600">View Analytics</p>
+                    <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
+                </li>
+                <li className="px-4 py-4 sm:px-6 hover:bg-gray-50 cursor-pointer">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm font-medium text-primary-600">Refund Requests</p>
+                    <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
+                </li>
+              </ul>
+            </div>
           </div>
-        </main>
+        </div>
       </div>
     </div>
   );

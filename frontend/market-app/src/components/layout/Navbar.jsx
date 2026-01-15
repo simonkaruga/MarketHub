@@ -81,13 +81,19 @@ const Navbar = () => {
                       My Orders
                     </Link>
 
-                    {user?.role === 'merchant' && (
+                    {user?.role === 'CUSTOMER' && (
+                      <Link to="/apply-merchant" className="block px-4 py-2 text-primary-600 hover:bg-gray-100 font-medium">
+                        Become a Merchant
+                      </Link>
+                    )}
+
+                    {user?.role === 'MERCHANT' && (
                       <Link to="/merchant/dashboard" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">
                         Merchant Dashboard
                       </Link>
                     )}
 
-                    {user?.role === 'admin' && (
+                    {user?.role === 'ADMIN' && (
                       <Link to="/admin/dashboard" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">
                         Admin Dashboard
                       </Link>
