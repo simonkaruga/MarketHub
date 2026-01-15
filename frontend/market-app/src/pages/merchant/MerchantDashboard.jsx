@@ -82,7 +82,7 @@ const MerchantDashboard = () => {
           </div>
 
           {/* Quick Links */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <Link to="/merchant/products" className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
               <h3 className="font-semibold text-lg mb-2">Manage Products</h3>
               <p className="text-gray-600 text-sm">Add, edit, or remove products</p>
@@ -96,6 +96,11 @@ const MerchantDashboard = () => {
             <Link to="/merchant/analytics" className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
               <h3 className="font-semibold text-lg mb-2">Analytics</h3>
               <p className="text-gray-600 text-sm">View detailed performance metrics</p>
+            </Link>
+
+            <Link to="/merchant/reviews" className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+              <h3 className="font-semibold text-lg mb-2">Reviews</h3>
+              <p className="text-gray-600 text-sm">View and respond to reviews</p>
             </Link>
           </div>
         </main>
