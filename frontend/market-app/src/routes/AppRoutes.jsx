@@ -20,9 +20,12 @@ import ApplyMerchant from '../pages/customer/ApplyMerchant';
 // Merchant Pages
 import MerchantDashboard from '../pages/merchant/MerchantDashboard';
 import MerchantProducts from '../pages/merchant/MerchantProducts';
+import MerchantOrders from '../pages/merchant/MerchantOrders';
 
 // Admin Pages
 import AdminDashboard from '../pages/admin/AdminDashboard';
+import MerchantApplications from '../pages/admin/MerchantApplications';
+import MerchantApplicationDetail from '../pages/admin/MerchantApplicationDetail';
 
 const AppRoutes = () => {
   return (
@@ -101,6 +104,14 @@ const AppRoutes = () => {
           </RoleRoute>
         }
       />
+      <Route
+        path="/merchant/orders"
+        element={
+          <RoleRoute allowedRoles={['merchant']}>
+            <MerchantOrders />
+          </RoleRoute>
+        }
+      />
 
       {/* Admin Routes */}
       <Route
@@ -108,6 +119,22 @@ const AppRoutes = () => {
         element={
           <RoleRoute allowedRoles={['admin']}>
             <AdminDashboard />
+          </RoleRoute>
+        }
+      />
+      <Route
+        path="/admin/merchant-applications"
+        element={
+          <RoleRoute allowedRoles={['admin']}>
+            <MerchantApplications />
+          </RoleRoute>
+        }
+      />
+      <Route
+        path="/admin/merchant-applications/:id"
+        element={
+          <RoleRoute allowedRoles={['admin']}>
+            <MerchantApplicationDetail />
           </RoleRoute>
         }
       />
