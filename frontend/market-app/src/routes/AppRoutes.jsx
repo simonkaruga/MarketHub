@@ -32,6 +32,11 @@ import MerchantApplications from '../pages/admin/MerchantApplications';
 import MerchantApplicationDetail from '../pages/admin/MerchantApplicationDetail';
 import AdminOrders from '../pages/admin/AdminOrders';
 import AdminOrderDetail from '../pages/admin/AdminOrderDetail';
+import AdminAnalytics from '../pages/admin/AdminAnalytics';
+import AdminHubStaff from '../pages/admin/AdminHubStaff';
+
+// Hub Staff Pages
+import HubDashboard from '../pages/hub/HubDashboard';
 
 const AppRoutes = () => {
   return (
@@ -175,6 +180,32 @@ const AppRoutes = () => {
         element={
           <RoleRoute allowedRoles={['admin']}>
             <AdminOrderDetail />
+          </RoleRoute>
+        }
+      />
+      <Route
+        path="/admin/analytics"
+        element={
+          <RoleRoute allowedRoles={['admin']}>
+            <AdminAnalytics />
+          </RoleRoute>
+        }
+      />
+      <Route
+        path="/admin/hub-staff"
+        element={
+          <RoleRoute allowedRoles={['admin']}>
+            <AdminHubStaff />
+          </RoleRoute>
+        }
+      />
+
+      {/* Hub Staff Routes */}
+      <Route
+        path="/hub/dashboard"
+        element={
+          <RoleRoute allowedRoles={['hub_staff']}>
+            <HubDashboard />
           </RoleRoute>
         }
       />

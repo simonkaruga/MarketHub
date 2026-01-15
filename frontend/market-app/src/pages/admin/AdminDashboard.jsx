@@ -101,22 +101,26 @@ const AdminDashboard = () => {
                     </div>
                   </li>
                 </Link>
-                <li className="px-4 py-4 sm:px-6 hover:bg-gray-50 cursor-pointer">
-                  <div className="flex items-center justify-between">
-                    <p className="text-sm font-medium text-primary-600">View Analytics</p>
-                    <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </div>
-                </li>
-                <li className="px-4 py-4 sm:px-6 hover:bg-gray-50 cursor-pointer">
-                  <div className="flex items-center justify-between">
-                    <p className="text-sm font-medium text-primary-600">Refund Requests</p>
-                    <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </div>
-                </li>
+                <Link to="/admin/analytics">
+                  <li className="px-4 py-4 sm:px-6 hover:bg-gray-50 cursor-pointer">
+                    <div className="flex items-center justify-between">
+                      <p className="text-sm font-medium text-primary-600">View Analytics</p>
+                      <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
+                  </li>
+                </Link>
+                <Link to="/admin/hub-staff">
+                  <li className="px-4 py-4 sm:px-6 hover:bg-gray-50 cursor-pointer">
+                    <div className="flex items-center justify-between">
+                      <p className="text-sm font-medium text-primary-600">Hub Staff Management</p>
+                      <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
+                  </li>
+                </Link>
               </ul>
             </div>
           </div>
