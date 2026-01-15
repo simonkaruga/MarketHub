@@ -11,7 +11,7 @@ const Products = () => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   useEffect(() => {
     fetchCategories();
@@ -67,8 +67,7 @@ const Products = () => {
       }
     });
 
-    window.history.pushState({}, '', `?${params.toString()}`);
-    fetchProducts();
+    setSearchParams(params);
   };
 
   return (
