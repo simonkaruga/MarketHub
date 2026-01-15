@@ -9,7 +9,7 @@ const RoleRoute = ({ children, allowedRoles }) => {
     return <Loading />;
   }
 
-  if (!user || !allowedRoles.includes(user.role)) {
+ if (!user || !allowedRoles.includes(user.role)) {
     return <Navigate to="/" replace />;
   }
 
