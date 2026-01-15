@@ -8,6 +8,8 @@ import Products from '../pages/public/Products';
 import ProductDetail from '../pages/public/ProductDetail';
 import Login from '../pages/public/Login';
 import Register from '../pages/public/Register';
+import ForgotPassword from '../pages/public/ForgotPassword';
+import ResetPassword from '../pages/public/ResetPassword';
 
 // Customer Pages
 import Cart from '../pages/customer/Cart';
@@ -26,6 +28,8 @@ import MerchantOrders from '../pages/merchant/MerchantOrders';
 import AdminDashboard from '../pages/admin/AdminDashboard';
 import MerchantApplications from '../pages/admin/MerchantApplications';
 import MerchantApplicationDetail from '../pages/admin/MerchantApplicationDetail';
+import AdminOrders from '../pages/admin/AdminOrders';
+import AdminOrderDetail from '../pages/admin/AdminOrderDetail';
 
 const AppRoutes = () => {
   return (
@@ -36,6 +40,8 @@ const AppRoutes = () => {
       <Route path="/products/:id" element={<ProductDetail />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password/:token" element={<ResetPassword />} />
 
       {/* Customer Routes */}
       <Route
@@ -135,6 +141,22 @@ const AppRoutes = () => {
         element={
           <RoleRoute allowedRoles={['admin']}>
             <MerchantApplicationDetail />
+          </RoleRoute>
+        }
+      />
+      <Route
+        path="/admin/orders"
+        element={
+          <RoleRoute allowedRoles={['admin']}>
+            <AdminOrders />
+          </RoleRoute>
+        }
+      />
+      <Route
+        path="/admin/orders/:id"
+        element={
+          <RoleRoute allowedRoles={['admin']}>
+            <AdminOrderDetail />
           </RoleRoute>
         }
       />

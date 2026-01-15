@@ -2,21 +2,19 @@ import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { FiShoppingCart, FiStar } from 'react-icons/fi';
 import { productService } from '../../services/productService';
-import { reviewService } from '../../services/reviewService';
 import { useCart } from '../../hooks/useCart';
 import { useAuth } from '../../hooks/useAuth';
 import { formatCurrency } from '../../utils/formatters';
 import Navbar from '../../components/layout/Navbar';
 import Footer from '../../components/layout/Footer';
 import Loading from '../../components/common/Loading';
-import ReviewCard from '../../components/review/ReviewCard';
 import Button from '../../components/common/Button';
+import ProductReviews from '../../components/product/ProductReviews';
 import toast from 'react-hot-toast';
 
 const ProductDetail = () => {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
-  const [reviews, setReviews] = useState([]);
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(true);
   const { addToCart } = useCart();
@@ -24,7 +22,6 @@ const ProductDetail = () => {
 
   useEffect(() => {
     fetchProduct();
-    fetchReviews();
   }, [id]);
 
   const fetchProduct = async () => {
@@ -38,35 +35,12 @@ const ProductDetail = () => {
     }
   };
 
-  const fetchReviews = async () => {
-    try {
-      const data = await reviewService.getProductReviews(id);
-      setReviews(data.reviews || []);
-    } catch (error) {
-      console.error('Failed to load reviews:', error);
-    }
-  };
-
   const handleAddToCart = async () => {
     if (!isAuthenticated) {
       toast.error('Please login to add items to cart');
       return;
     }
     await addToCart(product.id, quantity);
-  };
-
-  const handleMarkHelpful = async (reviewId) => {
-    if (!isAuthenticated) {
-      toast.error('Please login to mark reviews as helpful');
-      return;
-    }
-    try {
-      await reviewService.markHelpful(reviewId);
-      fetchReviews();
-      toast.success('Marked as helpful!');
-    } catch (error) {
-      toast.error('Failed to mark as helpful');
-    }
   };
 
   if (loading) {
@@ -200,23 +174,7 @@ const ProductDetail = () => {
         </div>
 
         {/* Reviews Section */}
-        <div>
-          <h2 className="text-2xl font-bold mb-6">Customer Reviews</h2>
-
-          {reviews.length > 0 ? (
-            <div className="space-y-4">
-              {reviews.map((review) => (
-                <ReviewCard
-                  key={review.id}
-                  review={review}
-                  onMarkHelpful={handleMarkHelpful}
-                />
-              ))}
-            </div>
-          ) : (
-            <p className="text-gray-600">No reviews yet. Be the first to review!</p>
-          )}
-        </div>
+        <ProductReviews productId={id} />
       </div>
 
       <Footer />
