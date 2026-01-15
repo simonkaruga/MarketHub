@@ -43,10 +43,11 @@ def create_app(config_name='development'):
     # Load configuration
     app.config.from_object(config[config_name])
     
-    # Initialize Sentry (Error Monitoring) - only if DSN is provided
-    if app.config.get('SENTRY_DSN'):
+    # Initialize Sentry (Error Monitoring) - only if DSN is provided and not a placeholder
+    sentry_dsn = app.config.get('SENTRY_DSN')
+    if sentry_dsn and sentry_dsn != 'your_sentry_dsn_here':
         sentry_sdk.init(
-            dsn=app.config['SENTRY_DSN'],
+            dsn=sentry_dsn,
             integrations=[FlaskIntegration()],
             environment=config_name,
             traces_sample_rate=1.0 if config_name == 'development' else 0.1
