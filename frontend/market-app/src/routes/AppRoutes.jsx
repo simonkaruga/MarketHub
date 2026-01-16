@@ -8,6 +8,14 @@ import Products from '../pages/public/Products';
 import ProductDetail from '../pages/public/ProductDetail';
 import Login from '../pages/public/Login';
 import Register from '../pages/public/Register';
+import ForgotPassword from '../pages/public/ForgotPassword';
+import ResetPassword from '../pages/public/ResetPassword';
+import FAQ from '../pages/public/FAQ';
+import Contact from '../pages/public/Contact';
+import About from '../pages/public/About';
+import Terms from '../pages/public/Terms';
+import Privacy from '../pages/public/Privacy';
+import BecomeMerchant from '../pages/public/BecomeMerchant';
 
 // Customer Pages
 import Cart from '../pages/customer/Cart';
@@ -20,9 +28,21 @@ import ApplyMerchant from '../pages/customer/ApplyMerchant';
 // Merchant Pages
 import MerchantDashboard from '../pages/merchant/MerchantDashboard';
 import MerchantProducts from '../pages/merchant/MerchantProducts';
+import MerchantOrders from '../pages/merchant/MerchantOrders';
+import MerchantAnalytics from '../pages/merchant/MerchantAnalytics';
+import MerchantReviews from '../pages/merchant/MerchantReviews';
 
 // Admin Pages
 import AdminDashboard from '../pages/admin/AdminDashboard';
+import MerchantApplications from '../pages/admin/MerchantApplications';
+import MerchantApplicationDetail from '../pages/admin/MerchantApplicationDetail';
+import AdminOrders from '../pages/admin/AdminOrders';
+import AdminOrderDetail from '../pages/admin/AdminOrderDetail';
+import AdminAnalytics from '../pages/admin/AdminAnalytics';
+import AdminHubStaff from '../pages/admin/AdminHubStaff';
+
+// Hub Staff Pages
+import HubDashboard from '../pages/hub/HubDashboard';
 
 const AppRoutes = () => {
   return (
@@ -33,6 +53,15 @@ const AppRoutes = () => {
       <Route path="/products/:id" element={<ProductDetail />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password/:token" element={<ResetPassword />} />
+      <Route path="/faq" element={<FAQ />} />
+      <Route path="/contact" element={<Contact />} />
+      <Route path="/about" element={<About />} />
+      <Route path="/terms" element={<Terms />} />
+      <Route path="/privacy" element={<Privacy />} />
+      <Route path="/become-merchant" element={<BecomeMerchant />} />
+      <Route path="/seller-guide" element={<BecomeMerchant />} />
 
       {/* Customer Routes */}
       <Route
@@ -101,6 +130,30 @@ const AppRoutes = () => {
           </RoleRoute>
         }
       />
+      <Route
+        path="/merchant/orders"
+        element={
+          <RoleRoute allowedRoles={['merchant']}>
+            <MerchantOrders />
+          </RoleRoute>
+        }
+      />
+      <Route
+        path="/merchant/analytics"
+        element={
+          <RoleRoute allowedRoles={['merchant']}>
+            <MerchantAnalytics />
+          </RoleRoute>
+        }
+      />
+      <Route
+        path="/merchant/reviews"
+        element={
+          <RoleRoute allowedRoles={['merchant']}>
+            <MerchantReviews />
+          </RoleRoute>
+        }
+      />
 
       {/* Admin Routes */}
       <Route
@@ -108,6 +161,64 @@ const AppRoutes = () => {
         element={
           <RoleRoute allowedRoles={['admin']}>
             <AdminDashboard />
+          </RoleRoute>
+        }
+      />
+      <Route
+        path="/admin/merchant-applications"
+        element={
+          <RoleRoute allowedRoles={['admin']}>
+            <MerchantApplications />
+          </RoleRoute>
+        }
+      />
+      <Route
+        path="/admin/merchant-applications/:id"
+        element={
+          <RoleRoute allowedRoles={['admin']}>
+            <MerchantApplicationDetail />
+          </RoleRoute>
+        }
+      />
+      <Route
+        path="/admin/orders"
+        element={
+          <RoleRoute allowedRoles={['admin']}>
+            <AdminOrders />
+          </RoleRoute>
+        }
+      />
+      <Route
+        path="/admin/orders/:id"
+        element={
+          <RoleRoute allowedRoles={['admin']}>
+            <AdminOrderDetail />
+          </RoleRoute>
+        }
+      />
+      <Route
+        path="/admin/analytics"
+        element={
+          <RoleRoute allowedRoles={['admin']}>
+            <AdminAnalytics />
+          </RoleRoute>
+        }
+      />
+      <Route
+        path="/admin/hub-staff"
+        element={
+          <RoleRoute allowedRoles={['admin']}>
+            <AdminHubStaff />
+          </RoleRoute>
+        }
+      />
+
+      {/* Hub Staff Routes */}
+      <Route
+        path="/hub/dashboard"
+        element={
+          <RoleRoute allowedRoles={['hub_staff']}>
+            <HubDashboard />
           </RoleRoute>
         }
       />

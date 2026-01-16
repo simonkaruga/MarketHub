@@ -23,16 +23,26 @@ class User(db.Model):
     
     # Authentication fields
     email = db.Column(db.String(120), unique=True, nullable=False, index=True)
-    password_hash = db.Column(db.String(255), nullable=False)
-    
+    password_hash = db.Column(db.String(255), nullable=True)  # Nullable for OAuth users
+
     # Basic Information
     name = db.Column(db.String(100), nullable=False)
     phone_number = db.Column(db.String(20), nullable=True)
-    
+
     # Role and Status
     role = db.Column(Enum(UserRole), nullable=False, default=UserRole.CUSTOMER)
     is_active = db.Column(db.Boolean, default=True, nullable=False)
-    
+
+    # Email Verification
+    email_verified = db.Column(db.Boolean, default=False, nullable=False)
+    email_verification_token = db.Column(db.String(6), nullable=True)  # 6-digit OTP
+    email_verification_expires = db.Column(db.DateTime, nullable=True)
+
+    # OAuth fields
+    oauth_provider = db.Column(db.String(50), nullable=True)  # 'google', 'facebook', etc.
+    oauth_provider_id = db.Column(db.String(255), nullable=True)  # User ID from OAuth provider
+    profile_picture = db.Column(db.String(500), nullable=True)  # URL to profile picture
+
     # Password Reset
     reset_token = db.Column(db.String(255), nullable=True)
     reset_token_expires = db.Column(db.DateTime, nullable=True)
@@ -68,20 +78,22 @@ class User(db.Model):
     def check_password(self, password):
         """
         Verify the user's password
-        
+
         Args:
             password (str): Plain text password to verify
-            
+
         Returns:
             bool: True if password matches, False otherwise
         """
+        if not self.password_hash:
+            return False  # OAuth users don't have passwords
         return bcrypt.check_password_hash(self.password_hash, password)
     
     def to_dict(self):
         """
         Convert user to dictionary (for JSON responses)
         Excludes sensitive information like password_hash
-        
+
         Returns:
             dict: User data as dictionary
         """
@@ -92,6 +104,9 @@ class User(db.Model):
             'phone_number': self.phone_number,
             'role': self.role.value,
             'is_active': self.is_active,
+            'email_verified': self.email_verified,
+            'oauth_provider': self.oauth_provider,
+            'profile_picture': self.profile_picture,
             'hub_id': self.hub_id,
             'created_at': self.created_at.isoformat() if self.created_at else None,
             'updated_at': self.updated_at.isoformat() if self.updated_at else None
