@@ -14,6 +14,7 @@ const MerchantProducts = () => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
+  const [editingProduct, setEditingProduct] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -22,6 +23,13 @@ const MerchantProducts = () => {
     stock_quantity: '',
     image: null
   });
+
+  // Blue placeholder for broken images
+  const BLUE_PLACEHOLDER = 'https://placehold.co/800x800/5B7EE5/white/png?text=Product+Image';
+
+  const handleImageError = (e) => {
+    e.target.src = BLUE_PLACEHOLDER;
+  };
 
   useEffect(() => {
     fetchProducts();
@@ -51,9 +59,15 @@ const MerchantProducts = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await productService.createProduct(formData);
-      toast.success('Product created successfully!');
+      if (editingProduct) {
+        await productService.updateProduct(editingProduct.id, formData);
+        toast.success('Product updated successfully!');
+      } else {
+        await productService.createProduct(formData);
+        toast.success('Product created successfully!');
+      }
       setModalOpen(false);
+      setEditingProduct(null);
       fetchProducts();
       setFormData({
         name: '',
@@ -64,8 +78,21 @@ const MerchantProducts = () => {
         image: null
       });
     } catch (error) {
-      toast.error('Failed to create product');
+      toast.error(editingProduct ? 'Failed to update product' : 'Failed to create product');
     }
+  };
+
+  const handleEdit = (product) => {
+    setEditingProduct(product);
+    setFormData({
+      name: product.name,
+      description: product.description,
+      price: product.price,
+      category_id: product.category_id,
+      stock_quantity: product.stock_quantity,
+      image: null
+    });
+    setModalOpen(true);
   };
 
   const handleDelete = async (id) => {
@@ -103,9 +130,10 @@ const MerchantProducts = () => {
               {products.map((product) => (
                 <div key={product.id} className="bg-white rounded-lg shadow-md overflow-hidden">
                   <img
-                    src={product.image_url || '/placeholder.png'}
+                    src={product.image_url || BLUE_PLACEHOLDER}
                     alt={product.name}
                     className="w-full h-48 object-cover"
+                    onError={handleImageError}
                   />
                   <div className="p-4">
                     <h3 className="font-semibold text-lg mb-2">{product.name}</h3>
@@ -118,14 +146,24 @@ const MerchantProducts = () => {
                         Stock: {product.stock_quantity}
                       </span>
                     </div>
-                    <Button
-                      variant="danger"
-                      size="sm"
-                      onClick={() => handleDelete(product.id)}
-                      className="w-full"
-                    >
-                      Delete
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        onClick={() => handleEdit(product)}
+                        className="flex-1"
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        variant="danger"
+                        size="sm"
+                        onClick={() => handleDelete(product.id)}
+                        className="flex-1"
+                      >
+                        Delete
+                      </Button>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -134,8 +172,23 @@ const MerchantProducts = () => {
         </main>
       </div>
 
-      {/* Add Product Modal */}
-      <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title="Add New Product">
+      {/* Add/Edit Product Modal */}
+      <Modal
+        isOpen={modalOpen}
+        onClose={() => {
+          setModalOpen(false);
+          setEditingProduct(null);
+          setFormData({
+            name: '',
+            description: '',
+            price: '',
+            category_id: '',
+            stock_quantity: '',
+            image: null
+          });
+        }}
+        title={editingProduct ? "Edit Product" : "Add New Product"}
+      >
         <form onSubmit={handleSubmit}>
           <Input
             label="Product Name"
@@ -187,6 +240,11 @@ const MerchantProducts = () => {
 
           <div className="mb-6">
             <label className="label">Product Image</label>
+            {editingProduct && (
+              <p className="text-sm text-gray-600 mb-2">
+                Current image will be kept if no new image is selected
+              </p>
+            )}
             <input
               type="file"
               accept="image/*"
@@ -195,7 +253,9 @@ const MerchantProducts = () => {
             />
           </div>
 
-          <Button type="submit" className="w-full">Create Product</Button>
+          <Button type="submit" className="w-full">
+            {editingProduct ? 'Update Product' : 'Create Product'}
+          </Button>
         </form>
       </Modal>
     </div>

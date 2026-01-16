@@ -20,16 +20,25 @@ const ProductDetail = () => {
   const { addToCart } = useCart();
   const { isAuthenticated } = useAuth();
 
+  // Blue placeholder for broken images
+  const BLUE_PLACEHOLDER = 'https://placehold.co/800x800/5B7EE5/white/png?text=Product+Image';
+
+  const handleImageError = (e) => {
+    e.target.src = BLUE_PLACEHOLDER;
+  };
+
   useEffect(() => {
     fetchProduct();
   }, [id]);
 
   const fetchProduct = async () => {
     try {
-      const data = await productService.getProduct(id);
-      setProduct(data);
+      const response = await productService.getProduct(id);
+      // API returns { success: true, data: {...} }
+      setProduct(response.data || response);
     } catch (error) {
       toast.error('Failed to load product');
+      console.error('Error fetching product:', error);
     } finally {
       setLoading(false);
     }
@@ -87,9 +96,10 @@ const ProductDetail = () => {
           {/* Image */}
           <div>
             <img
-              src={product.image_url || '/placeholder.png'}
+              src={product.image_url || BLUE_PLACEHOLDER}
               alt={product.name}
               className="w-full rounded-lg shadow-lg"
+              onError={handleImageError}
             />
           </div>
 

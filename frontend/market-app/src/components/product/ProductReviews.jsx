@@ -158,27 +158,29 @@ const ProductReviews = ({ productId }) => {
   };
 
   const getAverageRating = () => {
-    if (reviews.length === 0) return 0;
+    if (!Array.isArray(reviews) || reviews.length === 0) return 0;
     const sum = reviews.reduce((acc, review) => acc + review.rating, 0);
     return (sum / reviews.length).toFixed(1);
   };
 
   const getRatingBreakdown = () => {
     const breakdown = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
-    reviews.forEach((review) => {
-      breakdown[review.rating]++;
-    });
+    if (Array.isArray(reviews)) {
+      reviews.forEach((review) => {
+        breakdown[review.rating]++;
+      });
+    }
     return breakdown;
   };
 
-  const userHasReviewed = reviews.some(review => review.customer?.id === user?.id);
+  const userHasReviewed = Array.isArray(reviews) && reviews.some(review => review.customer?.id === user?.id);
 
   return (
     <div className="mt-8">
       <h2 className="text-2xl font-bold mb-6">Customer Reviews</h2>
 
       {/* Review Summary */}
-      {reviews.length > 0 && (
+      {Array.isArray(reviews) && reviews.length > 0 && (
         <div className="bg-gray-50 rounded-lg p-6 mb-6">
           <div className="flex items-start gap-8">
             <div className="text-center">
@@ -320,13 +322,13 @@ const ProductReviews = ({ productId }) => {
         <div className="text-center py-8">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto"></div>
         </div>
-      ) : reviews.length === 0 ? (
+      ) : !Array.isArray(reviews) || reviews.length === 0 ? (
         <div className="text-center py-12 bg-gray-50 rounded-lg">
           <p className="text-gray-600">No reviews yet. Be the first to review this product!</p>
         </div>
       ) : (
         <div className="space-y-6">
-          {reviews.map((review) => (
+          {Array.isArray(reviews) && reviews.map((review) => (
             <div key={review.id} className="border-b pb-6">
               <div className="flex justify-between items-start mb-2">
                 <div>

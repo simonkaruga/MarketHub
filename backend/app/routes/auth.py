@@ -1,8 +1,8 @@
 """
 Authentication Routes
-Handles user registration, login, logout, password reset
+Handles user registration, login, logout, password reset, OTP verification, and OAuth
 """
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, current_app
 from flask_jwt_extended import (
     create_access_token,
     create_refresh_token,
@@ -13,6 +13,8 @@ from flask_jwt_extended import (
 from marshmallow import ValidationError
 from datetime import datetime, timedelta
 import secrets
+from google.oauth2 import id_token
+from google.auth.transport import requests as google_requests
 
 from app import db, limiter
 from app.models.user import User, UserRole
@@ -23,6 +25,7 @@ from app.models.schemas import (
     ResetPasswordSchema,
     UserResponseSchema
 )
+from app.services.otp_service import OTPService
 
 # Create blueprint
 bp = Blueprint('auth', __name__)
@@ -78,10 +81,11 @@ def register():
         email=data['email'].lower(),
         name=data['name'],
         phone_number=data.get('phone_number'),
-        role=UserRole.CUSTOMER  # Always start as customer
+        role=UserRole.CUSTOMER,  # Always start as customer
+        email_verified=False  # Email not verified yet
     )
     user.set_password(data['password'])
-    
+
     # Save to database
     try:
         db.session.add(user)
@@ -95,19 +99,28 @@ def register():
                 'message': 'Failed to create user'
             }
         }), 500
-    
+
+    # Generate and send OTP
+    try:
+        otp = OTPService.create_verification_token(user)
+        OTPService.send_verification_email(user, otp)
+    except Exception as e:
+        current_app.logger.error(f"Failed to send OTP email: {str(e)}")
+        # Continue even if email fails - user can request resend
+
     # Generate JWT tokens
     access_token = create_access_token(identity=user.id)
     refresh_token = create_refresh_token(identity=user.id)
-    
+
     return jsonify({
         'success': True,
         'data': {
             'user': user_response_schema.dump(user),
             'access_token': access_token,
-            'refresh_token': refresh_token
+            'refresh_token': refresh_token,
+            'requires_verification': True
         },
-        'message': 'User registered successfully'
+        'message': 'User registered successfully. Please check your email for verification code.'
     }), 201
 
 
@@ -362,3 +375,216 @@ def reset_password():
         'success': True,
         'message': 'Password reset successfully'
     }), 200
+
+
+@bp.route('/verify-email', methods=['POST'])
+@jwt_required()
+@limiter.limit("10 per hour")
+def verify_email():
+    """
+    Verify email with OTP code
+
+    POST /api/v1/auth/verify-email
+    Headers: Authorization: Bearer <access_token>
+    Body: {
+        "otp": "123456"
+    }
+    """
+    current_user_id = get_jwt_identity()
+    user = User.find_by_id(current_user_id)
+
+    if not user:
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'USER_NOT_FOUND',
+                'message': 'User not found'
+            }
+        }), 404
+
+    # Get OTP from request
+    otp = request.json.get('otp')
+    if not otp:
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'VALIDATION_ERROR',
+                'message': 'OTP code is required'
+            }
+        }), 400
+
+    # Verify OTP
+    success, message = OTPService.verify_otp(user, otp)
+
+    if not success:
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'INVALID_OTP',
+                'message': message
+            }
+        }), 400
+
+    return jsonify({
+        'success': True,
+        'data': {
+            'user': user_response_schema.dump(user)
+        },
+        'message': message
+    }), 200
+
+
+@bp.route('/resend-verification', methods=['POST'])
+@jwt_required()
+@limiter.limit("3 per hour")
+def resend_verification():
+    """
+    Resend verification email
+
+    POST /api/v1/auth/resend-verification
+    Headers: Authorization: Bearer <access_token>
+    """
+    current_user_id = get_jwt_identity()
+    user = User.find_by_id(current_user_id)
+
+    if not user:
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'USER_NOT_FOUND',
+                'message': 'User not found'
+            }
+        }), 404
+
+    success, message = OTPService.resend_verification_code(user)
+
+    if not success:
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'RESEND_FAILED',
+                'message': message
+            }
+        }), 400
+
+    return jsonify({
+        'success': True,
+        'message': message
+    }), 200
+
+
+@bp.route('/google', methods=['POST'])
+@limiter.limit("10 per minute")
+def google_auth():
+    """
+    Google OAuth authentication
+
+    POST /api/v1/auth/google
+    Body: {
+        "token": "google_id_token"
+    }
+    """
+    token = request.json.get('token')
+    if not token:
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'VALIDATION_ERROR',
+                'message': 'Google token is required'
+            }
+        }), 400
+
+    try:
+        # Verify Google token
+        google_client_id = current_app.config.get('GOOGLE_CLIENT_ID')
+        if not google_client_id:
+            return jsonify({
+                'success': False,
+                'error': {
+                    'code': 'CONFIG_ERROR',
+                    'message': 'Google OAuth not configured'
+                }
+            }), 500
+
+        idinfo = id_token.verify_oauth2_token(
+            token,
+            google_requests.Request(),
+            google_client_id
+        )
+
+        # Get user info from Google
+        email = idinfo.get('email')
+        name = idinfo.get('name')
+        google_id = idinfo.get('sub')
+        picture = idinfo.get('picture')
+        email_verified = idinfo.get('email_verified', False)
+
+        if not email:
+            return jsonify({
+                'success': False,
+                'error': {
+                    'code': 'INVALID_TOKEN',
+                    'message': 'Invalid Google token'
+                }
+            }), 400
+
+        # Check if user exists
+        user = User.find_by_email(email.lower())
+
+        if user:
+            # User exists - update OAuth info if not set
+            if not user.oauth_provider:
+                user.oauth_provider = 'google'
+                user.oauth_provider_id = google_id
+                user.profile_picture = picture
+                if email_verified:
+                    user.email_verified = True
+                db.session.commit()
+        else:
+            # Create new user
+            user = User(
+                email=email.lower(),
+                name=name,
+                role=UserRole.CUSTOMER,
+                oauth_provider='google',
+                oauth_provider_id=google_id,
+                profile_picture=picture,
+                email_verified=email_verified,
+                is_active=True
+            )
+            # No password for OAuth users
+            db.session.add(user)
+            db.session.commit()
+
+        # Generate JWT tokens
+        access_token = create_access_token(identity=user.id)
+        refresh_token = create_refresh_token(identity=user.id)
+
+        return jsonify({
+            'success': True,
+            'data': {
+                'user': user_response_schema.dump(user),
+                'access_token': access_token,
+                'refresh_token': refresh_token
+            },
+            'message': 'Login successful'
+        }), 200
+
+    except ValueError as e:
+        # Invalid token
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'INVALID_TOKEN',
+                'message': 'Invalid Google token'
+            }
+        }), 400
+    except Exception as e:
+        current_app.logger.error(f"Google OAuth error: {str(e)}")
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'OAUTH_ERROR',
+                'message': 'Failed to authenticate with Google'
+            }
+        }), 500

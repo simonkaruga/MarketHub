@@ -1,17 +1,21 @@
 import { BrowserRouter as Router } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import AppRoutes from './routes/AppRoutes';
 
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
+
 function App() {
   return (
-    <Router>
-      <AuthProvider>
-        <CartProvider>
-          <div className="min-h-screen bg-gray-50">
-            <AppRoutes />
-            <Toaster
+    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+      <Router>
+        <AuthProvider>
+          <CartProvider>
+            <div className="min-h-screen bg-gray-50">
+              <AppRoutes />
+              <Toaster
               position="top-right"
               toastOptions={{
                 duration: 3000,
@@ -39,6 +43,7 @@ function App() {
         </CartProvider>
       </AuthProvider>
     </Router>
+    </GoogleOAuthProvider>
   );
 }
 
