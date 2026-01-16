@@ -1,21 +1,27 @@
 import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { FiMail, FiLock } from 'react-icons/fi';
+import { FiMail, FiLock, FiEye, FiEyeOff } from 'react-icons/fi';
 import { useAuth } from '../../hooks/useAuth';
 import Input from '../../components/common/Input';
 import Button from '../../components/common/Button';
 import ErrorMessage from '../../components/common/ErrorMessage';
+import GoogleSignInButton from '../../components/auth/GoogleSignInButton';
 import toast from 'react-hot-toast';
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
   const from = location.state?.from?.pathname || '/';
+
+  const handleGoogleSuccess = () => {
+    navigate(from, { replace: true });
+  };
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -43,8 +49,9 @@ const Login = () => {
       <div className="max-w-md w-full">
         {/* Logo */}
         <div className="text-center mb-8">
-          <Link to="/" className="text-3xl font-bold text-primary-600">
-            MarketHub
+          <Link to="/" className="inline-flex flex-col items-center">
+            <img src="/hub.png" alt="MarketHub Logo" className="h-28 w-28 object-contain mb-3" />
+            <span className="text-3xl font-bold text-primary-600">MarketHub</span>
           </Link>
           <h2 className="mt-6 text-2xl font-bold text-gray-900">
             Sign in to your account
@@ -66,15 +73,25 @@ const Login = () => {
               required
             />
 
-            <Input
-              label="Password"
-              type="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              icon={<FiLock size={20} />}
-              required
-            />
+            <div className="relative">
+              <Input
+                label="Password"
+                type={showPassword ? "text" : "password"}
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                icon={<FiLock size={20} />}
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-9 text-gray-500 hover:text-gray-700 focus:outline-none"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
+              </button>
+            </div>
 
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center">
@@ -96,6 +113,19 @@ const Login = () => {
               {loading ? 'Signing in...' : 'Sign In'}
             </Button>
           </form>
+
+          {/* Divider */}
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-300" />
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-white text-gray-500">Or continue with</span>
+            </div>
+          </div>
+
+          {/* Google Sign In */}
+          <GoogleSignInButton onSuccess={handleGoogleSuccess} />
 
           <p className="mt-6 text-center text-sm text-gray-600">
             Don't have an account?{' '}
