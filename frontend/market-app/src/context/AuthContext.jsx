@@ -22,6 +22,7 @@ export const AuthProvider = ({ children }) => {
     const data = await authService.login(email, password);
     setUser(data.user);
     localStorage.setItem('token', data.access_token);
+    localStorage.setItem('access_token', data.access_token);
     localStorage.setItem('user', JSON.stringify(data.user));
     return data;
   };
@@ -30,8 +31,17 @@ export const AuthProvider = ({ children }) => {
     const data = await authService.register(userData);
     setUser(data.user);
     localStorage.setItem('token', data.access_token);
+    localStorage.setItem('access_token', data.access_token);
     localStorage.setItem('user', JSON.stringify(data.user));
     return data;
+  };
+
+  // For Google OAuth login - accepts user data directly
+  const googleLogin = (userData, accessToken) => {
+    setUser(userData);
+    localStorage.setItem('token', accessToken);
+    localStorage.setItem('access_token', accessToken);
+    localStorage.setItem('user', JSON.stringify(userData));
   };
 
   const logout = () => {
@@ -50,6 +60,7 @@ export const AuthProvider = ({ children }) => {
     loading,
     login,
     register,
+    googleLogin,
     logout,
     updateUser,
     isAuthenticated: !!user,
