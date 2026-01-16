@@ -45,7 +45,7 @@ const GoogleSignInButton = ({ onSuccess }) => {
         text="continue_with"
         shape="rectangular"
         size="large"
-        width="100%"
+        width="400"
         theme="outline"
       />
     </div>
