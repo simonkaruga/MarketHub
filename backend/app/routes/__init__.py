@@ -1,9 +1,9 @@
 from app.routes import (
-    auth, 
-    categories, 
-    products, 
-    merchant, 
-    admin, 
+    auth,
+    categories,
+    products,
+    merchant,
+    admin,
     cart,
     orders,
     payments,
@@ -16,15 +16,16 @@ from app.routes import (
     merchant_applications,
     admin_merchant_applications,
     admin_analytics,
-    profile  
+    merchant_analytics,
+    profile
 )
 
 __all__ = [
-    'auth', 
-    'categories', 
-    'products', 
-    'merchant', 
-    'admin', 
+    'auth',
+    'categories',
+    'products',
+    'merchant',
+    'admin',
     'cart',
     'orders',
     'payments',
@@ -37,5 +38,6 @@ __all__ = [
     'merchant_applications',
     'admin_merchant_applications',
     'admin_analytics',
-    'profile'  
+    'merchant_analytics',
+    'profile'
 ]
