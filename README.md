@@ -13,6 +13,7 @@ A comprehensive multi-vendor marketplace platform with product management, order
 This will start:
 - **Backend** (Flask) on http://localhost:5000
 - **Frontend** (Vite/React) on http://localhost:3000
+- **LiveLInk** https://markethubz.vercel.app 
 
 ### Stop Both Servers
 
