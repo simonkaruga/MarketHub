@@ -1,15 +1,29 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { FiShoppingCart, FiUser, FiMenu, FiX, FiSearch } from 'react-icons/fi';
-import { useState } from 'react';
+import { FiShoppingCart, FiUser, FiMenu, FiX, FiSearch, FiChevronDown } from 'react-icons/fi';
+import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { useCart } from '../../hooks/useCart';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const { user, logout, isAuthenticated } = useAuth();
   const { itemCount } = useCart();
   const navigate = useNavigate();
+  const dropdownRef = useRef(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -20,9 +34,13 @@ const Navbar = () => {
   };
 
   const handleLogout = () => {
+    setIsDropdownOpen(false);
     logout();
     navigate('/');
   };
+
+  // Normalize role to lowercase for comparison
+  const userRole = user?.role?.toLowerCase();
 
   return (
     <nav className="bg-white shadow-lg sticky top-0 z-50">
@@ -66,48 +84,96 @@ const Navbar = () => {
                   )}
                 </Link>
 
-                {/* User Menu */}
-                <div className="relative group">
-                  <button className="flex items-center space-x-2 text-gray-700 hover:text-primary-600">
-                    <FiUser size={24} />
-                    <span>{user?.name}</span>
+                {/* User Menu - Click-based dropdown */}
+                <div className="relative" ref={dropdownRef}>
+                  <button
+                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                    className="flex items-center space-x-2 text-gray-700 hover:text-primary-600 py-2 px-3 rounded-lg hover:bg-gray-50 transition-colors"
+                  >
+                    <FiUser size={22} />
+                    <span className="max-w-[120px] truncate">{user?.name}</span>
+                    <FiChevronDown size={16} className={`transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
                   </button>
 
-                  {/* Dropdown */}
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 hidden group-hover:block">
-                    <Link to="/profile" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">
-                      My Profile
-                    </Link>
-                    <Link to="/orders" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">
-                      My Orders
-                    </Link>
+                  {/* Dropdown Menu */}
+                  {isDropdownOpen && (
+                    <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-50">
+                      {/* User Info Header */}
+                      <div className="px-4 py-3 border-b border-gray-100">
+                        <p className="text-sm font-medium text-gray-900 truncate">{user?.name}</p>
+                        <p className="text-xs text-gray-500 truncate">{user?.email}</p>
+                        <span className="inline-block mt-1 px-2 py-0.5 text-xs font-medium bg-primary-100 text-primary-700 rounded-full capitalize">
+                          {userRole}
+                        </span>
+                      </div>
 
-                    {user?.role === 'CUSTOMER' && (
-                      <Link to="/apply-merchant" className="block px-4 py-2 text-primary-600 hover:bg-gray-100 font-medium">
-                        Become a Merchant
-                      </Link>
-                    )}
+                      <div className="py-1">
+                        <Link
+                          to="/profile"
+                          className="block px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors"
+                          onClick={() => setIsDropdownOpen(false)}
+                        >
+                          My Profile
+                        </Link>
+                        <Link
+                          to="/orders"
+                          className="block px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors"
+                          onClick={() => setIsDropdownOpen(false)}
+                        >
+                          My Orders
+                        </Link>
 
-                    {user?.role === 'MERCHANT' && (
-                      <Link to="/merchant/dashboard" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">
-                        Merchant Dashboard
-                      </Link>
-                    )}
+                        {userRole === 'customer' && (
+                          <Link
+                            to="/apply-merchant"
+                            className="block px-4 py-2 text-primary-600 hover:bg-primary-50 font-medium transition-colors"
+                            onClick={() => setIsDropdownOpen(false)}
+                          >
+                            Become a Merchant
+                          </Link>
+                        )}
 
-                    {user?.role === 'ADMIN' && (
-                      <Link to="/admin/dashboard" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">
-                        Admin Dashboard
-                      </Link>
-                    )}
+                        {userRole === 'merchant' && (
+                          <Link
+                            to="/merchant/dashboard"
+                            className="block px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors"
+                            onClick={() => setIsDropdownOpen(false)}
+                          >
+                            Merchant Dashboard
+                          </Link>
+                        )}
 
-                    <hr className="my-2" />
-                    <button
-                      onClick={handleLogout}
-                      className="block w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100"
-                    >
-                      Logout
-                    </button>
-                  </div>
+                        {userRole === 'admin' && (
+                          <Link
+                            to="/admin/dashboard"
+                            className="block px-4 py-2 text-primary-600 hover:bg-primary-50 font-medium transition-colors"
+                            onClick={() => setIsDropdownOpen(false)}
+                          >
+                            Admin Dashboard
+                          </Link>
+                        )}
+
+                        {userRole === 'hub_staff' && (
+                          <Link
+                            to="/hub/dashboard"
+                            className="block px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors"
+                            onClick={() => setIsDropdownOpen(false)}
+                          >
+                            Hub Dashboard
+                          </Link>
+                        )}
+                      </div>
+
+                      <div className="border-t border-gray-100 pt-1">
+                        <button
+                          onClick={handleLogout}
+                          className="block w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 transition-colors"
+                        >
+                          Logout
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </>
             ) : (
@@ -162,7 +228,26 @@ const Navbar = () => {
                 <Link to="/orders" className="block py-2 text-gray-700" onClick={() => setIsMenuOpen(false)}>
                   My Orders
                 </Link>
-                <button onClick={handleLogout} className="block py-2 text-red-600">
+
+                {userRole === 'merchant' && (
+                  <Link to="/merchant/dashboard" className="block py-2 text-gray-700" onClick={() => setIsMenuOpen(false)}>
+                    Merchant Dashboard
+                  </Link>
+                )}
+
+                {userRole === 'admin' && (
+                  <Link to="/admin/dashboard" className="block py-2 text-primary-600 font-medium" onClick={() => setIsMenuOpen(false)}>
+                    Admin Dashboard
+                  </Link>
+                )}
+
+                {userRole === 'hub_staff' && (
+                  <Link to="/hub/dashboard" className="block py-2 text-gray-700" onClick={() => setIsMenuOpen(false)}>
+                    Hub Dashboard
+                  </Link>
+                )}
+
+                <button onClick={handleLogout} className="block py-2 text-red-600 mt-2">
                   Logout
                 </button>
               </>
