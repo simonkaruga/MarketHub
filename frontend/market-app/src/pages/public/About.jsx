@@ -59,7 +59,7 @@ const About = () => {
     {
       name: 'SHEILA AWUOR',
       role: 'Merchant Relations',
-      image: 'https://ui-avatars.com/api/?name=Fatuma+Hassan&background=16a34a&color=fff&size=200'
+      image: '/shee.jpeg'
     }
   ];
 
