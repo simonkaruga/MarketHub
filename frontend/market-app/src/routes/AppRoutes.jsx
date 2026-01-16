@@ -10,6 +10,12 @@ import Login from '../pages/public/Login';
 import Register from '../pages/public/Register';
 import ForgotPassword from '../pages/public/ForgotPassword';
 import ResetPassword from '../pages/public/ResetPassword';
+import FAQ from '../pages/public/FAQ';
+import Contact from '../pages/public/Contact';
+import About from '../pages/public/About';
+import Terms from '../pages/public/Terms';
+import Privacy from '../pages/public/Privacy';
+import BecomeMerchant from '../pages/public/BecomeMerchant';
 
 // Customer Pages
 import Cart from '../pages/customer/Cart';
@@ -49,6 +55,13 @@ const AppRoutes = () => {
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password/:token" element={<ResetPassword />} />
+      <Route path="/faq" element={<FAQ />} />
+      <Route path="/contact" element={<Contact />} />
+      <Route path="/about" element={<About />} />
+      <Route path="/terms" element={<Terms />} />
+      <Route path="/privacy" element={<Privacy />} />
+      <Route path="/become-merchant" element={<BecomeMerchant />} />
+      <Route path="/seller-guide" element={<BecomeMerchant />} />
 
       {/* Customer Routes */}
       <Route
