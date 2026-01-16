@@ -44,7 +44,7 @@ const About = () => {
     {
       name: 'RONNY MBOYA',
       role: 'CEO & Founder',
-      image: 'https://ui-avatars.com/api/?name=John+Kamau&background=16a34a&color=fff&size=200'
+      image: '/mboya.jpg'
     },
     {
       name: 'SIMON KARUGA',
