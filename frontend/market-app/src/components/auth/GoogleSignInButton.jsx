@@ -4,20 +4,20 @@ import { useAuth } from '../../hooks/useAuth';
 import toast from 'react-hot-toast';
 
 const GoogleSignInButton = ({ onSuccess }) => {
-  const { login: authLogin } = useAuth();
+  const { googleLogin } = useAuth();
 
   const handleGoogleSuccess = async (credentialResponse) => {
     try {
       // Exchange Google ID token for our JWT
       const data = await authService.googleAuth(credentialResponse.credential);
 
-      // Store tokens and user data
-      localStorage.setItem('access_token', data.access_token);
-      localStorage.setItem('refresh_token', data.refresh_token);
-      localStorage.setItem('user', JSON.stringify(data.user));
+      // Update auth context (this also stores tokens in localStorage)
+      googleLogin(data.user, data.access_token);
 
-      // Update auth context
-      authLogin(data.user, data.access_token);
+      // Store refresh token separately
+      if (data.refresh_token) {
+        localStorage.setItem('refresh_token', data.refresh_token);
+      }
 
       toast.success('Logged in successfully!');
 
