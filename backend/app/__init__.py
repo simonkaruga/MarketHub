@@ -57,6 +57,10 @@ def create_app(config_name='development'):
     db.init_app(app)
     migrate.init_app(app, db)
     jwt.init_app(app)
+
+    # Configure JWT to handle integer identities
+    app.config['JWT_DECODE_AUDIENCE'] = None
+
     bcrypt.init_app(app)
     ma.init_app(app)
     mail.init_app(app)
