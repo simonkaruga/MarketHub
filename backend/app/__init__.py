@@ -126,4 +126,12 @@ def create_app(config_name='development'):
     # Merchant analytics dashboard (NEW)
     app.register_blueprint(merchant_analytics.bp, url_prefix='/api/v1/merchant')
 
+    # Health check endpoint for Render
+    @app.route('/')
+    def health_check():
+        return jsonify({
+            'status': 'healthy',
+            'message': 'MarketHub API is running'
+        }), 200
+
     return app
