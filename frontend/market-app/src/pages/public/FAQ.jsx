@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
+import { Link } from 'react-router-dom';
 import Navbar from '../../components/layout/Navbar';
 import Footer from '../../components/layout/Footer';
 
@@ -110,67 +111,70 @@ const FAQ = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
-      <div className="flex-1 bg-gray-50 py-12">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Frequently Asked Questions</h1>
-          <p className="text-lg text-gray-600">
+
+      {/* Hero Section */}
+      <div className="bg-gradient-to-r from-primary-600 to-primary-800 py-16">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h1 className="text-4xl font-bold text-white mb-4">Frequently Asked Questions</h1>
+          <p className="text-xl text-primary-100 max-w-2xl mx-auto">
             Find answers to common questions about shopping, selling, and using MarketHub.
           </p>
         </div>
-
-        {/* FAQ Categories */}
-        <div className="space-y-8">
-          {faqs.map((category, categoryIndex) => (
-            <div key={categoryIndex} className="bg-white rounded-lg shadow-md overflow-hidden">
-              <div className="bg-green-600 px-6 py-4">
-                <h2 className="text-xl font-semibold text-white">{category.category}</h2>
-              </div>
-              <div className="divide-y divide-gray-200">
-                {category.questions.map((item, questionIndex) => {
-                  const key = `${categoryIndex}-${questionIndex}`;
-                  const isOpen = openIndex === key;
-                  return (
-                    <div key={questionIndex} className="px-6">
-                      <button
-                        onClick={() => toggleQuestion(categoryIndex, questionIndex)}
-                        className="w-full py-4 flex justify-between items-center text-left focus:outline-none"
-                      >
-                        <span className="font-medium text-gray-900">{item.question}</span>
-                        {isOpen ? (
-                          <ChevronUpIcon className="h-5 w-5 text-green-600" />
-                        ) : (
-                          <ChevronDownIcon className="h-5 w-5 text-gray-400" />
-                        )}
-                      </button>
-                      {isOpen && (
-                        <div className="pb-4 pr-12">
-                          <p className="text-gray-600">{item.answer}</p>
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Contact CTA */}
-        <div className="mt-12 bg-green-50 rounded-lg p-8 text-center">
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">Still have questions?</h3>
-          <p className="text-gray-600 mb-4">
-            Can't find the answer you're looking for? Our support team is here to help.
-          </p>
-          <a
-            href="/contact"
-            className="inline-block bg-green-600 text-white px-6 py-3 rounded-md font-medium hover:bg-green-700 transition-colors"
-          >
-            Contact Support
-          </a>
-        </div>
       </div>
+
+      <div className="flex-1 bg-gray-50 py-12">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* FAQ Categories */}
+          <div className="space-y-6">
+            {faqs.map((category, categoryIndex) => (
+              <div key={categoryIndex} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
+                <div className="bg-gradient-to-r from-primary-600 to-primary-700 px-6 py-4">
+                  <h2 className="text-lg font-semibold text-white">{category.category}</h2>
+                </div>
+                <div className="divide-y divide-gray-100">
+                  {category.questions.map((item, questionIndex) => {
+                    const key = `${categoryIndex}-${questionIndex}`;
+                    const isOpen = openIndex === key;
+                    return (
+                      <div key={questionIndex} className="px-6">
+                        <button
+                          onClick={() => toggleQuestion(categoryIndex, questionIndex)}
+                          className="w-full py-4 flex justify-between items-center text-left focus:outline-none group"
+                        >
+                          <span className="font-medium text-gray-900 group-hover:text-primary-600 transition-colors">{item.question}</span>
+                          {isOpen ? (
+                            <ChevronUpIcon className="h-5 w-5 text-primary-600 flex-shrink-0" />
+                          ) : (
+                            <ChevronDownIcon className="h-5 w-5 text-gray-400 group-hover:text-primary-600 flex-shrink-0 transition-colors" />
+                          )}
+                        </button>
+                        {isOpen && (
+                          <div className="pb-4 pr-12 animate-fadeIn">
+                            <p className="text-gray-600 leading-relaxed">{item.answer}</p>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Contact CTA */}
+          <div className="mt-12 bg-primary-50 rounded-xl p-8 text-center border border-primary-100">
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">Still have questions?</h3>
+            <p className="text-gray-600 mb-6">
+              Can't find the answer you're looking for? Our support team is here to help.
+            </p>
+            <Link
+              to="/contact"
+              className="inline-block bg-primary-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-primary-700 transition-colors shadow-sm hover:shadow-md"
+            >
+              Contact Support
+            </Link>
+          </div>
+        </div>
       </div>
       <Footer />
     </div>

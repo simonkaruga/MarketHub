@@ -69,8 +69,16 @@ class UserResponseSchema(Schema):
     email = fields.Email()
     name = fields.Str()
     phone_number = fields.Str()
-    role = fields.Str()
+    role = fields.Method("get_role_value")
     is_active = fields.Bool()
+    email_verified = fields.Bool()
     hub_id = fields.Int()
+    profile_picture = fields.Str()
     created_at = fields.DateTime()
     updated_at = fields.DateTime()
+
+    def get_role_value(self, obj):
+        """Extract the string value from the UserRole enum"""
+        if hasattr(obj.role, 'value'):
+            return obj.role.value
+        return str(obj.role)
