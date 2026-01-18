@@ -4,7 +4,8 @@ const PRODUCTION_API_URL = import.meta.env.VITE_PRODUCTION_API_URL || 'https://m
 const LOCAL_API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
 
 // Track which API is currently being used
-let currentApiUrl = PRODUCTION_API_URL;
+// In development, start with localhost; in production, start with production URL
+let currentApiUrl = import.meta.env.DEV ? LOCAL_API_URL : PRODUCTION_API_URL;
 let isUsingFallback = false;
 
 const api = axios.create({

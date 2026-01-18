@@ -8,11 +8,12 @@ from app import create_app, db
 app = create_app(os.getenv('FLASK_ENV', 'development'))
 
 if __name__ == '__main__':
-    # Create tables if they don't exist (for development only)
-    # In production, use migrations instead
+    # Run database migrations (for development)
+    # In production, migrations should be run separately
     with app.app_context():
-        db.create_all()
-    
+        from flask_migrate import upgrade
+        upgrade()
+
     # Run the application
     app.run(
         debug=True,
