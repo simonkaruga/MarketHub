@@ -37,7 +37,7 @@ const ProductCard = ({ product }) => {
   };
 
   return (
-    <div className="group relative">
+    <Link to={`/products/${product.id}`} className="group relative block">
       {/* Premium Card Container */}
       <div className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 border border-gray-100 hover:border-primary-200 overflow-hidden transform hover:-translate-y-2">
 
@@ -105,7 +105,7 @@ const ProductCard = ({ product }) => {
           </div>
 
           {/* Description */}
-          <p className="text-gray-600 text-sm leading-relaxed line-clamp-2">
+          <p className="text-gray-800 text-sm leading-relaxed line-clamp-2">
             {product.description}
           </p>
 
@@ -118,7 +118,7 @@ const ProductCard = ({ product }) => {
                   {product.average_rating.toFixed(1)}
                 </span>
               </div>
-              <span className="text-gray-500 text-sm">
+              <span className="text-gray-700 text-sm">
                 ({product.review_count} reviews)
               </span>
               <div className="ml-auto flex items-center gap-1 text-green-600 text-xs font-medium">
@@ -131,10 +131,10 @@ const ProductCard = ({ product }) => {
           {/* Price Section */}
           <div className="flex items-center justify-between pt-2">
             <div className="flex flex-col">
-              <span className="text-3xl font-bold bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text text-transparent">
+              <span className="text-3xl font-bold text-gray-900">
                 {formatCurrency(product.price)}
               </span>
-              <span className="text-xs text-gray-500 font-medium">Free shipping</span>
+              <span className="text-xs text-gray-800 font-medium">Free shipping</span>
             </div>
 
             {/* Add to Cart Button */}
@@ -153,7 +153,7 @@ const ProductCard = ({ product }) => {
         {/* Bottom accent */}
         <div className="h-1 bg-gradient-to-r from-primary-400 via-primary-500 to-primary-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
       </div>
-    </div>
+    </Link>
   );
 };
 
