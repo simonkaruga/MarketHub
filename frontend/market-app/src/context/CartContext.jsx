@@ -8,15 +8,15 @@ export const CartContext = createContext();
 export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState(null);
   const [loading, setLoading] = useState(false);
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isCustomer } = useAuth();
 
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated && isCustomer) {
       fetchCart();
     } else {
       setCart(null);
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, isCustomer]);
 
   const fetchCart = async () => {
     try {

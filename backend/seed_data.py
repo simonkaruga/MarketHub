@@ -157,7 +157,7 @@ def seed_database():
                     role=UserRole.ADMIN,
                     is_active=True
                 )
-                admin.password_hash = 'pbkdf2:sha256:600000$dummy$dummy'
+                admin.set_password('Admin123!')
                 db.session.add(admin)
                 admin_created = 1
         except Exception as e:
@@ -202,7 +202,7 @@ def seed_database():
                         role=UserRole.MERCHANT,
                         is_active=True
                     )
-                    merchant.password_hash = 'pbkdf2:sha256:600000$dummy$dummy'
+                    merchant.set_password('Merchant123!')
                     db.session.add(merchant)
                     merchants.append(merchant)
                     merchants_created += 1
