@@ -160,7 +160,7 @@ const Products = () => {
             <FiFilter size={18} />
             <span>Filters</span>
             {activeFiltersCount > 0 && (
-              <span className="bg-primary-600 text-white text-xs font-medium px-2 py-0.5 rounded-full">
+              <span className="bg-orange-500 text-white text-xs font-medium px-2 py-0.5 rounded-full">
                 {activeFiltersCount}
               </span>
             )}

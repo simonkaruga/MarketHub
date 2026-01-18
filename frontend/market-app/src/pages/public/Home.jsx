@@ -47,7 +47,7 @@ const Home = () => {
               </span>
             </div>
 
-            <h1 className="text-6xl md:text-7xl font-bold mb-8 leading-tight animate-float">
+            <h1 className="text-6xl md:text-7xl font-bold mb-8 leading-tight">
               Shop Smart,<br />
               <span className="text-primary-200">Sell Confidently</span>
             </h1>
@@ -59,10 +59,10 @@ const Home = () => {
 
             <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-12">
               <Link to="/products" className="bg-white text-primary-600 px-10 py-4 rounded-xl font-bold text-lg hover:bg-gray-50 hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl">
-                 Start Shopping
+                🛍️ Start Shopping
               </Link>
               <Link to="/register" className="border-2 border-white text-white px-10 py-4 rounded-xl font-bold text-lg hover:bg-white hover:text-primary-600 transition-all duration-200">
-                 Become a Merchant
+                💼 Become a Merchant
               </Link>
             </div>
 

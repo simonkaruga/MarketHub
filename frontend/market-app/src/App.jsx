@@ -13,7 +13,7 @@ function App() {
       <Router>
         <AuthProvider>
           <CartProvider>
-            <div className="min-h-screen">
+            <div className="min-h-screen bg-white">
               <AppRoutes />
               <Toaster
               position="top-right"
