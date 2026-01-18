@@ -88,11 +88,11 @@ const ProductDetail = () => {
       <div className="container-custom py-8 flex-1">
         {/* Breadcrumb */}
         <nav className="mb-8 text-sm">
-          <Link to="/" className="text-gray-600 hover:text-gray-800">Home</Link>
-          <span className="mx-2">/</span>
-          <Link to="/products" className="text-gray-600 hover:text-gray-800">Products</Link>
-          <span className="mx-2">/</span>
-          <span className="text-gray-800">{product.name}</span>
+          <Link to="/" className="text-gray-300 hover:text-white">Home</Link>
+          <span className="mx-2 text-gray-400">/</span>
+          <Link to="/products" className="text-gray-300 hover:text-white">Products</Link>
+          <span className="mx-2 text-gray-400">/</span>
+          <span className="text-white">{product.name}</span>
         </nav>
 
         {/* Product Details */}
@@ -109,7 +109,7 @@ const ProductDetail = () => {
 
           {/* Info */}
           <div>
-            <h1 className="text-3xl font-bold mb-4">{product.name}</h1>
+            <h1 className="text-3xl font-bold mb-4 text-white">{product.name}</h1>
 
             {/* Rating */}
             {product.average_rating > 0 && (
@@ -122,7 +122,7 @@ const ProductDetail = () => {
                     />
                   ))}
                 </div>
-                <span className="text-gray-600">
+                <span className="text-gray-200">
                   {product.average_rating.toFixed(1)} ({product.review_count} reviews)
                 </span>
               </div>
@@ -137,8 +137,8 @@ const ProductDetail = () => {
 
             {/* Description */}
             <div className="mb-6">
-              <h3 className="font-semibold mb-2">Description</h3>
-              <p className="text-gray-700">{product.description}</p>
+              <h3 className="font-semibold mb-2 text-white">Description</h3>
+              <p className="text-gray-200">{product.description}</p>
             </div>
 
             {/* Stock */}
@@ -154,25 +154,25 @@ const ProductDetail = () => {
 
             {/* Merchant */}
             <div className="mb-6">
-              <p className="text-sm text-gray-600">
-                Sold by <span className="font-semibold">{product.merchant?.name}</span>
+              <p className="text-sm text-gray-300">
+                Sold by <span className="font-semibold text-white">{product.merchant?.name}</span>
               </p>
             </div>
 
             {/* Quantity & Add to Cart */}
             {product.stock_quantity > 0 && (
               <div className="flex gap-4 mb-6">
-                <div className="flex items-center border border-gray-300 rounded-lg">
+                <div className="flex items-center border border-gray-300 rounded-lg bg-white/10 backdrop-blur-sm">
                   <button
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="px-4 py-2 hover:bg-gray-100"
+                    className="px-4 py-2 hover:bg-white/20 text-white"
                   >
                     -
                   </button>
-                  <span className="px-6 py-2 font-semibold">{quantity}</span>
+                  <span className="px-6 py-2 font-semibold text-white">{quantity}</span>
                   <button
                     onClick={() => setQuantity(Math.min(product.stock_quantity, quantity + 1))}
-                    className="px-4 py-2 hover:bg-gray-100"
+                    className="px-4 py-2 hover:bg-white/20 text-white"
                   >
                     +
                   </button>

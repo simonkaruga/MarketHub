@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import AdminLayout from '../../components/layout/AdminLayout';
 import { FiEdit2, FiTrash2, FiPlus, FiX, FiUser } from 'react-icons/fi';
 import axios from 'axios';
 import toast from 'react-hot-toast';
@@ -161,211 +162,210 @@ const AdminHubStaff = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
-      </div>
+      <AdminLayout>
+        <div className="flex items-center justify-center py-12">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-400"></div>
+        </div>
+      </AdminLayout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="px-4 py-6 sm:px-0">
-          {/* Header */}
-          <div className="mb-8 flex justify-between items-center">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">Hub Staff Management</h1>
-              <p className="text-gray-600">Manage hub staff accounts and assignments</p>
-            </div>
-            <button
-              onClick={() => handleOpenModal()}
-              className="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
-            >
-              <FiPlus />
-              Add Staff Member
-            </button>
-          </div>
+    <AdminLayout>
+      {/* Header */}
+      <div className="mb-8 flex justify-between items-center">
+        <div>
+          <h1 className="text-4xl font-bold text-white mb-2">Hub Staff Management</h1>
+          <p className="text-gray-300 text-lg">Manage hub staff accounts and assignments</p>
+          <div className="mt-4 h-1 w-24 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"></div>
+        </div>
+        <button
+          onClick={() => handleOpenModal()}
+          className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300"
+        >
+          <FiPlus />
+          Add Staff Member
+        </button>
+      </div>
 
-          {/* Stats */}
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-3 mb-8">
-            <div className="bg-white overflow-hidden shadow rounded-lg">
-              <div className="p-5">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0">
-                    <FiUser className="h-6 w-6 text-gray-400" />
-                  </div>
-                  <div className="ml-5 w-0 flex-1">
-                    <dl>
-                      <dt className="text-sm font-medium text-gray-500 truncate">Total Staff</dt>
-                      <dd className="text-lg font-medium text-gray-900">{staff.length}</dd>
-                    </dl>
-                  </div>
-                </div>
+      {/* Stats */}
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-3 mb-8">
+        <div className="bg-white/10 backdrop-blur-md border border-white/20 shadow-2xl rounded-2xl p-6">
+          <div className="flex items-center">
+            <div className="flex-shrink-0">
+              <div className="p-3 rounded-lg bg-gradient-to-r from-blue-600 to-cyan-600">
+                <FiUser className="h-8 w-8 text-white" />
               </div>
             </div>
-
-            <div className="bg-white overflow-hidden shadow rounded-lg">
-              <div className="p-5">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0">
-                    <FiUser className="h-6 w-6 text-green-400" />
-                  </div>
-                  <div className="ml-5 w-0 flex-1">
-                    <dl>
-                      <dt className="text-sm font-medium text-gray-500 truncate">Assigned</dt>
-                      <dd className="text-lg font-medium text-gray-900">
-                        {staff.filter(s => s.hub_id).length}
-                      </dd>
-                    </dl>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white overflow-hidden shadow rounded-lg">
-              <div className="p-5">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0">
-                    <FiUser className="h-6 w-6 text-yellow-400" />
-                  </div>
-                  <div className="ml-5 w-0 flex-1">
-                    <dl>
-                      <dt className="text-sm font-medium text-gray-500 truncate">Unassigned</dt>
-                      <dd className="text-lg font-medium text-gray-900">
-                        {staff.filter(s => !s.hub_id).length}
-                      </dd>
-                    </dl>
-                  </div>
-                </div>
-              </div>
+            <div className="ml-5 w-0 flex-1">
+              <dl>
+                <dt className="text-sm font-medium text-gray-300 truncate">Total Staff</dt>
+                <dd className="text-2xl font-bold text-white">{staff.length}</dd>
+              </dl>
             </div>
           </div>
+        </div>
 
-          {/* Staff Table */}
-          <div className="bg-white shadow overflow-hidden sm:rounded-lg">
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Name
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Email
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Phone
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Assigned Hub
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Status
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {staff.length === 0 ? (
-                    <tr>
-                      <td colSpan="6" className="px-6 py-12 text-center text-gray-500">
-                        No staff members found. Click "Add Staff Member" to create one.
-                      </td>
-                    </tr>
-                  ) : (
-                    staff.map((member) => (
-                      <tr key={member.id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                          {member.name}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {member.email}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {member.phone_number}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {member.hub_name || (
-                            <span className="text-yellow-600">Unassigned</span>
-                          )}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                            member.is_active
-                              ? 'bg-green-100 text-green-800'
-                              : 'bg-red-100 text-red-800'
-                          }`}>
-                            {member.is_active ? 'Active' : 'Inactive'}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                          <button
-                            onClick={() => handleOpenModal(member)}
-                            className="text-primary-600 hover:text-primary-900 mr-4"
-                          >
-                            <FiEdit2 size={16} />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(member.id)}
-                            className="text-red-600 hover:text-red-900"
-                          >
-                            <FiTrash2 size={16} />
-                          </button>
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
+        <div className="bg-white/10 backdrop-blur-md border border-white/20 shadow-2xl rounded-2xl p-6">
+          <div className="flex items-center">
+            <div className="flex-shrink-0">
+              <div className="p-3 rounded-lg bg-gradient-to-r from-green-600 to-emerald-600">
+                <FiUser className="h-8 w-8 text-white" />
+              </div>
+            </div>
+            <div className="ml-5 w-0 flex-1">
+              <dl>
+                <dt className="text-sm font-medium text-gray-300 truncate">Assigned</dt>
+                <dd className="text-2xl font-bold text-white">
+                  {staff.filter(s => s.hub_id).length}
+                </dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white/10 backdrop-blur-md border border-white/20 shadow-2xl rounded-2xl p-6">
+          <div className="flex items-center">
+            <div className="flex-shrink-0">
+              <div className="p-3 rounded-lg bg-gradient-to-r from-yellow-600 to-orange-600">
+                <FiUser className="h-8 w-8 text-white" />
+              </div>
+            </div>
+            <div className="ml-5 w-0 flex-1">
+              <dl>
+                <dt className="text-sm font-medium text-gray-300 truncate">Unassigned</dt>
+                <dd className="text-2xl font-bold text-white">
+                  {staff.filter(s => !s.hub_id).length}
+                </dd>
+              </dl>
             </div>
           </div>
         </div>
       </div>
 
+      {/* Staff Table */}
+      <div className="bg-white/10 backdrop-blur-md border border-white/20 shadow-2xl overflow-hidden rounded-2xl">
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-white/10">
+            <thead className="bg-white/5">
+              <tr>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                  Name
+                </th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                  Email
+                </th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                  Phone
+                </th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                  Assigned Hub
+                </th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                  Status
+                </th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-white/10">
+              {staff.length === 0 ? (
+                <tr>
+                  <td colSpan="6" className="px-6 py-12 text-center text-gray-400">
+                    No staff members found. Click "Add Staff Member" to create one.
+                  </td>
+                </tr>
+              ) : (
+                staff.map((member) => (
+                  <tr key={member.id} className="hover:bg-white/5 transition-colors">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
+                      {member.name}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
+                      {member.email}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
+                      {member.phone_number}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
+                      {member.hub_name || (
+                        <span className="text-yellow-400">Unassigned</span>
+                      )}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                        member.is_active
+                          ? 'bg-green-600/20 text-green-300 border border-green-500/30'
+                          : 'bg-red-600/20 text-red-300 border border-red-500/30'
+                      }`}>
+                        {member.is_active ? 'Active' : 'Inactive'}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <button
+                        onClick={() => handleOpenModal(member)}
+                        className="text-blue-400 hover:text-blue-300 transition-colors mr-4"
+                      >
+                        <FiEdit2 size={16} />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(member.id)}
+                        className="text-red-400 hover:text-red-300 transition-colors"
+                      >
+                        <FiTrash2 size={16} />
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       {/* Add/Edit Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-            <div className="flex justify-between items-start mb-4">
-              <h3 className="text-xl font-semibold">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl">
+            <div className="flex justify-between items-start mb-6">
+              <h3 className="text-xl font-bold text-white">
                 {editingStaff ? 'Edit Staff Member' : 'Add Staff Member'}
               </h3>
-              <button onClick={handleCloseModal} className="text-gray-400 hover:text-gray-600">
+              <button onClick={handleCloseModal} className="text-gray-400 hover:text-white transition-colors text-2xl">
                 <FiX size={24} />
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-300 mb-2">
                   Name *
                 </label>
                 <input
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                  className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 backdrop-blur-sm"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-300 mb-2">
                   Email *
                 </label>
                 <input
                   type="email"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                  className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 backdrop-blur-sm"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-300 mb-2">
                   Phone Number *
                 </label>
                 <input
@@ -373,13 +373,13 @@ const AdminHubStaff = () => {
                   value={formData.phone_number}
                   onChange={(e) => setFormData({ ...formData, phone_number: e.target.value })}
                   placeholder="0712345678"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                  className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 backdrop-blur-sm"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-300 mb-2">
                   Password {!editingStaff && '*'}
                 </label>
                 <input
@@ -387,19 +387,19 @@ const AdminHubStaff = () => {
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   placeholder={editingStaff ? 'Leave blank to keep current' : 'Enter password'}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                  className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 backdrop-blur-sm"
                   required={!editingStaff}
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-300 mb-2">
                   Assign to Hub
                 </label>
                 <select
                   value={formData.hub_id}
                   onChange={(e) => setFormData({ ...formData, hub_id: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                  className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 backdrop-blur-sm"
                 >
                   <option value="">Unassigned</option>
                   {hubs.map((hub) => (
@@ -410,18 +410,18 @@ const AdminHubStaff = () => {
                 </select>
               </div>
 
-              <div className="flex gap-3 mt-6">
+              <div className="flex gap-3 pt-4">
                 <button
                   type="button"
                   onClick={handleCloseModal}
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                  className="flex-1 px-6 py-2 border border-white/20 rounded-lg text-sm font-medium text-gray-300 hover:bg-white/10 transition-colors backdrop-blur-sm"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50"
+                  className="flex-1 px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg text-sm font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-300 disabled:opacity-50"
                 >
                   {submitting ? 'Saving...' : editingStaff ? 'Update' : 'Create'}
                 </button>
@@ -430,7 +430,7 @@ const AdminHubStaff = () => {
           </div>
         </div>
       )}
-    </div>
+    </AdminLayout>
   );
 };
 
