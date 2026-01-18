@@ -1,29 +1,15 @@
 import { useState, useEffect } from 'react';
 import { FiTrendingUp, FiDollarSign, FiShoppingBag, FiUsers, FiPackage, FiUserCheck } from 'react-icons/fi';
-import axios from 'axios';
-import toast from 'react-hot-toast';
+import { adminService } from '../../services/adminService';
 import { formatCurrency } from '../../utils/formatters';
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api/v1';
 
 const AdminAnalytics = () => {
   const [loading, setLoading] = useState(true);
-  const [timeRange, setTimeRange] = useState('30');
-  const [analytics, setAnalytics] = useState({
-    platform_revenue: 0,
-    total_orders: 0,
-    total_users: 0,
-    total_merchants: 0,
-    total_products: 0,
-    active_customers: 0,
-    revenue_growth: 0,
-    users_growth: 0,
-    orders_growth: 0,
-    revenue_by_day: [],
-    top_merchants: [],
-    top_products: [],
-    user_registrations: []
-  });
+  const [timeRange, setTimeRange] = useState('month'); // 'today', 'week', 'month', 'year'
+  const [overview, setOverview] = useState(null);
+  const [salesData, setSalesData] = useState(null);
+  const [userData, setUserData] = useState(null);
+  const [merchantData, setMerchantData] = useState(null);
 
   useEffect(() => {
     fetchAnalytics();
@@ -32,16 +18,18 @@ const AdminAnalytics = () => {
   const fetchAnalytics = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
-      const response = await axios.get(`${API_BASE_URL}/admin/analytics?days=${timeRange}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const [overviewData, salesData, userData, merchantData] = await Promise.all([
+        adminService.getAdminAnalytics(timeRange),
+        adminService.getAdminSalesAnalytics(timeRange, 'day'),
+        adminService.getAdminUserAnalytics(timeRange),
+        adminService.getAdminMerchantAnalytics(timeRange)
+      ]);
 
-      if (response.data.success) {
-        setAnalytics(response.data.data);
-      }
+      setOverview(overviewData);
+      setSalesData(salesData);
+      setUserData(userData);
+      setMerchantData(merchantData);
     } catch (error) {
-      toast.error('Failed to load analytics');
       console.error('Error fetching analytics:', error);
     } finally {
       setLoading(false);
@@ -72,10 +60,10 @@ const AdminAnalytics = () => {
                 onChange={(e) => setTimeRange(e.target.value)}
                 className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
               >
-                <option value="7">Last 7 Days</option>
-                <option value="30">Last 30 Days</option>
-                <option value="90">Last 90 Days</option>
-                <option value="365">Last Year</option>
+                <option value="today">Today</option>
+                <option value="week">Last 7 Days</option>
+                <option value="month">Last 30 Days</option>
+                <option value="year">Last Year</option>
               </select>
             </div>
           </div>
@@ -96,16 +84,8 @@ const AdminAnalytics = () => {
                       <dt className="text-sm font-medium text-gray-500 truncate">Platform Revenue</dt>
                       <dd className="flex items-baseline">
                         <div className="text-2xl font-semibold text-gray-900">
-                          {formatCurrency(analytics.platform_revenue)}
+                          {formatCurrency(overview?.revenue?.total || 0)}
                         </div>
-                        {analytics.revenue_growth !== 0 && (
-                          <div className={`ml-2 flex items-baseline text-sm font-semibold ${analytics.revenue_growth > 0 ? 'text-green-600' : 'text-red-600'}`}>
-                            <FiTrendingUp className="self-center flex-shrink-0 h-4 w-4" />
-                            <span className="ml-1">
-                              {analytics.revenue_growth > 0 ? '+' : ''}{analytics.revenue_growth.toFixed(1)}%
-                            </span>
-                          </div>
-                        )}
                       </dd>
                     </dl>
                   </div>
@@ -127,13 +107,8 @@ const AdminAnalytics = () => {
                       <dt className="text-sm font-medium text-gray-500 truncate">Total Orders</dt>
                       <dd className="flex items-baseline">
                         <div className="text-2xl font-semibold text-gray-900">
-                          {analytics.total_orders}
+                          {overview?.orders?.total || 0}
                         </div>
-                        {analytics.orders_growth !== 0 && (
-                          <div className={`ml-2 flex items-baseline text-xs font-semibold ${analytics.orders_growth > 0 ? 'text-green-600' : 'text-red-600'}`}>
-                            {analytics.orders_growth > 0 ? '+' : ''}{analytics.orders_growth.toFixed(1)}%
-                          </div>
-                        )}
                       </dd>
                     </dl>
                   </div>
@@ -155,13 +130,8 @@ const AdminAnalytics = () => {
                       <dt className="text-sm font-medium text-gray-500 truncate">Total Users</dt>
                       <dd className="flex items-baseline">
                         <div className="text-2xl font-semibold text-gray-900">
-                          {analytics.total_users}
+                          {userData?.user_counts?.reduce((sum, role) => sum + role.count, 0) || 0}
                         </div>
-                        {analytics.users_growth !== 0 && (
-                          <div className={`ml-2 flex items-baseline text-xs font-semibold ${analytics.users_growth > 0 ? 'text-green-600' : 'text-red-600'}`}>
-                            {analytics.users_growth > 0 ? '+' : ''}{analytics.users_growth.toFixed(1)}%
-                          </div>
-                        )}
                       </dd>
                     </dl>
                   </div>
@@ -182,7 +152,7 @@ const AdminAnalytics = () => {
                     <dl>
                       <dt className="text-sm font-medium text-gray-500 truncate">Merchants</dt>
                       <dd className="text-2xl font-semibold text-gray-900">
-                        {analytics.total_merchants}
+                        {overview?.users?.active_merchants || 0}
                       </dd>
                     </dl>
                   </div>
@@ -203,7 +173,7 @@ const AdminAnalytics = () => {
                     <dl>
                       <dt className="text-sm font-medium text-gray-500 truncate">Products</dt>
                       <dd className="text-2xl font-semibold text-gray-900">
-                        {analytics.total_products}
+                        {overview?.products?.total || 0}
                       </dd>
                     </dl>
                   </div>
@@ -216,16 +186,16 @@ const AdminAnalytics = () => {
             {/* Revenue Chart */}
             <div className="bg-white shadow rounded-lg p-6">
               <h2 className="text-xl font-semibold mb-4">Revenue Trend</h2>
-              {analytics.revenue_by_day && analytics.revenue_by_day.length > 0 ? (
+              {salesData?.sales_trend && salesData.sales_trend.length > 0 ? (
                 <div className="space-y-3">
-                  {analytics.revenue_by_day.slice(-10).map((day, index) => {
-                    const maxRevenue = Math.max(...analytics.revenue_by_day.map(d => d.revenue));
+                  {salesData.sales_trend.slice(-10).map((day, index) => {
+                    const maxRevenue = Math.max(...salesData.sales_trend.map(d => d.revenue));
                     const barWidth = maxRevenue > 0 ? (day.revenue / maxRevenue) * 100 : 0;
 
                     return (
                       <div key={index}>
                         <div className="flex justify-between text-sm mb-1">
-                          <span className="text-gray-600">{new Date(day.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                          <span className="text-gray-600">{day.period}</span>
                           <span className="font-medium text-gray-900">{formatCurrency(day.revenue)}</span>
                         </div>
                         <div className="w-full bg-gray-200 rounded-full h-3">
@@ -246,16 +216,16 @@ const AdminAnalytics = () => {
             {/* User Registrations Chart */}
             <div className="bg-white shadow rounded-lg p-6">
               <h2 className="text-xl font-semibold mb-4">User Growth</h2>
-              {analytics.user_registrations && analytics.user_registrations.length > 0 ? (
+              {userData?.new_users_trend && userData.new_users_trend.length > 0 ? (
                 <div className="space-y-3">
-                  {analytics.user_registrations.slice(-10).map((day, index) => {
-                    const maxUsers = Math.max(...analytics.user_registrations.map(d => d.count));
+                  {userData.new_users_trend.slice(-10).map((day, index) => {
+                    const maxUsers = Math.max(...userData.new_users_trend.map(d => d.count));
                     const barWidth = maxUsers > 0 ? (day.count / maxUsers) * 100 : 0;
 
                     return (
                       <div key={index}>
                         <div className="flex justify-between text-sm mb-1">
-                          <span className="text-gray-600">{new Date(day.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                          <span className="text-gray-600">{day.date}</span>
                           <span className="font-medium text-gray-900">{day.count} new users</span>
                         </div>
                         <div className="w-full bg-gray-200 rounded-full h-3">
@@ -278,9 +248,9 @@ const AdminAnalytics = () => {
             {/* Top Merchants */}
             <div className="bg-white shadow rounded-lg p-6">
               <h2 className="text-xl font-semibold mb-4">Top Merchants by Revenue</h2>
-              {analytics.top_merchants && analytics.top_merchants.length > 0 ? (
+              {merchantData?.top_merchants && merchantData.top_merchants.length > 0 ? (
                 <div className="space-y-4">
-                  {analytics.top_merchants.map((merchant, index) => (
+                  {merchantData.top_merchants.map((merchant, index) => (
                     <div key={merchant.id} className="flex items-center justify-between pb-4 border-b last:border-b-0">
                       <div className="flex items-center gap-4">
                         <div className="text-2xl font-bold text-gray-400">
@@ -289,15 +259,15 @@ const AdminAnalytics = () => {
                         <div>
                           <h3 className="font-medium text-gray-900">{merchant.name}</h3>
                           <p className="text-sm text-gray-500">
-                            {merchant.products_count} products • {merchant.orders_count} orders
+                            {merchant.order_count} orders • {formatCurrency(merchant.total_revenue)} revenue
                           </p>
                         </div>
                       </div>
                       <div className="text-right">
                         <p className="font-semibold text-gray-900">
-                          {formatCurrency(merchant.total_revenue)}
+                          {formatCurrency(merchant.payout)}
                         </p>
-                        <p className="text-sm text-gray-500">Revenue</p>
+                        <p className="text-sm text-gray-500">Payout</p>
                       </div>
                     </div>
                   ))}
@@ -310,9 +280,9 @@ const AdminAnalytics = () => {
             {/* Top Products */}
             <div className="bg-white shadow rounded-lg p-6">
               <h2 className="text-xl font-semibold mb-4">Top Selling Products</h2>
-              {analytics.top_products && analytics.top_products.length > 0 ? (
+              {salesData?.top_products && salesData.top_products.length > 0 ? (
                 <div className="space-y-4">
-                  {analytics.top_products.map((product, index) => (
+                  {salesData.top_products.map((product, index) => (
                     <div key={product.id} className="flex items-center justify-between pb-4 border-b last:border-b-0">
                       <div className="flex items-center gap-4">
                         <div className="text-2xl font-bold text-gray-400">
@@ -321,13 +291,13 @@ const AdminAnalytics = () => {
                         <div>
                           <h3 className="font-medium text-gray-900">{product.name}</h3>
                           <p className="text-sm text-gray-500">
-                            {product.merchant_name} • {product.total_sold} sold
+                            {product.units_sold} units sold
                           </p>
                         </div>
                       </div>
                       <div className="text-right">
                         <p className="font-semibold text-gray-900">
-                          {formatCurrency(product.total_revenue)}
+                          {formatCurrency(product.revenue)}
                         </p>
                         <p className="text-sm text-gray-500">Revenue</p>
                       </div>
