@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import AdminLayout from '../../components/layout/AdminLayout';
 import { useParams, useNavigate } from 'react-router-dom';
 import Navbar from '../../components/layout/Navbar';
 import Footer from '../../components/layout/Footer';
@@ -106,13 +107,11 @@ const MerchantApplicationDetail = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col">
-        <Navbar />
-        <div className="flex-1 flex items-center justify-center">
+      <AdminLayout>
+        <div className="flex items-center justify-center min-h-96">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
         </div>
-        <Footer />
-      </div>
+      </AdminLayout>
     );
   }
 
@@ -121,18 +120,15 @@ const MerchantApplicationDetail = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
-      <Navbar />
+    <AdminLayout>
+      <button
+        onClick={() => navigate('/admin/merchant-applications')}
+        className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6"
+      >
+        <FiArrowLeft /> Back to Applications
+      </button>
 
-      <div className="flex-1 container-custom py-8">
-        <button
-          onClick={() => navigate('/admin/merchant-applications')}
-          className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6"
-        >
-          <FiArrowLeft /> Back to Applications
-        </button>
-
-        <div className="bg-white rounded-lg shadow-md p-8">
+      <div className="bg-white rounded-lg shadow-md p-8">
           <div className="flex justify-between items-start mb-6">
             <div>
               <h1 className="text-3xl font-bold mb-2">{application.business_name}</h1>
@@ -281,7 +277,6 @@ const MerchantApplicationDetail = () => {
               <p className="text-red-800">{application.rejection_reason}</p>
             </div>
           )}
-        </div>
       </div>
 
       {/* Approve Modal */}
@@ -373,9 +368,7 @@ const MerchantApplicationDetail = () => {
           </div>
         </div>
       )}
-
-      <Footer />
-    </div>
+    </AdminLayout>
   );
 };
 

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import AdminLayout from '../../components/layout/AdminLayout';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { FiArrowLeft, FiPackage, FiTruck, FiCheckCircle, FiClock, FiAlertCircle } from 'react-icons/fi';
 import axios from 'axios';
@@ -107,29 +108,29 @@ const AdminOrderDetail = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
-      </div>
+      <AdminLayout>
+        <div className="flex items-center justify-center min-h-96">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+        </div>
+      </AdminLayout>
     );
   }
 
   if (!order) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <AdminLayout>
         <div className="text-center">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Order Not Found</h2>
           <Link to="/admin/orders" className="text-primary-600 hover:text-primary-700">
             Back to Orders
           </Link>
         </div>
-      </div>
+      </AdminLayout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="px-4 py-6 sm:px-0">
+    <AdminLayout>
           {/* Header */}
           <div className="mb-6">
             <button
@@ -278,8 +279,6 @@ const AdminOrderDetail = () => {
                 </div>
               </div>
             </div>
-          </div>
-        </div>
       </div>
 
       {/* Status Update Modal */}
@@ -343,7 +342,7 @@ const AdminOrderDetail = () => {
           </div>
         </div>
       )}
-    </div>
+    </AdminLayout>
   );
 };
 

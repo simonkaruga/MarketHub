@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react';
 import { adminService } from '../../services/adminService';
 import Loading from '../../components/common/Loading';
 import ErrorMessage from '../../components/common/ErrorMessage';
+import AdminLayout from '../../components/layout/AdminLayout';
+import { FaUsers, FaShoppingCart, FaMoneyBillWave, FaUserCog, FaStore, FaClipboardList, FaChartLine, FaWarehouse } from 'react-icons/fa';
 
 const AdminDashboard = () => {
   const [analytics, setAnalytics] = useState(null);
@@ -41,134 +43,140 @@ const AdminDashboard = () => {
   const totalOrders = analytics?.orders?.total || 0;
   const totalRevenue = analytics?.revenue?.total || 0;
 
+  const StatCard = ({ title, value, icon: Icon, gradient }) => (
+    <div className={`relative overflow-hidden rounded-2xl ${gradient} p-6 shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300 backdrop-blur-sm bg-opacity-90 border border-white/20`}>
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-sm font-medium text-white/90">{title}</p>
+          <p className="text-3xl font-bold text-white mt-2">{value}</p>
+        </div>
+        <div className="p-3 rounded-full bg-white/20 text-white">
+          <Icon size={32} />
+        </div>
+      </div>
+      <div className="absolute -top-4 -right-4 w-20 h-20 bg-white opacity-10 rounded-full"></div>
+    </div>
+  );
+
+  const ActionCard = ({ to, title, description, icon: Icon, color }) => (
+    <Link to={to} className="group">
+      <div className={`bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6 hover:bg-white/20 transition-all duration-300 transform hover:scale-105 hover:shadow-xl`}>
+        <div className="flex items-center space-x-4">
+          <div className={`p-3 rounded-lg ${color} text-white`}>
+            <Icon size={24} />
+          </div>
+          <div className="flex-1">
+            <h3 className="text-lg font-semibold text-white group-hover:text-blue-300 transition-colors">
+              {title}
+            </h3>
+            <p className="text-gray-300 text-sm">{description}</p>
+          </div>
+          <div className="text-white/60 group-hover:text-white transition-colors">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </div>
+        </div>
+      </div>
+    </Link>
+  );
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="px-4 py-6 sm:px-0">
-          <h1 className="text-3xl font-bold text-gray-900 mb-6">Admin Dashboard</h1>
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            <div className="bg-white overflow-hidden shadow rounded-lg">
-              <div className="p-5">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0">
-                    <svg className="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                    </svg>
-                  </div>
-                  <div className="ml-5 w-0 flex-1">
-                    <dl>
-                      <dt className="text-sm font-medium text-gray-500 truncate">Total Users</dt>
-                      <dd className="text-lg font-medium text-gray-900">{totalUsers.toLocaleString()}</dd>
-                    </dl>
-                  </div>
-                </div>
-              </div>
-            </div>
+    <AdminLayout>
+      <div className="p-6">
+        <div className="max-w-7xl mx-auto">
+          {/* Hero Section */}
+          <div className="mb-8">
+            <h1 className="text-4xl font-bold text-white mb-2">MarketHub Admin Control</h1>
+            <p className="text-gray-300 text-lg">Enterprise management dashboard for your marketplace</p>
+            <div className="mt-4 h-1 w-24 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"></div>
+          </div>
 
-            <div className="bg-white overflow-hidden shadow rounded-lg">
-              <div className="p-5">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0">
-                    <svg className="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                    </svg>
-                  </div>
-                  <div className="ml-5 w-0 flex-1">
-                    <dl>
-                      <dt className="text-sm font-medium text-gray-500 truncate">Total Orders</dt>
-                      <dd className="text-lg font-medium text-gray-900">{totalOrders.toLocaleString()}</dd>
-                    </dl>
-                  </div>
-                </div>
-              </div>
-            </div>
+          {/* Stats Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            <StatCard
+              title="Total Users"
+              value={totalUsers.toLocaleString()}
+              icon={FaUsers}
+              gradient="bg-gradient-to-r from-blue-600 to-cyan-600"
+            />
+            <StatCard
+              title="Total Orders"
+              value={totalOrders.toLocaleString()}
+              icon={FaShoppingCart}
+              gradient="bg-gradient-to-r from-green-600 to-emerald-600"
+            />
+            <StatCard
+              title="Total Revenue"
+              value={`KES ${totalRevenue.toLocaleString()}`}
+              icon={FaMoneyBillWave}
+              gradient="bg-gradient-to-r from-purple-600 to-pink-600"
+            />
+          </div>
 
-            <div className="bg-white overflow-hidden shadow rounded-lg">
-              <div className="p-5">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0">
-                    <svg className="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                  </div>
-                  <div className="ml-5 w-0 flex-1">
-                    <dl>
-                      <dt className="text-sm font-medium text-gray-500 truncate">Total Revenue</dt>
-                      <dd className="text-lg font-medium text-gray-900">KES {totalRevenue.toLocaleString()}</dd>
-                    </dl>
-                  </div>
-                </div>
-              </div>
+          {/* Quick Actions */}
+          <div className="bg-white/5 backdrop-blur-lg rounded-2xl p-8 border border-white/10">
+            <h2 className="text-2xl font-bold text-white mb-6">Quick Actions</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <ActionCard
+                to="/admin/users"
+                title="User Management"
+                description="Manage users, roles, and permissions"
+                icon={FaUserCog}
+                color="bg-blue-600"
+              />
+              <ActionCard
+                to="/admin/merchant-applications"
+                title="Merchant Applications"
+                description="Review and approve new merchants"
+                icon={FaStore}
+                color="bg-green-600"
+              />
+              <ActionCard
+                to="/admin/orders"
+                title="Order Management"
+                description="Monitor and manage marketplace orders"
+                icon={FaClipboardList}
+                color="bg-purple-600"
+              />
+              <ActionCard
+                to="/admin/analytics"
+                title="Analytics Dashboard"
+                description="View detailed marketplace analytics"
+                icon={FaChartLine}
+                color="bg-orange-600"
+              />
+              <ActionCard
+                to="/admin/hub-staff"
+                title="Hub Staff Management"
+                description="Manage delivery hub personnel"
+                icon={FaWarehouse}
+                color="bg-red-600"
+              />
             </div>
           </div>
 
-          <div className="mt-8 bg-white shadow overflow-hidden sm:rounded-lg">
-            <div className="px-4 py-5 sm:px-6">
-              <h3 className="text-lg leading-6 font-medium text-gray-900">
-                Admin Functions
-              </h3>
-              <p className="mt-1 max-w-2xl text-sm text-gray-500">
-                Manage your marketplace
-              </p>
-            </div>
-            <div className="border-t border-gray-200">
-              <ul className="divide-y divide-gray-200">
-                <Link to="/admin/users">
-                  <li className="px-4 py-4 sm:px-6 hover:bg-gray-50 cursor-pointer">
-                    <div className="flex items-center justify-between">
-                      <p className="text-sm font-medium text-primary-600">Manage Users</p>
-                      <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </div>
-                  </li>
-                </Link>
-                <Link to="/admin/merchant-applications">
-                  <li className="px-4 py-4 sm:px-6 hover:bg-gray-50 cursor-pointer">
-                    <div className="flex items-center justify-between">
-                      <p className="text-sm font-medium text-primary-600">Merchant Applications</p>
-                      <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </div>
-                  </li>
-                </Link>
-                <Link to="/admin/orders">
-                  <li className="px-4 py-4 sm:px-6 hover:bg-gray-50 cursor-pointer">
-                    <div className="flex items-center justify-between">
-                      <p className="text-sm font-medium text-primary-600">Manage Orders</p>
-                      <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </div>
-                  </li>
-                </Link>
-                <Link to="/admin/analytics">
-                  <li className="px-4 py-4 sm:px-6 hover:bg-gray-50 cursor-pointer">
-                    <div className="flex items-center justify-between">
-                      <p className="text-sm font-medium text-primary-600">View Analytics</p>
-                      <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </div>
-                  </li>
-                </Link>
-                <Link to="/admin/hub-staff">
-                  <li className="px-4 py-4 sm:px-6 hover:bg-gray-50 cursor-pointer">
-                    <div className="flex items-center justify-between">
-                      <p className="text-sm font-medium text-primary-600">Hub Staff Management</p>
-                      <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </div>
-                  </li>
-                </Link>
-              </ul>
+          {/* System Status */}
+          <div className="mt-8 bg-gradient-to-r from-gray-800/50 to-gray-900/50 backdrop-blur-md rounded-2xl p-6 border border-white/10">
+            <h2 className="text-xl font-bold text-white mb-4">System Overview</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-green-400">99.9%</div>
+                <div className="text-sm text-gray-300">System Uptime</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-blue-400">{totalOrders}</div>
+                <div className="text-sm text-gray-300">Active Orders</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-purple-400">{totalUsers}</div>
+                <div className="text-sm text-gray-300">Registered Users</div>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </AdminLayout>
   );
 };
 
