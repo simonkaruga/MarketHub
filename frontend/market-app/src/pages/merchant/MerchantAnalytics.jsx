@@ -1,10 +1,8 @@
 import { useState, useEffect } from 'react';
 import { FiTrendingUp, FiDollarSign, FiShoppingBag, FiUsers, FiPackage } from 'react-icons/fi';
-import axios from 'axios';
+import api from '../../services/api';
 import toast from 'react-hot-toast';
 import { formatCurrency } from '../../utils/formatters';
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api/v1';
 
 const MerchantAnalytics = () => {
   const [loading, setLoading] = useState(true);
@@ -28,10 +26,7 @@ const MerchantAnalytics = () => {
   const fetchAnalytics = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
-      const response = await axios.get(`${API_BASE_URL}/merchant/analytics?days=${timeRange}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.get(`/merchant/analytics?days=${timeRange}`);
 
       if (response.data.success) {
         setAnalytics(response.data.data);

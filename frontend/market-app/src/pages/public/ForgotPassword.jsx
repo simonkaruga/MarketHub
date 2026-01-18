@@ -1,10 +1,8 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FiArrowLeft, FiMail, FiCheckCircle } from 'react-icons/fi';
-import axios from 'axios';
+import api from '../../services/api';
 import toast from 'react-hot-toast';
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api/v1';
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
@@ -22,7 +20,7 @@ const ForgotPassword = () => {
     setLoading(true);
 
     try {
-      await axios.post(`${API_BASE_URL}/auth/forgot-password`, { email });
+      await api.post('/auth/forgot-password', { email });
       setEmailSent(true);
       toast.success('Password reset instructions sent to your email');
     } catch (error) {

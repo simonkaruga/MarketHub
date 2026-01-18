@@ -4,9 +4,7 @@ import { useAuth } from '../../hooks/useAuth';
 import Navbar from '../../components/layout/Navbar';
 import Footer from '../../components/layout/Footer';
 import toast from 'react-hot-toast';
-import axios from 'axios';
-
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+import api from '../../services/api';
 
 const ApplyMerchant = () => {
   const navigate = useNavigate();

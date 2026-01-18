@@ -1,12 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FiPackage, FiTruck, FiCheckCircle, FiClock, FiDollarSign, FiSearch, FiFilter } from 'react-icons/fi';
-import axios from 'axios';
+import api from '../../services/api';
 import toast from 'react-hot-toast';
 import { formatCurrency } from '../../utils/formatters';
 import AdminLayout from '../../components/layout/AdminLayout';
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api/v1';
 
 const AdminOrders = () => {
   const [orders, setOrders] = useState([]);
@@ -29,17 +27,13 @@ const AdminOrders = () => {
 
   const fetchOrders = async () => {
     try {
-      const token = localStorage.getItem('token');
       const params = new URLSearchParams();
 
       if (statusFilter) {
         params.append('status', statusFilter);
       }
 
-      const response = await axios.get(`${API_BASE_URL}/admin/orders?${params.toString()}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-
+      const response = await api.get(`/admin/orders?${params.toString()}`);
       setOrders(response.data.data || []);
     } catch (error) {
       toast.error('Failed to load orders');
@@ -51,11 +45,7 @@ const AdminOrders = () => {
 
   const fetchStats = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get(`${API_BASE_URL}/admin/orders/stats`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-
+      const response = await api.get('/admin/orders/stats');
       setStats(response.data.data || stats);
     } catch (error) {
       console.error('Error fetching stats:', error);
@@ -89,13 +79,7 @@ const AdminOrders = () => {
 
   const handleUpdateStatus = async (orderId, newStatus) => {
     try {
-      const token = localStorage.getItem('token');
-      await axios.patch(
-        `${API_BASE_URL}/admin/orders/${orderId}/status`,
-        { status: newStatus },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
+      await api.patch(`/admin/orders/${orderId}/status`, { status: newStatus });
       toast.success('Order status updated successfully');
       fetchOrders();
       fetchStats();

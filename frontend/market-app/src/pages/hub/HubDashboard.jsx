@@ -1,10 +1,8 @@
 import { useState, useEffect } from 'react';
 import { FiPackage, FiCheckCircle, FiClock, FiCamera, FiSearch } from 'react-icons/fi';
-import axios from 'axios';
+import api from '../../services/api';
 import toast from 'react-hot-toast';
 import { formatCurrency } from '../../utils/formatters';
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api/v1';
 
 const HubDashboard = () => {
   const [orders, setOrders] = useState([]);
@@ -27,16 +25,13 @@ const HubDashboard = () => {
   const fetchOrders = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
       const params = new URLSearchParams();
 
       if (filter !== 'all') {
         params.append('status', filter);
       }
 
-      const response = await axios.get(`${API_BASE_URL}/hub/orders?${params.toString()}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.get(`/hub/orders?${params.toString()}`);
 
       if (response.data.success) {
         setOrders(response.data.data);
@@ -51,10 +46,7 @@ const HubDashboard = () => {
 
   const fetchStats = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get(`${API_BASE_URL}/hub/dashboard`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.get('/hub/dashboard');
 
       if (response.data.success) {
         const dashboardData = response.data.data;
@@ -74,11 +66,9 @@ const HubDashboard = () => {
 
   const handleVerifyOrder = async (orderId, status) => {
     try {
-      const token = localStorage.getItem('token');
-      await axios.post(
-        `${API_BASE_URL}/hub/orders/${orderId}/verify`,
-        { status },
-        { headers: { Authorization: `Bearer ${token}` } }
+      await api.post(
+        `/hub/orders/${orderId}/verify`,
+        { status }
       );
 
       toast.success(`Order ${status === 'approved' ? 'approved' : 'rejected'}`);
@@ -95,12 +85,7 @@ const HubDashboard = () => {
     }
 
     try {
-      const token = localStorage.getItem('token');
-      await axios.post(
-        `${API_BASE_URL}/hub/orders/${orderId}/pickup`,
-        {},
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      await api.post(`/hub/orders/${orderId}/pickup`, {});
 
       toast.success('Order marked as picked up');
       fetchOrders();

@@ -1,9 +1,7 @@
 import { useState, useEffect } from 'react';
 import { FiStar, FiMessageSquare, FiFlag, FiFilter, FiSearch } from 'react-icons/fi';
-import axios from 'axios';
+import api from '../../services/api';
 import toast from 'react-hot-toast';
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api/v1';
 
 const MerchantReviews = () => {
   const [reviews, setReviews] = useState([]);
@@ -21,16 +19,13 @@ const MerchantReviews = () => {
   const fetchReviews = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
       const params = new URLSearchParams();
 
       if (filter !== 'all') {
         params.append('filter', filter);
       }
 
-      const response = await axios.get(`${API_BASE_URL}/merchant/reviews?${params.toString()}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.get(`/merchant/reviews?${params.toString()}`);
 
       if (response.data.success) {
         setReviews(response.data.data);
@@ -51,11 +46,9 @@ const MerchantReviews = () => {
 
     setSubmitting(true);
     try {
-      const token = localStorage.getItem('token');
-      await axios.post(
-        `${API_BASE_URL}/merchant/reviews/${reviewId}/respond`,
-        { response: responseText },
-        { headers: { Authorization: `Bearer ${token}` } }
+      await api.post(
+        `/merchant/reviews/${reviewId}/respond`,
+        { response: responseText }
       );
 
       toast.success('Response submitted successfully');
@@ -71,12 +64,7 @@ const MerchantReviews = () => {
 
   const handleFlagReview = async (reviewId) => {
     try {
-      const token = localStorage.getItem('token');
-      await axios.post(
-        `${API_BASE_URL}/merchant/reviews/${reviewId}/flag`,
-        {},
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      await api.post(`/merchant/reviews/${reviewId}/flag`, {});
 
       toast.success('Review flagged for admin review');
       fetchReviews();

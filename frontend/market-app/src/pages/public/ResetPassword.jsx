@@ -1,10 +1,8 @@
 import { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { FiLock, FiEye, FiEyeOff, FiCheckCircle } from 'react-icons/fi';
-import axios from 'axios';
+import api from '../../services/api';
 import toast from 'react-hot-toast';
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api/v1';
 
 const ResetPassword = () => {
   const { token } = useParams();
@@ -49,7 +47,7 @@ const ResetPassword = () => {
     setLoading(true);
 
     try {
-      await axios.post(`${API_BASE_URL}/auth/reset-password/${token}`, {
+      await api.post(`/auth/reset-password/${token}`, {
         password: formData.password
       });
 

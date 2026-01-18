@@ -1,11 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import axios from 'axios';
+import api from '../../services/api';
 import { FiCheck, FiX, FiEye, FiClock, FiFileText } from 'react-icons/fi';
 import AdminLayout from '../../components/layout/AdminLayout';
-
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 const MerchantApplications = () => {
   const [applications, setApplications] = useState([]);
