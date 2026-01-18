@@ -101,15 +101,15 @@ const BecomeMerchant = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
-      <div className="flex-1 bg-white">
+      <div className="flex-1 bg-[#0f172a]">
         {/* Hero Section */}
-      <div className="bg-gradient-to-r from-primary-600 to-primary-700 py-20">
+      <div className="bg-[#0f172a] py-20">
         <div className="container-custom">
           <div className="text-center">
             <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
               Sell on MarketHub
             </h1>
-            <p className="text-xl text-primary-100 max-w-2xl mx-auto mb-8">
+            <p className="text-xl text-gray-300 max-w-2xl mx-auto mb-8">
               Join Kenya's fastest-growing marketplace and reach thousands of customers.
               Start selling today with zero upfront costs.
             </p>
@@ -117,7 +117,7 @@ const BecomeMerchant = () => {
               {isAuthenticated ? (
                 <Link
                   to="/apply-merchant"
-                  className="inline-block bg-white text-primary-600 px-8 py-4 rounded-md font-semibold text-lg hover:bg-gray-100 transition-colors"
+                  className="inline-block bg-orange-500 text-white px-8 py-4 rounded-md font-semibold text-lg hover:bg-orange-600 transition-colors"
                 >
                   Apply Now
                 </Link>
@@ -125,13 +125,13 @@ const BecomeMerchant = () => {
                 <>
                   <Link
                     to="/register"
-                    className="inline-block bg-white text-primary-600 px-8 py-4 rounded-md font-semibold text-lg hover:bg-gray-100 transition-colors"
+                    className="inline-block bg-orange-500 text-white px-8 py-4 rounded-md font-semibold text-lg hover:bg-orange-600 transition-colors"
                   >
                     Create Account & Apply
                   </Link>
                   <Link
                     to="/login"
-                    className="inline-block bg-primary-700 text-white px-8 py-4 rounded-md font-semibold text-lg hover:bg-primary-800 transition-colors border border-primary-500"
+                    className="inline-block bg-slate-700 text-white px-8 py-4 rounded-md font-semibold text-lg hover:bg-slate-600 transition-colors border border-orange-500"
                   >
                     Login to Apply
                   </Link>
@@ -143,7 +143,7 @@ const BecomeMerchant = () => {
             <div className="text-center">
               <Link
                 to="/seller-guide"
-                className="inline-flex items-center text-primary-100 hover:text-white font-medium transition-colors group"
+                className="inline-flex items-center text-gray-300 hover:text-orange-400 font-medium transition-colors group"
               >
                 <BookOpenIcon className="h-5 w-5 mr-2 group-hover:scale-110 transition-transform" />
                 Learn more about selling on MarketHub →
@@ -154,40 +154,40 @@ const BecomeMerchant = () => {
       </div>
 
       {/* Stats */}
-      <div className="bg-primary-50 py-10">
+      <div className="bg-[#0f172a] py-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-3 gap-8 text-center">
             <div>
-              <div className="text-3xl font-bold text-primary-600">500+</div>
-              <div className="text-gray-600">Active Merchants</div>
+              <div className="text-3xl font-bold text-orange-400">500+</div>
+              <div className="text-gray-300">Active Merchants</div>
             </div>
             <div>
-              <div className="text-3xl font-bold text-primary-600">25,000+</div>
-              <div className="text-gray-600">Monthly Buyers</div>
+              <div className="text-3xl font-bold text-orange-400">25,000+</div>
+              <div className="text-gray-300">Monthly Buyers</div>
             </div>
             <div>
-              <div className="text-3xl font-bold text-primary-600">25%</div>
-              <div className="text-gray-600">Commission Only</div>
+              <div className="text-3xl font-bold text-orange-400">25%</div>
+              <div className="text-gray-300">Commission Only</div>
             </div>
           </div>
         </div>
       </div>
 
       {/* Benefits Section */}
-      <div className="py-16">
+      <div className="py-16 bg-[#0f172a]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900">Why Sell on MarketHub?</h2>
-            <p className="text-gray-600 mt-2">Everything you need to grow your business</p>
+            <h2 className="text-3xl font-bold text-white">Why Sell on MarketHub?</h2>
+            <p className="text-gray-300 mt-2">Everything you need to grow your business</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {benefits.map((benefit, index) => (
-              <div key={index} className="bg-gray-50 rounded-lg p-6">
-                <div className="inline-flex items-center justify-center w-12 h-12 bg-primary-100 rounded-full mb-4">
-                  <benefit.icon className="h-6 w-6 text-primary-600" />
+              <div key={index} className="bg-slate-800 rounded-lg p-6">
+                <div className="inline-flex items-center justify-center w-12 h-12 bg-slate-700 rounded-full mb-4">
+                  <benefit.icon className="h-6 w-6 text-orange-400" />
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">{benefit.title}</h3>
-                <p className="text-gray-600">{benefit.description}</p>
+                <h3 className="text-lg font-semibold text-white mb-2">{benefit.title}</h3>
+                <p className="text-gray-300">{benefit.description}</p>
               </div>
             ))}
           </div>
@@ -195,24 +195,24 @@ const BecomeMerchant = () => {
       </div>
 
       {/* How It Works */}
-      <div className="bg-gray-50 py-16">
+      <div className="bg-[#0f172a] py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900">How to Get Started</h2>
-            <p className="text-gray-600 mt-2">Four simple steps to start selling</p>
+            <h2 className="text-3xl font-bold text-white">How to Get Started</h2>
+            <p className="text-gray-300 mt-2">Four simple steps to start selling</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             {steps.map((step, index) => (
               <div key={index} className="relative">
                 <div className="text-center">
-                  <div className="inline-flex items-center justify-center w-16 h-16 bg-primary-600 text-white rounded-full text-2xl font-bold mb-4">
+                  <div className="inline-flex items-center justify-center w-16 h-16 bg-orange-500 text-white rounded-full text-2xl font-bold mb-4">
                     {step.number}
                   </div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">{step.title}</h3>
-                  <p className="text-gray-600 text-sm">{step.description}</p>
+                  <h3 className="text-lg font-semibold text-white mb-2">{step.title}</h3>
+                  <p className="text-gray-300 text-sm">{step.description}</p>
                 </div>
                 {index < steps.length - 1 && (
-                  <div className="hidden md:block absolute top-8 left-1/2 w-full h-0.5 bg-primary-200" />
+                  <div className="hidden md:block absolute top-8 left-1/2 w-full h-0.5 bg-slate-600" />
                 )}
               </div>
             ))}
@@ -221,45 +221,45 @@ const BecomeMerchant = () => {
       </div>
 
       {/* Requirements */}
-      <div className="py-16">
+      <div className="py-16 bg-[#0f172a]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="text-3xl font-bold text-gray-900 mb-6">What You'll Need</h2>
-              <p className="text-gray-600 mb-6">
+              <h2 className="text-3xl font-bold text-white mb-6">What You'll Need</h2>
+              <p className="text-gray-300 mb-6">
                 Before applying, make sure you have the following ready to ensure a smooth
                 application process:
               </p>
               <ul className="space-y-4">
                 {requirements.map((req, index) => (
                   <li key={index} className="flex items-start">
-                    <CheckCircleIcon className="h-6 w-6 text-primary-600 mr-3 flex-shrink-0" />
-                    <span className="text-gray-600">{req}</span>
+                    <CheckCircleIcon className="h-6 w-6 text-orange-400 mr-3 flex-shrink-0" />
+                    <span className="text-gray-300">{req}</span>
                   </li>
                 ))}
               </ul>
             </div>
-            <div className="bg-primary-50 rounded-lg p-8">
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">Commission Structure</h3>
+            <div className="bg-slate-800 rounded-lg p-8">
+              <h3 className="text-xl font-semibold text-white mb-4">Commission Structure</h3>
               <div className="space-y-4">
-                <div className="flex justify-between items-center border-b border-primary-200 pb-4">
-                  <span className="text-gray-600">Platform Commission</span>
-                  <span className="text-2xl font-bold text-primary-600">25%</span>
+                <div className="flex justify-between items-center border-b border-slate-600 pb-4">
+                  <span className="text-gray-300">Platform Commission</span>
+                  <span className="text-2xl font-bold text-orange-400">25%</span>
                 </div>
-                <div className="flex justify-between items-center border-b border-primary-200 pb-4">
-                  <span className="text-gray-600">Listing Fees</span>
-                  <span className="text-xl font-bold text-primary-600">FREE</span>
+                <div className="flex justify-between items-center border-b border-slate-600 pb-4">
+                  <span className="text-gray-300">Listing Fees</span>
+                  <span className="text-xl font-bold text-orange-400">FREE</span>
                 </div>
-                <div className="flex justify-between items-center border-b border-primary-200 pb-4">
-                  <span className="text-gray-600">Monthly Fees</span>
-                  <span className="text-xl font-bold text-primary-600">FREE</span>
+                <div className="flex justify-between items-center border-b border-slate-600 pb-4">
+                  <span className="text-gray-300">Monthly Fees</span>
+                  <span className="text-xl font-bold text-orange-400">FREE</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Payment Processing</span>
-                  <span className="text-xl font-bold text-primary-600">Included</span>
+                  <span className="text-gray-300">Payment Processing</span>
+                  <span className="text-xl font-bold text-orange-400">Included</span>
                 </div>
               </div>
-              <p className="text-sm text-gray-500 mt-4">
+              <p className="text-sm text-gray-400 mt-4">
                 * You only pay when you make a sale. No hidden fees.
               </p>
             </div>
@@ -268,16 +268,16 @@ const BecomeMerchant = () => {
       </div>
 
       {/* FAQ */}
-      <div className="bg-gray-50 py-16">
+      <div className="bg-[#0f172a] py-16">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900">Frequently Asked Questions</h2>
+            <h2 className="text-3xl font-bold text-white">Frequently Asked Questions</h2>
           </div>
           <div className="space-y-6">
             {faqs.map((faq, index) => (
-              <div key={index} className="bg-white rounded-lg p-6 shadow-sm">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">{faq.question}</h3>
-                <p className="text-gray-600">{faq.answer}</p>
+              <div key={index} className="bg-slate-800 rounded-lg p-6 shadow-sm">
+                <h3 className="text-lg font-semibold text-white mb-2">{faq.question}</h3>
+                <p className="text-gray-300">{faq.answer}</p>
               </div>
             ))}
           </div>
@@ -285,23 +285,23 @@ const BecomeMerchant = () => {
       </div>
 
       {/* CTA */}
-      <div className="bg-primary-600 py-16">
+      <div className="bg-[#0f172a] py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold text-white mb-4">Ready to Start Selling?</h2>
-          <p className="text-primary-100 mb-8 max-w-2xl mx-auto">
+          <p className="text-gray-300 mb-8 max-w-2xl mx-auto">
             Join hundreds of successful merchants on MarketHub. Apply today and start selling tomorrow!
           </p>
           {isAuthenticated ? (
             <Link
               to="/apply-merchant"
-              className="inline-block bg-white text-primary-600 px-10 py-4 rounded-md font-semibold text-lg hover:bg-gray-100 transition-colors"
+              className="inline-block bg-orange-500 text-white px-10 py-4 rounded-md font-semibold text-lg hover:bg-orange-600 transition-colors"
             >
               Apply Now
             </Link>
           ) : (
             <Link
               to="/register"
-              className="inline-block bg-white text-primary-600 px-10 py-4 rounded-md font-semibold text-lg hover:bg-gray-100 transition-colors"
+              className="inline-block bg-orange-500 text-white px-10 py-4 rounded-md font-semibold text-lg hover:bg-orange-600 transition-colors"
             >
               Get Started
             </Link>
