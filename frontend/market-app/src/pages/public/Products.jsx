@@ -109,19 +109,19 @@ const Products = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div className="min-h-screen flex flex-col bg-[#0f172a]">
       <Navbar />
 
       {/* Mobile Filter Drawer */}
       {mobileFiltersOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
           <div className="fixed inset-0 bg-black/50" onClick={() => setMobileFiltersOpen(false)} />
-          <div className="fixed inset-y-0 left-0 w-80 max-w-full bg-white shadow-xl overflow-y-auto">
-            <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-gray-900">Filters</h2>
+          <div className="fixed inset-y-0 left-0 w-80 max-w-full bg-slate-800 shadow-xl overflow-y-auto">
+            <div className="sticky top-0 bg-slate-800 border-b border-slate-600 px-4 py-3 flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-white">Filters</h2>
               <button
                 onClick={() => setMobileFiltersOpen(false)}
-                className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg"
+                className="p-2 text-gray-400 hover:text-gray-300 hover:bg-slate-700 rounded-lg"
               >
                 <FiX size={20} />
               </button>
@@ -144,9 +144,9 @@ const Products = () => {
         {/* Header with title and mobile filter button */}
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">All Products</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-white">All Products</h1>
             {pagination && (
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="text-sm text-gray-300 mt-1">
                 Showing {products.length} of {pagination.total_items} products
               </p>
             )}
@@ -155,12 +155,12 @@ const Products = () => {
           {/* Mobile Filter Button */}
           <button
             onClick={() => setMobileFiltersOpen(true)}
-            className="lg:hidden flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+            className="lg:hidden flex items-center gap-2 px-4 py-2 bg-slate-800 border border-slate-600 rounded-lg hover:bg-slate-700 transition-colors"
           >
             <FiFilter size={18} />
             <span>Filters</span>
             {activeFiltersCount > 0 && (
-              <span className="bg-primary-600 text-white text-xs font-medium px-2 py-0.5 rounded-full">
+              <span className="bg-orange-500 text-white text-xs font-medium px-2 py-0.5 rounded-full">
                 {activeFiltersCount}
               </span>
             )}
@@ -170,8 +170,8 @@ const Products = () => {
         <div className="flex gap-6 lg:gap-8">
           {/* Filters Sidebar - Desktop */}
           <div className="hidden lg:block w-72 flex-shrink-0">
-            <div className="sticky top-20 bg-white rounded-xl shadow-sm border border-gray-200 p-5">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Filters</h2>
+            <div className="sticky top-20 bg-slate-800 rounded-xl shadow-sm border border-slate-600 p-5">
+              <h2 className="text-lg font-semibold text-white mb-4">Filters</h2>
               <ProductFilter
                 categories={categories}
                 onFilterChange={handleFilterChange}
