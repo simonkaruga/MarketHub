@@ -4,10 +4,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Navbar from '../../components/layout/Navbar';
 import Footer from '../../components/layout/Footer';
 import toast from 'react-hot-toast';
-import axios from 'axios';
+import api from '../../services/api';
 import { FiArrowLeft, FiCheck, FiX, FiDownload } from 'react-icons/fi';
-
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 const MerchantApplicationDetail = () => {
   const { id } = useParams();

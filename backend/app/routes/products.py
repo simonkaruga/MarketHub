@@ -32,7 +32,8 @@ def get_products():
     max_price = request.args.get('max_price', type=float)
     in_stock_only = request.args.get('in_stock', 'true').lower() == 'true'
     page = request.args.get('page', 1, type=int)
-    per_page = min(request.args.get('per_page', 20, type=int), 50)  # Max 50 per page
+    limit = request.args.get('limit', type=int)
+    per_page = min(request.args.get('per_page', limit or 20, type=int), 50)  # Max 50 per page
     
     # Search products
     pagination = Product.search_products(

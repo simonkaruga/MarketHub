@@ -3,10 +3,8 @@ import { Link } from 'react-router-dom';
 import Navbar from '../../components/layout/Navbar';
 import Footer from '../../components/layout/Footer';
 import toast from 'react-hot-toast';
-import axios from 'axios';
+import api from '../../services/api';
 import { FiPackage, FiTruck, FiCheck, FiClock, FiEye } from 'react-icons/fi';
-
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 const MerchantOrders = () => {
   const [orders, setOrders] = useState([]);
@@ -24,10 +22,7 @@ const MerchantOrders = () => {
   const fetchOrders = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
-      const response = await axios.get(`${API_BASE_URL}/merchant/orders`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.get('/merchant/orders');
 
       if (response.data.success) {
         setOrders(response.data.data);
@@ -60,13 +55,9 @@ const MerchantOrders = () => {
 
     setUpdating(true);
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.patch(
-        `${API_BASE_URL}/merchant/orders/${selectedOrder.id}/status`,
-        { status: newStatus },
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
+      const response = await api.patch(
+        `/merchant/orders/${selectedOrder.id}/status`,
+        { status: newStatus }
       );
 
       if (response.data.success) {

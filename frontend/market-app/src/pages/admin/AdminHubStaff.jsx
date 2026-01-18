@@ -1,10 +1,8 @@
 import { useState, useEffect } from 'react';
 import AdminLayout from '../../components/layout/AdminLayout';
 import { FiEdit2, FiTrash2, FiPlus, FiX, FiUser } from 'react-icons/fi';
-import axios from 'axios';
+import api from '../../services/api';
 import toast from 'react-hot-toast';
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api/v1';
 
 const AdminHubStaff = () => {
   const [staff, setStaff] = useState([]);
@@ -29,10 +27,7 @@ const AdminHubStaff = () => {
   const fetchStaff = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
-      const response = await axios.get(`${API_BASE_URL}/admin/hub-staff`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.get('/admin/hub-staff');
 
       if (response.data.success) {
         setStaff(response.data.data);
@@ -47,10 +42,7 @@ const AdminHubStaff = () => {
 
   const fetchHubs = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get(`${API_BASE_URL}/admin/hubs`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.get('/admin/hubs');
 
       if (response.data.success) {
         setHubs(response.data.data || []);
@@ -110,10 +102,9 @@ const AdminHubStaff = () => {
 
     setSubmitting(true);
     try {
-      const token = localStorage.getItem('token');
       const url = editingStaff
-        ? `${API_BASE_URL}/admin/hub-staff/${editingStaff.id}`
-        : `${API_BASE_URL}/admin/hub-staff`;
+        ? `/admin/hub-staff/${editingStaff.id}`
+        : `/admin/hub-staff`;
 
       const method = editingStaff ? 'put' : 'post';
 
@@ -128,9 +119,7 @@ const AdminHubStaff = () => {
         payload.password = formData.password;
       }
 
-      await axios[method](url, payload, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await api[method](url, payload);
 
       toast.success(editingStaff ? 'Staff updated successfully' : 'Staff member created successfully');
       handleCloseModal();
@@ -148,11 +137,7 @@ const AdminHubStaff = () => {
     }
 
     try {
-      const token = localStorage.getItem('token');
-      await axios.delete(`${API_BASE_URL}/admin/hub-staff/${staffId}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-
+      await api.delete(`/admin/hub-staff/${staffId}`);
       toast.success('Staff member deleted successfully');
       fetchStaff();
     } catch (error) {

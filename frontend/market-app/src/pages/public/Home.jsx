@@ -17,7 +17,7 @@ const Home = () => {
   const fetchFeaturedProducts = async () => {
     try {
       const data = await productService.getProducts({ limit: 8 });
-      setFeaturedProducts(data.products || []);
+      setFeaturedProducts(data.data?.products || []);
     } catch (error) {
       console.error('Failed to fetch products:', error);
     } finally {

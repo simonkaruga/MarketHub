@@ -2,11 +2,9 @@ import { useState, useEffect } from 'react';
 import AdminLayout from '../../components/layout/AdminLayout';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { FiArrowLeft, FiPackage, FiTruck, FiCheckCircle, FiClock, FiAlertCircle } from 'react-icons/fi';
-import axios from 'axios';
+import api from '../../services/api';
 import toast from 'react-hot-toast';
 import { formatCurrency } from '../../utils/formatters';
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api/v1';
 
 const AdminOrderDetail = () => {
   const { id } = useParams();
