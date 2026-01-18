@@ -1,58 +1,30 @@
-import axios from 'axios';
-
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
+import api from './api';
 
 export const paymentService = {
   // Initiate M-Pesa STK Push
   initiateStkPush: async (orderId, phoneNumber) => {
-    const token = localStorage.getItem('token');
-    const response = await axios.post(
-      `${API_BASE_URL}/payments/mpesa/stk-push`,
-      {
-        order_id: orderId,
-        phone_number: phoneNumber
-      },
-      {
-        headers: { Authorization: `Bearer ${token}` }
-      }
-    );
+    const response = await api.post('/payments/mpesa/stk-push', {
+      order_id: orderId,
+      phone_number: phoneNumber
+    });
     return response.data;
   },
 
   // Check payment status
   checkPaymentStatus: async (orderId) => {
-    const token = localStorage.getItem('token');
-    const response = await axios.get(
-      `${API_BASE_URL}/payments/status/${orderId}`,
-      {
-        headers: { Authorization: `Bearer ${token}` }
-      }
-    );
+    const response = await api.get(`/payments/status/${orderId}`);
     return response.data;
   },
 
   // Get payment history
   getPaymentHistory: async () => {
-    const token = localStorage.getItem('token');
-    const response = await axios.get(
-      `${API_BASE_URL}/payments/history`,
-      {
-        headers: { Authorization: `Bearer ${token}` }
-      }
-    );
+    const response = await api.get('/payments/history');
     return response.data;
   },
 
   // Verify payment
   verifyPayment: async (orderId) => {
-    const token = localStorage.getItem('token');
-    const response = await axios.post(
-      `${API_BASE_URL}/payments/verify/${orderId}`,
-      {},
-      {
-        headers: { Authorization: `Bearer ${token}` }
-      }
-    );
+    const response = await api.post(`/payments/verify/${orderId}`, {});
     return response.data;
   }
 };
