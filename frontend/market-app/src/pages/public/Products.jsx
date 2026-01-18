@@ -109,7 +109,7 @@ const Products = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#0f172a]">
+    <div className="min-h-screen flex flex-col">
       <Navbar />
 
       {/* Mobile Filter Drawer */}
@@ -117,11 +117,11 @@ const Products = () => {
         <div className="fixed inset-0 z-50 lg:hidden">
           <div className="fixed inset-0 bg-black/50" onClick={() => setMobileFiltersOpen(false)} />
           <div className="fixed inset-y-0 left-0 w-80 max-w-full bg-slate-800 shadow-xl overflow-y-auto">
-            <div className="sticky top-0 bg-slate-800 border-b border-slate-600 px-4 py-3 flex items-center justify-between">
+            <div className="sticky top-0 bg-slate-800 border-b border-gray-600 px-4 py-3 flex items-center justify-between">
               <h2 className="text-lg font-semibold text-white">Filters</h2>
               <button
                 onClick={() => setMobileFiltersOpen(false)}
-                className="p-2 text-gray-400 hover:text-gray-300 hover:bg-slate-700 rounded-lg"
+                className="p-2 text-gray-300 hover:text-white hover:bg-slate-700 rounded-lg"
               >
                 <FiX size={20} />
               </button>
@@ -155,7 +155,7 @@ const Products = () => {
           {/* Mobile Filter Button */}
           <button
             onClick={() => setMobileFiltersOpen(true)}
-            className="lg:hidden flex items-center gap-2 px-4 py-2 bg-slate-800 border border-slate-600 rounded-lg hover:bg-slate-700 transition-colors"
+            className="lg:hidden flex items-center gap-2 px-4 py-2 bg-slate-700 border border-gray-600 rounded-lg hover:bg-slate-600 transition-colors text-white"
           >
             <FiFilter size={18} />
             <span>Filters</span>
@@ -170,7 +170,7 @@ const Products = () => {
         <div className="flex gap-6 lg:gap-8">
           {/* Filters Sidebar - Desktop */}
           <div className="hidden lg:block w-72 flex-shrink-0">
-            <div className="sticky top-20 bg-slate-800 rounded-xl shadow-sm border border-slate-600 p-5">
+            <div className="sticky top-20 bg-slate-800 rounded-xl shadow-sm border border-gray-600 p-5">
               <h2 className="text-lg font-semibold text-white mb-4">Filters</h2>
               <ProductFilter
                 categories={categories}
@@ -195,7 +195,7 @@ const Products = () => {
                   <button
                     onClick={() => goToPage(pagination.page - 1)}
                     disabled={!pagination.has_prev}
-                    className="p-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 transition-colors"
+                    className="p-2 border border-gray-600 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-700 text-white transition-colors"
                     aria-label="Previous page"
                   >
                     <FiChevronLeft size={20} />
@@ -205,7 +205,7 @@ const Products = () => {
                   <div className="hidden sm:flex items-center gap-1">
                     {getPageNumbers().map((page, index) => (
                       page === '...' ? (
-                        <span key={`ellipsis-${index}`} className="px-3 py-2 text-gray-500">...</span>
+                        <span key={`ellipsis-${index}`} className="px-3 py-2 text-gray-300">...</span>
                       ) : (
                         <button
                           key={page}
@@ -213,7 +213,7 @@ const Products = () => {
                           className={`min-w-[40px] px-3 py-2 rounded-lg font-medium transition-colors ${
                             page === pagination.page
                               ? 'bg-primary-600 text-white'
-                              : 'border border-gray-300 hover:bg-gray-100 text-gray-700'
+                              : 'border border-gray-600 hover:bg-slate-700 text-gray-300'
                           }`}
                         >
                           {page}
@@ -223,7 +223,7 @@ const Products = () => {
                   </div>
 
                   {/* Mobile page indicator */}
-                  <span className="sm:hidden px-4 py-2 text-sm text-gray-600">
+                  <span className="sm:hidden px-4 py-2 text-sm text-gray-300">
                     Page {pagination.page} of {pagination.total_pages}
                   </span>
 
@@ -231,7 +231,7 @@ const Products = () => {
                   <button
                     onClick={() => goToPage(pagination.page + 1)}
                     disabled={!pagination.has_next}
-                    className="p-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 transition-colors"
+                    className="p-2 border border-gray-600 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-700 text-white transition-colors"
                     aria-label="Next page"
                   >
                     <FiChevronRight size={20} />

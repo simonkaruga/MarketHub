@@ -22,12 +22,12 @@ const ProductFilter = ({ categories, onFilterChange }) => {
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md">
+    <div>
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-lg font-semibold">Filters</h3>
+        <h3 className="text-lg font-semibold text-white">Filters</h3>
         <button
           onClick={handleReset}
-          className="text-sm text-primary-600 hover:text-primary-700"
+          className="text-sm text-primary-400 hover:text-primary-300"
         >
           Reset
         </button>
@@ -35,13 +35,13 @@ const ProductFilter = ({ categories, onFilterChange }) => {
 
       {/* Category Filter */}
       <div className="mb-6">
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-sm font-medium text-gray-300 mb-2">
           Category
         </label>
         <select
           value={selectedCategory}
           onChange={(e) => setSelectedCategory(e.target.value)}
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500"
+          className="w-full border border-gray-600 rounded-lg px-3 py-2 bg-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
         >
           <option value="">All Categories</option>
           {categories?.map((category) => (
@@ -54,7 +54,7 @@ const ProductFilter = ({ categories, onFilterChange }) => {
 
       {/* Price Range */}
       <div className="mb-6">
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-sm font-medium text-gray-300 mb-2">
           Price Range
         </label>
         <div className="flex gap-2">
@@ -63,27 +63,27 @@ const ProductFilter = ({ categories, onFilterChange }) => {
             placeholder="Min"
             value={priceRange.min}
             onChange={(e) => setPriceRange({ ...priceRange, min: e.target.value })}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500"
+            className="w-full border border-gray-600 rounded-lg px-3 py-2 bg-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
           />
           <input
             type="number"
             placeholder="Max"
             value={priceRange.max}
             onChange={(e) => setPriceRange({ ...priceRange, max: e.target.value })}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500"
+            className="w-full border border-gray-600 rounded-lg px-3 py-2 bg-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
           />
         </div>
       </div>
 
       {/* Sort By */}
       <div className="mb-6">
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-sm font-medium text-gray-300 mb-2">
           Sort By
         </label>
         <select
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value)}
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500"
+          className="w-full border border-gray-600 rounded-lg px-3 py-2 bg-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
         >
           <option value="">Default</option>
           <option value="price_asc">Price: Low to High</option>

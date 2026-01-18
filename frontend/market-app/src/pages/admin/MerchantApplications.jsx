@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import Navbar from '../../components/layout/Navbar';
-import Footer from '../../components/layout/Footer';
 import toast from 'react-hot-toast';
 import axios from 'axios';
 import { FiCheck, FiX, FiEye, FiClock, FiFileText } from 'react-icons/fi';
+import AdminLayout from '../../components/layout/AdminLayout';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
@@ -128,15 +127,15 @@ const MerchantApplications = () => {
 
   const getStatusBadge = (status) => {
     const statusColors = {
-      PENDING: 'bg-yellow-100 text-yellow-800',
-      UNDER_REVIEW: 'bg-blue-100 text-blue-800',
-      APPROVED: 'bg-green-100 text-green-800',
-      REJECTED: 'bg-red-100 text-red-800'
+      PENDING: 'bg-yellow-600/20 text-yellow-300 border border-yellow-500/30',
+      UNDER_REVIEW: 'bg-blue-600/20 text-blue-300 border border-blue-500/30',
+      APPROVED: 'bg-green-600/20 text-green-300 border border-green-500/30',
+      REJECTED: 'bg-red-600/20 text-red-300 border border-red-500/30'
     };
 
     return (
-      <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusColors[status] || 'bg-gray-100 text-gray-800'}`}>
-        {status}
+      <span className={`px-3 py-1 rounded-full text-xs font-semibold ${statusColors[status] || 'bg-gray-600/20 text-gray-300 border border-gray-500/30'}`}>
+        {status.replace('_', ' ')}
       </span>
     );
   };
@@ -151,170 +150,166 @@ const MerchantApplications = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col">
-        <Navbar />
-        <div className="flex-1 flex items-center justify-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+      <AdminLayout>
+        <div className="flex items-center justify-center py-12">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-400"></div>
         </div>
-        <Footer />
-      </div>
+      </AdminLayout>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
-      <Navbar />
-
-      <div className="flex-1 container-custom py-8">
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold mb-2">Merchant Applications</h1>
-          <p className="text-gray-600">Review and manage merchant application requests</p>
-        </div>
-
-        {/* Filter Tabs */}
-        <div className="mb-6 flex gap-2 border-b">
-          {['pending', 'under_review', 'approved', 'rejected', ''].map((status) => (
-            <button
-              key={status}
-              onClick={() => setFilter(status)}
-              className={`px-4 py-2 font-medium ${
-                filter === status
-                  ? 'border-b-2 border-primary-600 text-primary-600'
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              {status === '' ? 'All' : status.replace('_', ' ').toUpperCase()}
-            </button>
-          ))}
-        </div>
-
-        {/* Applications List */}
-        {applications.length === 0 ? (
-          <div className="bg-white rounded-lg shadow-md p-12 text-center">
-            <FiFileText className="mx-auto text-gray-400 mb-4" size={48} />
-            <p className="text-gray-600">No applications found</p>
-          </div>
-        ) : (
-          <div className="bg-white rounded-lg shadow-md overflow-hidden">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Business Name
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Applicant
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Applied On
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {applications.map((app) => (
-                  <tr key={app.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">{app.business_name}</div>
-                      <div className="text-sm text-gray-500">{app.business_type}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{app.user?.name || 'N/A'}</div>
-                      <div className="text-sm text-gray-500">{app.user?.email || 'N/A'}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {formatDate(app.created_at)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {getStatusBadge(app.status)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <div className="flex justify-end gap-2">
-                        <Link
-                          to={`/admin/merchant-applications/${app.id}`}
-                          className="text-blue-600 hover:text-blue-900 flex items-center gap-1"
-                        >
-                          <FiEye size={16} />
-                          View
-                        </Link>
-                        {app.status === 'PENDING' && (
-                          <>
-                            <button
-                              onClick={() => openModal(app, 'approve')}
-                              className="text-green-600 hover:text-green-900 flex items-center gap-1"
-                            >
-                              <FiCheck size={16} />
-                              Approve
-                            </button>
-                            <button
-                              onClick={() => openModal(app, 'reject')}
-                              className="text-red-600 hover:text-red-900 flex items-center gap-1"
-                            >
-                              <FiX size={16} />
-                              Reject
-                            </button>
-                          </>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+    <AdminLayout>
+      {/* Header */}
+      <div className="mb-8">
+        <h1 className="text-4xl font-bold text-white mb-2">Merchant Applications</h1>
+        <p className="text-gray-300 text-lg">Review and manage merchant application requests</p>
+        <div className="mt-4 h-1 w-24 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"></div>
       </div>
+
+      {/* Filter Tabs */}
+      <div className="mb-8 flex gap-2 p-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl w-fit">
+        {['pending', 'under_review', 'approved', 'rejected', ''].map((status) => (
+          <button
+            key={status}
+            onClick={() => setFilter(status)}
+            className={`px-6 py-3 font-semibold rounded-xl transition-all duration-300 ${
+              filter === status
+                ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg'
+                : 'text-gray-300 hover:text-white hover:bg-white/10'
+            }`}
+          >
+            {status === '' ? 'All' : status.replace('_', ' ').toUpperCase()}
+          </button>
+        ))}
+      </div>
+
+      {/* Applications List */}
+      {applications.length === 0 ? (
+        <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl shadow-2xl p-12 text-center">
+          <FiFileText className="mx-auto text-gray-400 mb-4" size={48} />
+          <p className="text-gray-400">No applications found</p>
+        </div>
+      ) : (
+        <div className="bg-white/10 backdrop-blur-md border border-white/20 shadow-2xl overflow-hidden rounded-2xl">
+          <table className="min-w-full divide-y divide-white/10">
+            <thead className="bg-white/5">
+              <tr>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                  Business Name
+                </th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                  Applicant
+                </th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                  Applied On
+                </th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                  Status
+                </th>
+                <th className="px-6 py-4 text-right text-xs font-medium text-gray-300 uppercase tracking-wider">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-white/10">
+              {applications.map((app) => (
+                <tr key={app.id} className="hover:bg-white/5 transition-colors">
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm font-semibold text-white">{app.business_name}</div>
+                    <div className="text-sm text-gray-400">{app.business_type}</div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-white">{app.user?.name || 'N/A'}</div>
+                    <div className="text-sm text-gray-400">{app.user?.email || 'N/A'}</div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
+                    {formatDate(app.created_at)}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {getStatusBadge(app.status)}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <div className="flex justify-end gap-3">
+                      <Link
+                        to={`/admin/merchant-applications/${app.id}`}
+                        className="text-blue-400 hover:text-blue-300 transition-colors flex items-center gap-1"
+                      >
+                        <FiEye size={16} />
+                        View
+                      </Link>
+                      {app.status === 'PENDING' && (
+                        <>
+                          <button
+                            onClick={() => openModal(app, 'approve')}
+                            className="text-green-400 hover:text-green-300 transition-colors flex items-center gap-1"
+                          >
+                            <FiCheck size={16} />
+                            Approve
+                          </button>
+                          <button
+                            onClick={() => openModal(app, 'reject')}
+                            className="text-red-400 hover:text-red-300 transition-colors flex items-center gap-1"
+                          >
+                            <FiX size={16} />
+                            Reject
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       {/* Action Modal */}
       {showModal && selectedApp && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-lg w-full p-6">
-            <h2 className="text-xl font-bold mb-4">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl max-w-lg w-full p-6 shadow-2xl">
+            <h2 className="text-2xl font-bold text-white mb-6">
               {actionType === 'approve' ? 'Approve Application' : 'Reject Application'}
             </h2>
 
-            <div className="mb-4">
-              <p className="text-gray-700">
-                <strong>Business:</strong> {selectedApp.business_name}
+            <div className="mb-6">
+              <p className="text-gray-300 mb-2">
+                <strong className="text-white">Business:</strong> {selectedApp.business_name}
               </p>
-              <p className="text-gray-700">
-                <strong>Applicant:</strong> {selectedApp.user?.name} ({selectedApp.user?.email})
+              <p className="text-gray-300">
+                <strong className="text-white">Applicant:</strong> {selectedApp.user?.name} ({selectedApp.user?.email})
               </p>
             </div>
 
             {actionType === 'reject' && (
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Rejection Reason <span className="text-red-500">*</span>
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Rejection Reason <span className="text-red-400">*</span>
                 </label>
                 <textarea
                   value={rejectionReason}
                   onChange={(e) => setRejectionReason(e.target.value)}
                   rows="4"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 backdrop-blur-sm"
                   placeholder="Provide a detailed reason for rejection (minimum 20 characters)..."
                   required
                 />
-                <p className="text-sm text-gray-500 mt-1">
+                <p className="text-sm text-gray-400 mt-2">
                   {rejectionReason.length}/1000 characters (minimum 20)
                 </p>
               </div>
             )}
 
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-300 mb-2">
                 Admin Notes (Optional)
               </label>
               <textarea
                 value={adminNotes}
                 onChange={(e) => setAdminNotes(e.target.value)}
                 rows="3"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 backdrop-blur-sm"
                 placeholder="Internal notes (not visible to applicant)..."
               />
             </div>
@@ -323,17 +318,17 @@ const MerchantApplications = () => {
               <button
                 onClick={closeModal}
                 disabled={processing}
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+                className="flex-1 px-6 py-2 border border-white/20 rounded-lg text-gray-300 hover:bg-white/10 transition-colors backdrop-blur-sm disabled:opacity-50"
               >
                 Cancel
               </button>
               <button
                 onClick={actionType === 'approve' ? handleApprove : handleReject}
                 disabled={processing || (actionType === 'reject' && rejectionReason.length < 20)}
-                className={`flex-1 px-4 py-2 rounded-md text-white font-medium disabled:opacity-50 ${
+                className={`flex-1 px-6 py-2 rounded-lg text-white font-medium transition-all duration-300 disabled:opacity-50 ${
                   actionType === 'approve'
-                    ? 'bg-green-600 hover:bg-green-700'
-                    : 'bg-red-600 hover:bg-red-700'
+                    ? 'bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700'
+                    : 'bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800'
                 }`}
               >
                 {processing ? 'Processing...' : actionType === 'approve' ? 'Approve' : 'Reject'}
@@ -342,9 +337,7 @@ const MerchantApplications = () => {
           </div>
         </div>
       )}
-
-      <Footer />
-    </div>
+    </AdminLayout>
   );
 };
 

@@ -109,17 +109,17 @@ def seed_database():
     app = create_app(os.getenv('FLASK_ENV', 'development'))
 
     with app.app_context():
-        print("🌱 Starting database seeding...")
+        print(" Starting database seeding...")
 
         # Create categories (check if they exist first)
-        print("📂 Creating categories...")
+        print(" Creating categories...")
         categories = {}
         categories_created = 0
         for cat_data in categories_data:
             existing = Category.query.filter_by(name=cat_data['name']).first()
             if existing:
                 categories[cat_data['name']] = existing
-                print(f"   ⚠️  Category '{cat_data['name']}' already exists, skipping")
+                print(f"    Category '{cat_data['name']}' already exists, skipping")
             else:
                 category = Category(
                     name=cat_data['name'],
@@ -130,25 +130,25 @@ def seed_database():
                 categories_created += 1
 
         # Create hubs (check if they exist first)
-        print("🏢 Creating delivery hubs...")
+        print("Creating delivery hubs...")
         hubs_created = 0
         for hub_data in hubs_data:
             existing = Hub.query.filter_by(name=hub_data['name']).first()
             if existing:
-                print(f"   ⚠️  Hub '{hub_data['name']}' already exists, skipping")
+                print(f"Hub '{hub_data['name']}' already exists, skipping")
             else:
                 hub = Hub(**hub_data)
                 db.session.add(hub)
                 hubs_created += 1
 
         # Create admin user (check if exists first)
-        print("👤 Creating admin user...")
+        print("Creating admin user...")
         admin_created = 0
         try:
             existing_admin = User.query.filter_by(email='admin@markethub.com').first()
             if existing_admin:
                 admin = existing_admin
-                print("   ⚠️  Admin user already exists, skipping")
+                print("Admin user already exists, skipping")
             else:
                 admin = User(
                     email='admin@markethub.com',
@@ -161,7 +161,7 @@ def seed_database():
                 db.session.add(admin)
                 admin_created = 1
         except Exception as e:
-            print(f"   ❌ Error creating admin user: {e}")
+            print(f"Error creating admin user: {e}")
             # Create admin with raw SQL to avoid enum issues
             db.session.execute(db.text("""
                 INSERT OR IGNORE INTO users (email, password_hash, name, phone_number, role, is_active, created_at, updated_at)
@@ -179,7 +179,7 @@ def seed_database():
             admin_created = 1
 
         # Create sample merchants (check if they exist first)
-        print("🏪 Creating sample merchants...")
+        print("Creating sample merchants...")
         merchants = []
         merchants_created = 0
         merchant_data = [
@@ -193,7 +193,7 @@ def seed_database():
                 existing = User.query.filter_by(email=data['email']).first()
                 if existing:
                     merchants.append(existing)
-                    print(f"   ⚠️  Merchant '{data['email']}' already exists, skipping")
+                    print(f"Merchant '{data['email']}' already exists, skipping")
                 else:
                     merchant = User(
                         email=data['email'],
@@ -207,7 +207,7 @@ def seed_database():
                     merchants.append(merchant)
                     merchants_created += 1
             except Exception as e:
-                print(f"   ❌ Error creating merchant {data['email']}: {e}")
+                print(f"Error creating merchant {data['email']}: {e}")
                 # Create merchant with raw SQL
                 db.session.execute(db.text("""
                     INSERT OR IGNORE INTO users (email, password_hash, name, phone_number, role, is_active, created_at, updated_at)
@@ -237,12 +237,12 @@ def seed_database():
                     merchants.append(merchant)
 
         # Create products (check if they exist first)
-        print("📦 Creating products...")
+        print("Creating products...")
         products_created = 0
         for i, prod_data in enumerate(products_data):
             existing = Product.query.filter_by(name=prod_data['name']).first()
             if existing:
-                print(f"   ⚠️  Product '{prod_data['name']}' already exists, skipping")
+                print(f"Product '{prod_data['name']}' already exists, skipping")
                 continue
 
             # Get the merchant (distribute among available merchants)
@@ -264,17 +264,17 @@ def seed_database():
                     db.session.add(product)
                     products_created += 1
                 else:
-                    print(f"   ❌ Category '{prod_data['category']}' not found for product '{prod_data['name']}'")
+                    print(f"Category '{prod_data['category']}' not found for product '{prod_data['name']}'")
             else:
-                print("   ❌ No merchants available to assign products")
+                print("No merchants available to assign products")
 
         # Commit all changes
         db.session.commit()
-        print("✅ Database seeding completed successfully!")
-        print(f"   📂 Created {categories_created} new categories")
-        print(f"   🏢 Created {hubs_created} new hubs")
-        print(f"   👥 Created {admin_created} new admin + {merchants_created} new merchants")
-        print(f"   📦 Created {products_created} new products")
+        print("Database seeding completed successfully!")
+        print(f"Created {categories_created} new categories")
+        print(f"Created {hubs_created} new hubs")
+        print(f"Created {admin_created} new admin + {merchants_created} new merchants")
+        print(f"Created {products_created} new products")
 
 if __name__ == '__main__':
     seed_database()

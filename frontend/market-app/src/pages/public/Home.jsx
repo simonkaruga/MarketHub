@@ -59,10 +59,10 @@ const Home = () => {
 
             <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-12">
               <Link to="/products" className="bg-white text-primary-600 px-10 py-4 rounded-xl font-bold text-lg hover:bg-gray-50 hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl">
-                🛍️ Start Shopping
+                 Start Shopping
               </Link>
               <Link to="/register" className="border-2 border-white text-white px-10 py-4 rounded-xl font-bold text-lg hover:bg-white hover:text-primary-600 transition-all duration-200">
-                💼 Become a Merchant
+                 Become a Merchant
               </Link>
             </div>
 
@@ -269,10 +269,10 @@ const Home = () => {
 
             <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
               <Link to="/register" className="bg-orange-500 text-white px-10 py-4 rounded-xl font-bold text-lg hover:bg-orange-600 hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl inline-block">
-                🚀 Become a Merchant
+                 Become a Merchant
               </Link>
               <Link to="/products" className="border-2 border-orange-500 text-orange-500 px-10 py-4 rounded-xl font-bold text-lg hover:bg-orange-500 hover:text-white transition-all duration-200 inline-block">
-                🛒 Start Shopping
+                 Start Shopping
               </Link>
             </div>
 
