@@ -59,7 +59,7 @@ const Navbar = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-3">
             <img src="/hub.png" alt="MarketHub Logo" className="h-12 w-12 object-contain" />
-            <span className="text-2xl font-bold text-primary-600">MarketHub</span>
+            <span className="text-2xl font-bold text-orange-400">MarketHub</span>
           </Link>
 
           {/* Search Bar - Desktop */}

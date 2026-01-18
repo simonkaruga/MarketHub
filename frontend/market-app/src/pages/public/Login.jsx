@@ -45,21 +45,21 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-[#0f172a] py-12 px-4">
       <div className="max-w-md w-full">
         {/* Logo */}
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex flex-col items-center">
             <img src="/hub.png" alt="MarketHub Logo" className="h-28 w-28 object-contain mb-3" />
-            <span className="text-3xl font-bold text-primary-600">MarketHub</span>
+            <span className="text-3xl font-bold text-orange-400">MarketHub</span>
           </Link>
-          <h2 className="mt-6 text-2xl font-bold text-gray-900">
+          <h2 className="mt-6 text-2xl font-bold text-white">
             Sign in to your account
           </h2>
         </div>
 
         {/* Form */}
-        <div className="bg-white py-8 px-6 shadow-lg rounded-lg">
+        <div className="bg-slate-800 py-8 px-6 shadow-lg rounded-lg">
           <form onSubmit={handleSubmit}>
             {error && <ErrorMessage message={error} />}
 
@@ -98,13 +98,13 @@ const Login = () => {
                 <input
                   type="checkbox"
                   id="remember"
-                  className="h-4 w-4 text-primary-600 rounded"
+                  className="h-4 w-4 text-orange-400 rounded"
                 />
-                <label htmlFor="remember" className="ml-2 text-sm text-gray-600">
+                <label htmlFor="remember" className="ml-2 text-sm text-gray-300">
                   Remember me
                 </label>
               </div>
-              <Link to="/forgot-password" className="text-sm text-primary-600 hover:text-primary-700">
+              <Link to="/forgot-password" className="text-sm text-orange-400 hover:text-orange-300">
                 Forgot password?
               </Link>
             </div>
@@ -117,19 +117,19 @@ const Login = () => {
           {/* Divider */}
           <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300" />
+              <div className="w-full border-t border-gray-600" />
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-500">Or continue with</span>
+              <span className="px-2 bg-slate-800 text-gray-400">Or continue with</span>
             </div>
           </div>
 
           {/* Google Sign In */}
           <GoogleSignInButton onSuccess={handleGoogleSuccess} />
 
-          <p className="mt-6 text-center text-sm text-gray-600">
+          <p className="mt-6 text-center text-sm text-gray-400">
             Don't have an account?{' '}
-            <Link to="/register" className="text-primary-600 hover:text-primary-700 font-semibold">
+            <Link to="/register" className="text-orange-400 hover:text-orange-300 font-semibold">
               Sign up
             </Link>
           </p>
