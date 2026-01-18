@@ -7,27 +7,17 @@ import { useCart } from '../../hooks/useCart';
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [isHomeDropdownOpen, setIsHomeDropdownOpen] = useState(false);
-  const [isAboutDropdownOpen, setIsAboutDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const { user, logout, isAuthenticated } = useAuth();
   const { itemCount } = useCart();
   const navigate = useNavigate();
   const dropdownRef = useRef(null);
-  const homeDropdownRef = useRef(null);
-  const aboutDropdownRef = useRef(null);
 
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsDropdownOpen(false);
-      }
-      if (homeDropdownRef.current && !homeDropdownRef.current.contains(event.target)) {
-        setIsHomeDropdownOpen(false);
-      }
-      if (aboutDropdownRef.current && !aboutDropdownRef.current.contains(event.target)) {
-        setIsAboutDropdownOpen(false);
       }
     };
 
@@ -78,82 +68,12 @@ const Navbar = () => {
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-6">
-            {/* Home Dropdown */}
-            <div className="relative" ref={homeDropdownRef}>
-              <button
-                onClick={() => setIsHomeDropdownOpen(!isHomeDropdownOpen)}
-                className="flex items-center space-x-1 text-gray-300 hover:text-orange-400 py-2 px-3 rounded-lg hover:bg-slate-700 transition-colors"
-              >
-                <span>Home</span>
-                <FiChevronDown size={14} className={`transition-transform ${isHomeDropdownOpen ? 'rotate-180' : ''}`} />
-              </button>
-
-              {/* Home Dropdown Menu */}
-              {isHomeDropdownOpen && (
-                <div className="absolute left-0 mt-2 w-48 bg-slate-800 rounded-xl shadow-lg border border-slate-600 py-2 z-50">
-                  <Link
-                    to="/"
-                    className="block px-4 py-2 text-gray-300 hover:bg-slate-700 transition-colors"
-                    onClick={() => setIsHomeDropdownOpen(false)}
-                  >
-                    Home Page
-                  </Link>
-                  <Link
-                    to="/login"
-                    className="block px-4 py-2 text-gray-300 hover:bg-slate-700 transition-colors"
-                    onClick={() => setIsHomeDropdownOpen(false)}
-                  >
-                    Login
-                  </Link>
-                  <Link
-                    to="/register"
-                    className="block px-4 py-2 text-orange-400 hover:bg-slate-700 font-medium transition-colors"
-                    onClick={() => setIsHomeDropdownOpen(false)}
-                  >
-                    Sign Up
-                  </Link>
-                </div>
-              )}
-            </div>
-
-            {/* About Dropdown */}
-            <div className="relative" ref={aboutDropdownRef}>
-              <button
-                onClick={() => setIsAboutDropdownOpen(!isAboutDropdownOpen)}
-                className="flex items-center space-x-1 text-gray-300 hover:text-orange-400 py-2 px-3 rounded-lg hover:bg-slate-700 transition-colors"
-              >
-                <span>About</span>
-                <FiChevronDown size={14} className={`transition-transform ${isAboutDropdownOpen ? 'rotate-180' : ''}`} />
-              </button>
-
-              {/* About Dropdown Menu */}
-              {isAboutDropdownOpen && (
-                <div className="absolute left-0 mt-2 w-48 bg-slate-800 rounded-xl shadow-lg border border-slate-600 py-2 z-50">
-                  <Link
-                    to="/about"
-                    className="block px-4 py-2 text-gray-300 hover:bg-slate-700 transition-colors"
-                    onClick={() => setIsAboutDropdownOpen(false)}
-                  >
-                    About Us
-                  </Link>
-                  <Link
-                    to="/login"
-                    className="block px-4 py-2 text-gray-300 hover:bg-slate-700 transition-colors"
-                    onClick={() => setIsAboutDropdownOpen(false)}
-                  >
-                    Login
-                  </Link>
-                  <Link
-                    to="/register"
-                    className="block px-4 py-2 text-orange-400 hover:bg-slate-700 font-medium transition-colors"
-                    onClick={() => setIsAboutDropdownOpen(false)}
-                  >
-                    Sign Up
-                  </Link>
-                </div>
-              )}
-            </div>
-
+            <Link to="/" className="text-gray-300 hover:text-orange-400">
+              Home
+            </Link>
+            <Link to="/about" className="text-gray-300 hover:text-orange-400">
+              About
+            </Link>
             <Link to="/products" className="text-gray-300 hover:text-orange-400">
               Products
             </Link>
@@ -304,34 +224,12 @@ const Navbar = () => {
               </div>
             </form>
 
-            {/* Home Section */}
-            <div className="mb-4">
-              <div className="font-semibold text-gray-900 mb-2">Home</div>
-              <Link to="/" className="block py-2 pl-4 text-gray-700" onClick={() => setIsMenuOpen(false)}>
-                Home Page
-              </Link>
-              <Link to="/login" className="block py-2 pl-4 text-gray-700" onClick={() => setIsMenuOpen(false)}>
-                Login
-              </Link>
-              <Link to="/register" className="block py-2 pl-4 text-primary-600 font-medium" onClick={() => setIsMenuOpen(false)}>
-                Sign Up
-              </Link>
-            </div>
-
-            {/* About Section */}
-            <div className="mb-4">
-              <div className="font-semibold text-gray-900 mb-2">About</div>
-              <Link to="/about" className="block py-2 pl-4 text-gray-700" onClick={() => setIsMenuOpen(false)}>
-                About Us
-              </Link>
-              <Link to="/login" className="block py-2 pl-4 text-gray-700" onClick={() => setIsMenuOpen(false)}>
-                Login
-              </Link>
-              <Link to="/register" className="block py-2 pl-4 text-primary-600 font-medium" onClick={() => setIsMenuOpen(false)}>
-                Sign Up
-              </Link>
-            </div>
-
+            <Link to="/" className="block py-2 text-gray-700" onClick={() => setIsMenuOpen(false)}>
+              Home
+            </Link>
+            <Link to="/about" className="block py-2 text-gray-700" onClick={() => setIsMenuOpen(false)}>
+              About
+            </Link>
             <Link to="/products" className="block py-2 text-gray-700" onClick={() => setIsMenuOpen(false)}>
               Products
             </Link>
