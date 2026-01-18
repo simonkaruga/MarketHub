@@ -52,6 +52,19 @@ h1, h2, h3, h4, h5, h6 {
   animation: fadeIn 0.3s ease-in-out;
 }
 
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-25px);
+  }
+}
+
+.animate-float {
+  animation: float 2s ease-in-out infinite;
+}
+
 /* Loading spinner */
 .spinner {
   border: 3px solid rgba(0, 0, 0, 0.1);

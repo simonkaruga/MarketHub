@@ -47,7 +47,7 @@ const Home = () => {
               </span>
             </div>
 
-            <h1 className="text-6xl md:text-7xl font-bold mb-8 leading-tight">
+            <h1 className="text-6xl md:text-7xl font-bold mb-8 leading-tight animate-float">
               Shop Smart,<br />
               <span className="text-primary-200">Sell Confidently</span>
             </h1>
