@@ -1,6 +1,7 @@
 from datetime import datetime
-from app import db, bcrypt
+from app import db
 from sqlalchemy import Enum
+from werkzeug.security import generate_password_hash, check_password_hash
 import enum
 
 
@@ -69,12 +70,12 @@ class User(db.Model):
     def set_password(self, password):
         """
         Hash and set the user's password
-        
+
         Args:
             password (str): Plain text password
         """
-        self.password_hash = bcrypt.generate_password_hash(password).decode('utf-8')
-    
+        self.password_hash = generate_password_hash(password)
+
     def check_password(self, password):
         """
         Verify the user's password
@@ -87,7 +88,7 @@ class User(db.Model):
         """
         if not self.password_hash:
             return False  # OAuth users don't have passwords
-        return bcrypt.check_password_hash(self.password_hash, password)
+        return check_password_hash(self.password_hash, password)
     
     def to_dict(self):
         """
