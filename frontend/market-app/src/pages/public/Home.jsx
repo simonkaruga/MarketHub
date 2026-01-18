@@ -30,7 +30,7 @@ const Home = () => {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-primary-600 via-primary-700 to-primary-800 text-white py-24 overflow-hidden">
+      <section className="relative text-white py-24 overflow-hidden" style={{ backgroundColor: '#0f172a' }}>
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute inset-0" style={{
@@ -90,54 +90,54 @@ const Home = () => {
       </section>
 
       {/* Features */}
-      <section className="py-20 bg-gradient-to-b from-gray-50 to-white">
+      <section className="py-20 bg-[#0f172a]">
         <div className="container-custom">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-4xl font-bold text-white mb-4">
               Why Choose MarketHub?
             </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            <p className="text-xl text-gray-300 max-w-2xl mx-auto">
               Experience the future of online shopping in Kenya with our innovative platform
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             <div className="text-center group">
-              <div className="bg-gradient-to-br from-primary-50 to-primary-100 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 group-hover:shadow-lg transition-all duration-300">
-                <FiShoppingBag className="text-primary-600" size={36} />
+              <div className="bg-gradient-to-br from-slate-700 to-slate-800 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 group-hover:shadow-lg transition-all duration-300">
+                <FiShoppingBag className="text-orange-400" size={36} />
               </div>
-              <h3 className="font-bold text-xl mb-3 text-gray-900">Wide Selection</h3>
-              <p className="text-gray-600 leading-relaxed">
+              <h3 className="font-bold text-xl mb-3 text-white">Wide Selection</h3>
+              <p className="text-gray-300 leading-relaxed">
                 Discover thousands of products from verified Kenyan merchants across all categories
               </p>
             </div>
 
             <div className="text-center group">
-              <div className="bg-gradient-to-br from-green-50 to-green-100 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 group-hover:shadow-lg transition-all duration-300">
-                <FiTruck className="text-green-600" size={36} />
+              <div className="bg-gradient-to-br from-slate-700 to-slate-800 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 group-hover:shadow-lg transition-all duration-300">
+                <FiTruck className="text-orange-400" size={36} />
               </div>
-              <h3 className="font-bold text-xl mb-3 text-gray-900">Lightning Fast Delivery</h3>
-              <p className="text-gray-600 leading-relaxed">
+              <h3 className="font-bold text-xl mb-3 text-white">Lightning Fast Delivery</h3>
+              <p className="text-gray-300 leading-relaxed">
                 Get your orders delivered quickly or pick up conveniently at our hub locations
               </p>
             </div>
 
             <div className="text-center group">
-              <div className="bg-gradient-to-br from-blue-50 to-blue-100 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 group-hover:shadow-lg transition-all duration-300">
-                <FiShield className="text-blue-600" size={36} />
+              <div className="bg-gradient-to-br from-slate-700 to-slate-800 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 group-hover:shadow-lg transition-all duration-300">
+                <FiShield className="text-orange-400" size={36} />
               </div>
-              <h3 className="font-bold text-xl mb-3 text-gray-900">Secure Payments</h3>
-              <p className="text-gray-600 leading-relaxed">
+              <h3 className="font-bold text-xl mb-3 text-white">Secure Payments</h3>
+              <p className="text-gray-300 leading-relaxed">
                 Pay safely with M-Pesa or choose cash on delivery for complete peace of mind
               </p>
             </div>
 
             <div className="text-center group">
-              <div className="bg-gradient-to-br from-purple-50 to-purple-100 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 group-hover:shadow-lg transition-all duration-300">
-                <FiUsers className="text-purple-600" size={36} />
+              <div className="bg-gradient-to-br from-slate-700 to-slate-800 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 group-hover:shadow-lg transition-all duration-300">
+                <FiUsers className="text-orange-400" size={36} />
               </div>
-              <h3 className="font-bold text-xl mb-3 text-gray-900">Trusted Community</h3>
-              <p className="text-gray-600 leading-relaxed">
+              <h3 className="font-bold text-xl mb-3 text-white">Trusted Community</h3>
+              <p className="text-gray-300 leading-relaxed">
                 All merchants are verified and rated by our community of satisfied customers
               </p>
             </div>
@@ -146,13 +146,13 @@ const Home = () => {
       </section>
 
       {/* Featured Products */}
-      <section className="py-20 bg-gray-50">
+      <section className="py-20 bg-[#0f172a]">
         <div className="container-custom">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-4xl font-bold text-white mb-4">
               Featured Products
             </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            <p className="text-xl text-gray-300 max-w-2xl mx-auto">
               Discover trending products from our verified merchants
             </p>
           </div>
@@ -160,7 +160,7 @@ const Home = () => {
           <ProductGrid products={featuredProducts} loading={loading} />
 
           <div className="text-center mt-12">
-            <Link to="/products" className="bg-primary-600 text-white px-8 py-3 rounded-xl font-semibold hover:bg-primary-700 hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl inline-block">
+            <Link to="/products" className="bg-orange-500 text-white px-8 py-3 rounded-xl font-semibold hover:bg-orange-600 hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl inline-block">
               Explore All Products →
             </Link>
           </div>
@@ -168,19 +168,19 @@ const Home = () => {
       </section>
 
       {/* Testimonials */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-[#0f172a]">
         <div className="container-custom">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-4xl font-bold text-white mb-4">
               What Our Customers Say
             </h2>
-            <p className="text-xl text-gray-600">
+            <p className="text-xl text-gray-300">
               Real experiences from real customers
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-8 rounded-2xl shadow-sm">
+            <div className="bg-slate-800 p-8 rounded-2xl shadow-sm">
               <div className="flex items-center mb-4">
                 <div className="flex text-yellow-400">
                   <FiStar className="fill-current" size={20} />
@@ -190,21 +190,21 @@ const Home = () => {
                   <FiStar className="fill-current" size={20} />
                 </div>
               </div>
-              <p className="text-gray-700 mb-4 italic">
+              <p className="text-gray-300 mb-4 italic">
                 "MarketHub made it so easy to find authentic Kenyan products. The delivery was faster than expected!"
               </p>
               <div className="flex items-center">
-                <div className="w-12 h-12 bg-primary-200 rounded-full flex items-center justify-center text-primary-700 font-bold mr-3">
+                <div className="w-12 h-12 bg-slate-600 rounded-full flex items-center justify-center text-white font-bold mr-3">
                   S
                 </div>
                 <div>
-                  <p className="font-semibold text-gray-900">Sarah Wanjiku</p>
-                  <p className="text-sm text-gray-600">Nairobi</p>
+                  <p className="font-semibold text-white">Sarah Wanjiku</p>
+                  <p className="text-sm text-gray-400">Nairobi</p>
                 </div>
               </div>
             </div>
 
-            <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-8 rounded-2xl shadow-sm">
+            <div className="bg-slate-800 p-8 rounded-2xl shadow-sm">
               <div className="flex items-center mb-4">
                 <div className="flex text-yellow-400">
                   <FiStar className="fill-current" size={20} />
@@ -214,21 +214,21 @@ const Home = () => {
                   <FiStar className="fill-current" size={20} />
                 </div>
               </div>
-              <p className="text-gray-700 mb-4 italic">
+              <p className="text-gray-300 mb-4 italic">
                 "As a merchant, MarketHub has helped me reach customers I never could before. The platform is amazing!"
               </p>
               <div className="flex items-center">
-                <div className="w-12 h-12 bg-green-200 rounded-full flex items-center justify-center text-green-700 font-bold mr-3">
+                <div className="w-12 h-12 bg-slate-600 rounded-full flex items-center justify-center text-white font-bold mr-3">
                   J
                 </div>
                 <div>
-                  <p className="font-semibold text-gray-900">James Kiprop</p>
-                  <p className="text-sm text-gray-600">Eldoret</p>
+                  <p className="font-semibold text-white">James Kiprop</p>
+                  <p className="text-sm text-gray-400">Eldoret</p>
                 </div>
               </div>
             </div>
 
-            <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-8 rounded-2xl shadow-sm">
+            <div className="bg-slate-800 p-8 rounded-2xl shadow-sm">
               <div className="flex items-center mb-4">
                 <div className="flex text-yellow-400">
                   <FiStar className="fill-current" size={20} />
@@ -238,16 +238,16 @@ const Home = () => {
                   <FiStar className="fill-current" size={20} />
                 </div>
               </div>
-              <p className="text-gray-700 mb-4 italic">
+              <p className="text-gray-300 mb-4 italic">
                 "M-Pesa integration works perfectly. I love the cash on delivery option for peace of mind."
               </p>
               <div className="flex items-center">
-                <div className="w-12 h-12 bg-blue-200 rounded-full flex items-center justify-center text-blue-700 font-bold mr-3">
+                <div className="w-12 h-12 bg-slate-600 rounded-full flex items-center justify-center text-white font-bold mr-3">
                   M
                 </div>
                 <div>
-                  <p className="font-semibold text-gray-900">Mary Achieng</p>
-                  <p className="text-sm text-gray-600">Kisumu</p>
+                  <p className="font-semibold text-white">Mary Achieng</p>
+                  <p className="text-sm text-gray-400">Kisumu</p>
                 </div>
               </div>
             </div>
@@ -256,27 +256,27 @@ const Home = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="bg-gradient-to-r from-primary-600 to-primary-700 text-white py-20">
+      <section className="bg-[#0f172a] text-white py-20">
         <div className="container-custom text-center">
           <div className="max-w-4xl mx-auto">
             <h2 className="text-4xl md:text-5xl font-bold mb-6">
               Ready to Start Your Success Story?
             </h2>
-            <p className="text-xl md:text-2xl mb-12 text-primary-100 leading-relaxed">
+            <p className="text-xl md:text-2xl mb-12 text-gray-300 leading-relaxed">
               Join thousands of successful merchants and customers on MarketHub.
               Start selling today or discover amazing products from verified sellers.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
-              <Link to="/register" className="bg-white text-primary-600 px-10 py-4 rounded-xl font-bold text-lg hover:bg-gray-50 hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl inline-block">
+              <Link to="/register" className="bg-orange-500 text-white px-10 py-4 rounded-xl font-bold text-lg hover:bg-orange-600 hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl inline-block">
                 🚀 Become a Merchant
               </Link>
-              <Link to="/products" className="border-2 border-white text-white px-10 py-4 rounded-xl font-bold text-lg hover:bg-white hover:text-primary-600 transition-all duration-200 inline-block">
+              <Link to="/products" className="border-2 border-orange-500 text-orange-500 px-10 py-4 rounded-xl font-bold text-lg hover:bg-orange-500 hover:text-white transition-all duration-200 inline-block">
                 🛒 Start Shopping
               </Link>
             </div>
 
-            <div className="mt-12 flex flex-wrap justify-center items-center gap-8 text-primary-200">
+            <div className="mt-12 flex flex-wrap justify-center items-center gap-8 text-gray-400">
               <div className="flex items-center gap-2">
                 <FiCheck className="text-green-400" size={20} />
                 <span>Free to Join</span>
