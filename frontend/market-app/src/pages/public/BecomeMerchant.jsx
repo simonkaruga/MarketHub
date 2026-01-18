@@ -5,7 +5,8 @@ import {
   ChartBarIcon,
   ShieldCheckIcon,
   UserGroupIcon,
-  TruckIcon
+  TruckIcon,
+  BookOpenIcon
 } from '@heroicons/react/24/outline';
 import { useAuth } from '../../hooks/useAuth';
 import Navbar from '../../components/layout/Navbar';
@@ -102,21 +103,21 @@ const BecomeMerchant = () => {
       <Navbar />
       <div className="flex-1 bg-white">
         {/* Hero Section */}
-      <div className="bg-gradient-to-r from-green-600 to-green-700 py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="bg-gradient-to-r from-primary-600 to-primary-700 py-20">
+        <div className="container-custom">
           <div className="text-center">
             <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
               Sell on MarketHub
             </h1>
-            <p className="text-xl text-green-100 max-w-2xl mx-auto mb-8">
+            <p className="text-xl text-primary-100 max-w-2xl mx-auto mb-8">
               Join Kenya's fastest-growing marketplace and reach thousands of customers.
               Start selling today with zero upfront costs.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
               {isAuthenticated ? (
                 <Link
                   to="/apply-merchant"
-                  className="inline-block bg-white text-green-600 px-8 py-4 rounded-md font-semibold text-lg hover:bg-gray-100 transition-colors"
+                  className="inline-block bg-white text-primary-600 px-8 py-4 rounded-md font-semibold text-lg hover:bg-gray-100 transition-colors"
                 >
                   Apply Now
                 </Link>
@@ -124,37 +125,48 @@ const BecomeMerchant = () => {
                 <>
                   <Link
                     to="/register"
-                    className="inline-block bg-white text-green-600 px-8 py-4 rounded-md font-semibold text-lg hover:bg-gray-100 transition-colors"
+                    className="inline-block bg-white text-primary-600 px-8 py-4 rounded-md font-semibold text-lg hover:bg-gray-100 transition-colors"
                   >
                     Create Account & Apply
                   </Link>
                   <Link
                     to="/login"
-                    className="inline-block bg-green-700 text-white px-8 py-4 rounded-md font-semibold text-lg hover:bg-green-800 transition-colors border border-green-500"
+                    className="inline-block bg-primary-700 text-white px-8 py-4 rounded-md font-semibold text-lg hover:bg-primary-800 transition-colors border border-primary-500"
                   >
                     Login to Apply
                   </Link>
                 </>
               )}
             </div>
+
+            {/* Seller Guide Link */}
+            <div className="text-center">
+              <Link
+                to="/seller-guide"
+                className="inline-flex items-center text-primary-100 hover:text-white font-medium transition-colors group"
+              >
+                <BookOpenIcon className="h-5 w-5 mr-2 group-hover:scale-110 transition-transform" />
+                Learn more about selling on MarketHub →
+              </Link>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Stats */}
-      <div className="bg-green-50 py-10">
+      <div className="bg-primary-50 py-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-3 gap-8 text-center">
             <div>
-              <div className="text-3xl font-bold text-green-600">500+</div>
+              <div className="text-3xl font-bold text-primary-600">500+</div>
               <div className="text-gray-600">Active Merchants</div>
             </div>
             <div>
-              <div className="text-3xl font-bold text-green-600">25,000+</div>
+              <div className="text-3xl font-bold text-primary-600">25,000+</div>
               <div className="text-gray-600">Monthly Buyers</div>
             </div>
             <div>
-              <div className="text-3xl font-bold text-green-600">25%</div>
+              <div className="text-3xl font-bold text-primary-600">25%</div>
               <div className="text-gray-600">Commission Only</div>
             </div>
           </div>
@@ -171,8 +183,8 @@ const BecomeMerchant = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {benefits.map((benefit, index) => (
               <div key={index} className="bg-gray-50 rounded-lg p-6">
-                <div className="inline-flex items-center justify-center w-12 h-12 bg-green-100 rounded-full mb-4">
-                  <benefit.icon className="h-6 w-6 text-green-600" />
+                <div className="inline-flex items-center justify-center w-12 h-12 bg-primary-100 rounded-full mb-4">
+                  <benefit.icon className="h-6 w-6 text-primary-600" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">{benefit.title}</h3>
                 <p className="text-gray-600">{benefit.description}</p>
@@ -193,14 +205,14 @@ const BecomeMerchant = () => {
             {steps.map((step, index) => (
               <div key={index} className="relative">
                 <div className="text-center">
-                  <div className="inline-flex items-center justify-center w-16 h-16 bg-green-600 text-white rounded-full text-2xl font-bold mb-4">
+                  <div className="inline-flex items-center justify-center w-16 h-16 bg-primary-600 text-white rounded-full text-2xl font-bold mb-4">
                     {step.number}
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">{step.title}</h3>
                   <p className="text-gray-600 text-sm">{step.description}</p>
                 </div>
                 {index < steps.length - 1 && (
-                  <div className="hidden md:block absolute top-8 left-1/2 w-full h-0.5 bg-green-200" />
+                  <div className="hidden md:block absolute top-8 left-1/2 w-full h-0.5 bg-primary-200" />
                 )}
               </div>
             ))}
@@ -221,30 +233,30 @@ const BecomeMerchant = () => {
               <ul className="space-y-4">
                 {requirements.map((req, index) => (
                   <li key={index} className="flex items-start">
-                    <CheckCircleIcon className="h-6 w-6 text-green-600 mr-3 flex-shrink-0" />
+                    <CheckCircleIcon className="h-6 w-6 text-primary-600 mr-3 flex-shrink-0" />
                     <span className="text-gray-600">{req}</span>
                   </li>
                 ))}
               </ul>
             </div>
-            <div className="bg-green-50 rounded-lg p-8">
+            <div className="bg-primary-50 rounded-lg p-8">
               <h3 className="text-xl font-semibold text-gray-900 mb-4">Commission Structure</h3>
               <div className="space-y-4">
-                <div className="flex justify-between items-center border-b border-green-200 pb-4">
+                <div className="flex justify-between items-center border-b border-primary-200 pb-4">
                   <span className="text-gray-600">Platform Commission</span>
-                  <span className="text-2xl font-bold text-green-600">25%</span>
+                  <span className="text-2xl font-bold text-primary-600">25%</span>
                 </div>
-                <div className="flex justify-between items-center border-b border-green-200 pb-4">
+                <div className="flex justify-between items-center border-b border-primary-200 pb-4">
                   <span className="text-gray-600">Listing Fees</span>
-                  <span className="text-xl font-bold text-green-600">FREE</span>
+                  <span className="text-xl font-bold text-primary-600">FREE</span>
                 </div>
-                <div className="flex justify-between items-center border-b border-green-200 pb-4">
+                <div className="flex justify-between items-center border-b border-primary-200 pb-4">
                   <span className="text-gray-600">Monthly Fees</span>
-                  <span className="text-xl font-bold text-green-600">FREE</span>
+                  <span className="text-xl font-bold text-primary-600">FREE</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-gray-600">Payment Processing</span>
-                  <span className="text-xl font-bold text-green-600">Included</span>
+                  <span className="text-xl font-bold text-primary-600">Included</span>
                 </div>
               </div>
               <p className="text-sm text-gray-500 mt-4">
@@ -273,23 +285,23 @@ const BecomeMerchant = () => {
       </div>
 
       {/* CTA */}
-      <div className="bg-green-600 py-16">
+      <div className="bg-primary-600 py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold text-white mb-4">Ready to Start Selling?</h2>
-          <p className="text-green-100 mb-8 max-w-2xl mx-auto">
+          <p className="text-primary-100 mb-8 max-w-2xl mx-auto">
             Join hundreds of successful merchants on MarketHub. Apply today and start selling tomorrow!
           </p>
           {isAuthenticated ? (
             <Link
               to="/apply-merchant"
-              className="inline-block bg-white text-green-600 px-10 py-4 rounded-md font-semibold text-lg hover:bg-gray-100 transition-colors"
+              className="inline-block bg-white text-primary-600 px-10 py-4 rounded-md font-semibold text-lg hover:bg-gray-100 transition-colors"
             >
               Apply Now
             </Link>
           ) : (
             <Link
               to="/register"
-              className="inline-block bg-white text-green-600 px-10 py-4 rounded-md font-semibold text-lg hover:bg-gray-100 transition-colors"
+              className="inline-block bg-white text-primary-600 px-10 py-4 rounded-md font-semibold text-lg hover:bg-gray-100 transition-colors"
             >
               Get Started
             </Link>

@@ -52,12 +52,20 @@ const HubDashboard = () => {
   const fetchStats = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`${API_BASE_URL}/hub/stats`, {
+      const response = await axios.get(`${API_BASE_URL}/hub/dashboard`, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
       if (response.data.success) {
-        setStats(response.data.data);
+        const dashboardData = response.data.data;
+        setStats({
+          pending_verification: dashboardData.statistics.pending_verification,
+          ready_for_pickup: dashboardData.statistics.ready_for_pickup,
+          completed_today: dashboardData.statistics.completed_today,
+          total_items: dashboardData.statistics.pending_verification +
+                      dashboardData.statistics.ready_for_pickup +
+                      dashboardData.statistics.completed_today
+        });
       }
     } catch (error) {
       console.error('Error fetching stats:', error);

@@ -115,8 +115,8 @@ if command -v pipenv &> /dev/null; then
     pipenv run python run.py > "$BACKEND_LOG" 2>&1 &
     BACKEND_PROCESS=$!
 else
-    print_warning "Pipenv not found, using system Python..."
-    python run.py > "$BACKEND_LOG" 2>&1 &
+    print_warning "Pipenv not found, using virtual environment..."
+    source venv/bin/activate && python run.py > "$BACKEND_LOG" 2>&1 &
     BACKEND_PROCESS=$!
 fi
 

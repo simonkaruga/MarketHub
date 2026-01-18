@@ -13,14 +13,14 @@ const Input = ({
 
       <div className="relative">
         {icon && (
-          <div className="absolute left-3 top-3 text-gray-400">
+          <div className="absolute left-3 top-3 text-gray-400 transition-opacity duration-200 peer-focus:opacity-0 peer-not-placeholder-shown:opacity-0">
             {icon}
           </div>
         )}
 
         <input
           type={type}
-          className={`input-field ${icon ? 'pl-10' : ''} ${error ? 'border-red-500' : ''}`}
+          className={`input-field peer ${icon ? 'pl-10' : ''} ${error ? 'border-red-500' : ''}`}
           {...props}
         />
       </div>
