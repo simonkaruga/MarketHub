@@ -19,7 +19,7 @@ def seed_real_data():
         print("="*70)
 
         # Create categories
-        print("\n📁 STEP 1: Creating Categories...")
+        print("\n STEP 1: Creating Categories...")
         categories_data = [
             {'name': 'Electronics', 'description': 'Smartphones, laptops, tablets, and electronic accessories'},
             {'name': 'Fashion & Clothing', 'description': 'Men and women clothing, shoes, and accessories'},
@@ -45,7 +45,7 @@ def seed_real_data():
         db.session.commit()
 
         # Create Hubs
-        print("\n🏢 STEP 2: Creating Delivery Hubs...")
+        print("\n STEP 2: Creating Delivery Hubs...")
         hubs_data = [
             {'name': 'Nairobi Central Hub', 'address': 'Kenyatta Avenue, CBD', 'city': 'Nairobi', 'phone_number': '0712000001', 'operating_hours': 'Mon-Sat: 8AM-8PM'},
             {'name': 'Westlands Hub', 'address': 'Westlands Shopping Mall', 'city': 'Nairobi', 'phone_number': '0712000002', 'operating_hours': 'Mon-Sun: 9AM-9PM'},
@@ -67,7 +67,7 @@ def seed_real_data():
         db.session.commit()
 
         # Create Admin User
-        print("\n👤 STEP 3: Creating Admin User...")
+        print("\n STEP 3: Creating Admin User...")
         admin_email = "admin@markethub.com"
         admin = User.query.filter_by(email=admin_email).first()
 
@@ -82,13 +82,13 @@ def seed_real_data():
             )
             db.session.add(admin)
             db.session.commit()
-            print(f"   ✓ Created admin: {admin_email}")
-            print(f"   🔑 Password: admin123")
+            print(f"    Created admin: {admin_email}")
+            print(f"    Password: admin123")
         else:
-            print(f"   • Admin exists: {admin_email}")
+            print(f"    Admin exists: {admin_email}")
 
         # Create 3 Merchant Users
-        print("\n🏪 STEP 4: Creating Merchant Accounts...")
+        print("\n STEP 4: Creating Merchant Accounts...")
         merchants_data = [
             {
                 'email': 'techstore@markethub.com',
@@ -121,16 +121,16 @@ def seed_real_data():
                 )
                 db.session.add(merchant)
                 merchants.append(merchant)
-                print(f"   ✓ Created: {merch_data['name']}")
-                print(f"      📧 {merch_data['email']} / merchant123")
+                print(f"    Created: {merch_data['name']}")
+                print(f"       {merch_data['email']} / merchant123")
             else:
                 merchants.append(merchant)
-                print(f"   • Exists: {merch_data['name']}")
+                print(f"    Exists: {merch_data['name']}")
 
         db.session.commit()
 
         # Create Customer Users
-        print("\n👥 STEP 5: Creating Customer Accounts...")
+        print("\n STEP 5: Creating Customer Accounts...")
         customers_data = [
             {'email': 'john.doe@gmail.com', 'name': 'John Doe', 'phone': '0723456001'},
             {'email': 'jane.smith@gmail.com', 'name': 'Jane Smith', 'phone': '0723456002'},
@@ -155,7 +155,7 @@ def seed_real_data():
         db.session.commit()
 
         # Create 25+ Products across 3 merchants
-        print("\n📦 STEP 6: Creating Products...")
+        print("\n STEP 6: Creating Products...")
 
         # Products use placeholder images from placeholder.com
         # In production, these would be actual Cloudinary URLs after upload
@@ -408,36 +408,36 @@ def seed_real_data():
                 )
                 db.session.add(product)
                 created_count += 1
-                print(f"   ✓ {prod_data['name']} - KES {prod_data['price']:,.2f}")
+                print(f"    {prod_data['name']} - KES {prod_data['price']:,.2f}")
             else:
-                print(f"   • {prod_data['name']} (exists)")
+                print(f"    {prod_data['name']} (exists)")
 
         db.session.commit()
 
         # Final Summary
         print("\n" + "="*70)
-        print("✅ DATABASE SEEDING COMPLETED SUCCESSFULLY!")
+        print(" DATABASE SEEDING COMPLETED SUCCESSFULLY!")
         print("="*70)
-        print(f"\n📊 SUMMARY:")
+        print(f"\n SUMMARY:")
         print(f"   Categories: {Category.query.count()}")
         print(f"   Hubs: {Hub.query.count()}")
         print(f"   Users: {User.query.count()}")
         print(f"   Products: {Product.query.count()} ({created_count} new)")
 
-        print(f"\n🔐 TEST ACCOUNTS:")
-        print(f"\n   👑 Admin:")
-        print(f"      📧 admin@markethub.com")
-        print(f"      🔑 admin123")
+        print(f"\n TEST ACCOUNTS:")
+        print(f"\n    Admin:")
+        print(f"       admin@markethub.com")
+        print(f"       admin123")
 
-        print(f"\n   🏪 Merchants (all use: merchant123):")
+        print(f"\n    Merchants (all use: merchant123):")
         for merch_data in merchants_data:
-            print(f"      📧 {merch_data['email']}")
+            print(f"       {merch_data['email']}")
 
-        print(f"\n   👥 Customers (all use: customer123):")
+        print(f"\n    Customers (all use: customer123):")
         for cust_data in customers_data:
-            print(f"      📧 {cust_data['email']}")
+            print(f"       {cust_data['email']}")
 
-        print(f"\n💡 NEXT STEPS:")
+        print(f"\n NEXT STEPS:")
         print(f"   1. Start the application: ./start.sh")
         print(f"   2. Login with any account above")
         print(f"   3. Merchants can upload actual product images")
