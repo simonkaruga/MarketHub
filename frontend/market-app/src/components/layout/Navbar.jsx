@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { FiShoppingCart, FiUser, FiMenu, FiX, FiSearch, FiChevronDown } from 'react-icons/fi';
+import { FiShoppingBag, FiUser, FiMenu, FiX, FiSearch, FiChevronDown } from 'react-icons/fi';
 import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { useCart } from '../../hooks/useCart';
@@ -165,7 +165,7 @@ const Navbar = () => {
               <>
                 {/* Cart */}
                 <Link to="/cart" className="relative text-gray-300 hover:text-orange-400">
-                  <FiShoppingCart size={24} />
+                  <FiShoppingBag size={24} />
                   {itemCount > 0 && (
                     <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                       {itemCount}
