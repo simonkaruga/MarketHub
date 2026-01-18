@@ -2,7 +2,7 @@
 Product Model
 Products listed by merchants
 """
-from datetime import datetime
+from datetime import datetime, timezone
 from app import db
 from sqlalchemy import CheckConstraint
 
@@ -31,8 +31,8 @@ class Product(db.Model):
     is_active = db.Column(db.Boolean, default=True, nullable=False)
 
     # Timestamps
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc), nullable=False)
 
     # Relationships
     merchant = db.relationship('User', backref='products', foreign_keys=[merchant_id])
@@ -117,7 +117,8 @@ class Product(db.Model):
     @staticmethod
     def find_by_id(product_id):
         """Find product by ID"""
-        return Product.query.get(product_id)
+        # Use session.get to avoid SQLAlchemy Query.get legacy warning
+        return db.session.get(Product, product_id)
 
     @staticmethod
     def search_products(query=None, category_id=None, min_price=None, max_price=None,

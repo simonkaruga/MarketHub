@@ -17,7 +17,7 @@ class UserRegistrationSchema(Schema):
     phone_number = fields.Str(validate=validate.Length(max=20))
     role = fields.Str(
         validate=validate.OneOf(['customer', 'merchant_applicant']),
-        missing='customer'  # Default to customer
+        load_default='customer'  # Default to customer (use load_default for Marshmallow 4+)
     )
     
     @validates('email')
