@@ -69,9 +69,11 @@ def create_app(config_name='development'):
     limiter.init_app(app)
     
     # Configure CORS
-    CORS(app, 
-         origins=app.config.get('CORS_ORIGINS', '*'),
-         supports_credentials=True)
+    CORS(app,
+         origins=app.config.get('CORS_ORIGINS', ['*']),
+         supports_credentials=True,
+         allow_headers=['Content-Type', 'Authorization'],
+         methods=['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'])
     
  # Register blueprints
     from app.routes import (
