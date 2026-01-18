@@ -22,8 +22,10 @@ jwt = JWTManager()
 bcrypt = Bcrypt()
 ma = Marshmallow()
 mail = Mail()
+# Use database storage for rate limiting (more reliable than in-memory)
 limiter = Limiter(
     key_func=get_remote_address,
+    storage_uri="memory://",  # Will be overridden in create_app for production
     default_limits=["100 per hour"]
 )
 

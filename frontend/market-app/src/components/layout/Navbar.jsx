@@ -71,6 +71,9 @@ const Navbar = () => {
             <Link to="/products" className="text-gray-700 hover:text-primary-600">
               Products
             </Link>
+            <Link to="/become-merchant" className="text-gray-700 hover:text-primary-600">
+              Sell on MarketHub
+            </Link>
 
             {isAuthenticated ? (
               <>
@@ -215,6 +218,9 @@ const Navbar = () => {
 
             <Link to="/products" className="block py-2 text-gray-700" onClick={() => setIsMenuOpen(false)}>
               Products
+            </Link>
+            <Link to="/become-merchant" className="block py-2 text-gray-700" onClick={() => setIsMenuOpen(false)}>
+              Sell on MarketHub
             </Link>
 
             {isAuthenticated ? (

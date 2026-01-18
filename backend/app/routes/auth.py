@@ -293,9 +293,14 @@ def forgot_password():
             # TODO: Send email with reset link
             # from app.services.email_service import send_password_reset_email
             # send_password_reset_email(user.email, reset_token)
-            
-            # For now, we'll just log the token (REMOVE IN PRODUCTION!)
-            print(f"Password reset token for {user.email}: {reset_token}")
+
+            # For security, never log reset tokens - this is for development only
+            # In production, always use proper email service
+            if current_app.debug:
+                current_app.logger.info(f"Password reset requested for {user.email}")
+            else:
+                # TODO: Implement email service
+                pass
             
         except Exception as e:
             db.session.rollback()

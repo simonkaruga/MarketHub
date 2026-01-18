@@ -18,7 +18,7 @@ const ProductDetail = () => {
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(true);
   const { addToCart } = useCart();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isCustomer } = useAuth();
 
   // Blue placeholder for broken images
   const BLUE_PLACEHOLDER = 'https://placehold.co/800x800/5B7EE5/white/png?text=Product+Image';
@@ -47,6 +47,10 @@ const ProductDetail = () => {
   const handleAddToCart = async () => {
     if (!isAuthenticated) {
       toast.error('Please login to add items to cart');
+      return;
+    }
+    if (!isCustomer) {
+      toast.error('Only customers can add items to cart');
       return;
     }
     await addToCart(product.id, quantity);

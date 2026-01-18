@@ -358,8 +358,8 @@ def get_user_analytics(current_user):
     ).filter(
         User.created_at.between(start, end)
     ).group_by(
-        'date', User.role
-    ).order_by('date').all()
+        func.date(User.created_at), User.role
+    ).order_by(func.date(User.created_at)).all()
     
     # Active merchants (with orders)
     active_merchants = db.session.query(
@@ -405,7 +405,7 @@ def get_user_analytics(current_user):
             ],
             'new_users_trend': [
                 {
-                    'date': date.isoformat(),
+                    'date': date,
                     'role': role.value,
                     'count': count
                 }
@@ -714,7 +714,7 @@ def get_review_analytics(current_user):
         func.avg(Review.rating).label('avg_rating')
     ).filter(
         Review.created_at.between(start, end)
-    ).group_by('date').order_by('date').all()
+    ).group_by(func.date(Review.created_at)).order_by(func.date(Review.created_at)).all()
     
     # Products with most reviews
     most_reviewed = db.session.query(
@@ -744,7 +744,7 @@ def get_review_analytics(current_user):
             ],
             'reviews_trend': [
                 {
-                    'date': date.isoformat(),
+                    'date': date,
                     'count': count,
                     'average_rating': round(float(avg), 1) if avg else 0
                 }
