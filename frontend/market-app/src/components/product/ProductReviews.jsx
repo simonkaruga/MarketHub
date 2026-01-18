@@ -177,16 +177,16 @@ const ProductReviews = ({ productId }) => {
 
   return (
     <div className="mt-8">
-      <h2 className="text-2xl font-bold mb-6">Customer Reviews</h2>
+      <h2 className="text-2xl font-bold mb-6 text-white">Customer Reviews</h2>
 
       {/* Review Summary */}
       {Array.isArray(reviews) && reviews.length > 0 && (
-        <div className="bg-gray-50 rounded-lg p-6 mb-6">
+        <div className="bg-white/10 backdrop-blur-md rounded-lg p-6 mb-6 border border-white/20">
           <div className="flex items-start gap-8">
             <div className="text-center">
-              <div className="text-4xl font-bold">{getAverageRating()}</div>
+              <div className="text-4xl font-bold text-white">{getAverageRating()}</div>
               <div className="mt-2">{renderStars(Math.round(getAverageRating()))}</div>
-              <div className="text-sm text-gray-600 mt-1">
+              <div className="text-sm text-gray-300 mt-1">
                 {reviews.length} {reviews.length === 1 ? 'review' : 'reviews'}
               </div>
             </div>
@@ -197,14 +197,14 @@ const ProductReviews = ({ productId }) => {
                 const percentage = reviews.length > 0 ? (count / reviews.length) * 100 : 0;
                 return (
                   <div key={rating} className="flex items-center gap-2 mb-2">
-                    <span className="text-sm w-8">{rating} ★</span>
-                    <div className="flex-1 bg-gray-200 rounded-full h-2">
+                    <span className="text-sm w-8 text-gray-200">{rating} ★</span>
+                    <div className="flex-1 bg-white/10 rounded-full h-2">
                       <div
                         className="bg-yellow-400 h-2 rounded-full"
                         style={{ width: `${percentage}%` }}
                       />
                     </div>
-                    <span className="text-sm text-gray-600 w-12">{count}</span>
+                    <span className="text-sm text-gray-300 w-12">{count}</span>
                   </div>
                 );
               })}
@@ -225,14 +225,14 @@ const ProductReviews = ({ productId }) => {
 
       {/* Review Form */}
       {showReviewForm && (
-        <div className="bg-white border-2 border-primary-200 rounded-lg p-6 mb-6">
-          <h3 className="text-lg font-semibold mb-4">
+        <div className="bg-white/10 backdrop-blur-md border-2 border-primary-400 rounded-lg p-6 mb-6">
+          <h3 className="text-lg font-semibold mb-4 text-white">
             {editingReview ? 'Edit Your Review' : 'Write a Review'}
           </h3>
           <form onSubmit={handleSubmitReview}>
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Rating <span className="text-red-500">*</span>
+              <label className="block text-sm font-medium text-gray-200 mb-2">
+                Rating <span className="text-red-400">*</span>
               </label>
               {renderStars(formData.rating, true, (rating) =>
                 setFormData({ ...formData, rating })
@@ -240,41 +240,41 @@ const ProductReviews = ({ productId }) => {
             </div>
 
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-200 mb-2">
                 Review Title (Optional)
               </label>
               <input
                 type="text"
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 text-white placeholder-gray-400"
                 placeholder="Summary of your review"
                 maxLength={200}
               />
             </div>
 
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Your Review <span className="text-red-500">*</span>
+              <label className="block text-sm font-medium text-gray-200 mb-2">
+                Your Review <span className="text-red-400">*</span>
               </label>
               <textarea
                 value={formData.comment}
                 onChange={(e) => setFormData({ ...formData, comment: e.target.value })}
                 rows="4"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 text-white placeholder-gray-400"
                 placeholder="Tell us about your experience with this product (minimum 10 characters)..."
                 required
                 minLength={10}
                 maxLength={2000}
               />
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="text-sm text-gray-300 mt-1">
                 {formData.comment.length}/2000 characters (minimum 10)
               </p>
             </div>
 
             {!editingReview && (
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-200 mb-2">
                   Add Photos (Optional, max 3)
                 </label>
                 <input
@@ -282,10 +282,10 @@ const ProductReviews = ({ productId }) => {
                   accept="image/*"
                   multiple
                   onChange={handleImageChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 text-white file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-primary-600 file:text-white hover:file:bg-primary-700"
                 />
                 {images.length > 0 && (
-                  <p className="text-sm text-gray-500 mt-1">
+                  <p className="text-sm text-gray-300 mt-1">
                     {images.length} image(s) selected
                   </p>
                 )}
@@ -301,7 +301,7 @@ const ProductReviews = ({ productId }) => {
                   setFormData({ rating: 5, title: '', comment: '' });
                   setImages([]);
                 }}
-                className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                className="px-4 py-2 border border-white/30 rounded-md text-white hover:bg-white/10"
               >
                 Cancel
               </button>
@@ -323,13 +323,13 @@ const ProductReviews = ({ productId }) => {
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto"></div>
         </div>
       ) : !Array.isArray(reviews) || reviews.length === 0 ? (
-        <div className="text-center py-12 bg-gray-50 rounded-lg">
-          <p className="text-gray-600">No reviews yet. Be the first to review this product!</p>
+        <div className="text-center py-12 bg-white/10 backdrop-blur-md rounded-lg border border-white/20">
+          <p className="text-gray-200">No reviews yet. Be the first to review this product!</p>
         </div>
       ) : (
         <div className="space-y-6">
           {Array.isArray(reviews) && reviews.map((review) => (
-            <div key={review.id} className="border-b pb-6">
+            <div key={review.id} className="border-b border-white/20 pb-6">
               <div className="flex justify-between items-start mb-2">
                 <div>
                   <div className="flex items-center gap-2 mb-1">
@@ -341,7 +341,7 @@ const ProductReviews = ({ productId }) => {
                     )}
                   </div>
                   {review.title && (
-                    <h4 className="font-semibold text-gray-900">{review.title}</h4>
+                    <h4 className="font-semibold text-white">{review.title}</h4>
                   )}
                 </div>
 
@@ -365,7 +365,7 @@ const ProductReviews = ({ productId }) => {
                 )}
               </div>
 
-              <p className="text-sm text-gray-600 mb-2">
+              <p className="text-sm text-gray-300 mb-2">
                 By {review.customer?.name || 'Anonymous'} •{' '}
                 {new Date(review.created_at).toLocaleDateString('en-US', {
                   year: 'numeric',
@@ -374,7 +374,7 @@ const ProductReviews = ({ productId }) => {
                 })}
               </p>
 
-              <p className="text-gray-700 whitespace-pre-wrap">{review.comment}</p>
+              <p className="text-gray-200 whitespace-pre-wrap">{review.comment}</p>
 
               {review.image_urls && review.image_urls.length > 0 && (
                 <div className="flex gap-2 mt-3">
@@ -391,12 +391,12 @@ const ProductReviews = ({ productId }) => {
               )}
 
               {review.merchant_response && (
-                <div className="mt-4 ml-6 bg-gray-50 p-4 rounded-md">
-                  <p className="text-sm font-semibold text-gray-900 mb-1">
+                <div className="mt-4 ml-6 bg-white/10 backdrop-blur-sm p-4 rounded-md border border-white/20">
+                  <p className="text-sm font-semibold text-white mb-1">
                     Response from Merchant
                   </p>
-                  <p className="text-sm text-gray-700">{review.merchant_response}</p>
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-sm text-gray-200">{review.merchant_response}</p>
+                  <p className="text-xs text-gray-400 mt-1">
                     {new Date(review.merchant_response_date).toLocaleDateString()}
                   </p>
                 </div>

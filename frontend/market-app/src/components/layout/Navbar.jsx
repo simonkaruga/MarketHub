@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { FiShoppingCart, FiUser, FiMenu, FiX, FiSearch, FiChevronDown } from 'react-icons/fi';
+import { FiShoppingBag, FiShoppingCart, FiUser, FiMenu, FiX, FiSearch, FiChevronDown } from 'react-icons/fi';
 import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { useCart } from '../../hooks/useCart';
@@ -43,13 +43,13 @@ const Navbar = () => {
   const userRole = user?.role?.toLowerCase();
 
   return (
-    <nav className="bg-white shadow-lg sticky top-0 z-50">
+    <nav className="bg-[#0f172a] shadow-lg sticky top-0 z-50">
       <div className="container-custom">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-3">
             <img src="/hub.png" alt="MarketHub Logo" className="h-12 w-12 object-contain" />
-            <span className="text-2xl font-bold text-primary-600">MarketHub</span>
+            <span className="text-2xl font-bold text-orange-400">MarketHub</span>
           </Link>
 
           {/* Search Bar - Desktop */}
@@ -68,21 +68,30 @@ const Navbar = () => {
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-6">
-            <Link to="/products" className="text-gray-700 hover:text-primary-600">
+            <Link to="/" className="text-gray-300 hover:text-orange-400">
+              Home
+            </Link>
+            <Link to="/about" className="text-gray-300 hover:text-orange-400">
+              About
+            </Link>
+            <Link to="/products" className="text-gray-300 hover:text-orange-400">
               Products
             </Link>
-            <Link to="/become-merchant" className="text-gray-700 hover:text-primary-600">
+            <Link to="/become-merchant" className="text-gray-300 hover:text-orange-400">
               Sell on MarketHub
             </Link>
 
             {isAuthenticated ? (
               <>
                 {/* Cart */}
-                <Link to="/cart" className="relative text-gray-700 hover:text-primary-600">
-                  <FiShoppingCart size={24} />
+                <Link to="/cart" className="relative text-gray-300 hover:text-orange-400">
+                  <FiShoppingBag size={24} />
+                  <FiShoppingCart size={32} />
                   {itemCount > 0 && (
                     <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    <span className="absolute -top-3 -right-3 bg-red-500 text-white text-xs rounded-full h-6 w-6 flex items-center justify-center">
                       {itemCount}
+                    </span>
                     </span>
                   )}
                 </Link>
@@ -91,7 +100,7 @@ const Navbar = () => {
                 <div className="relative" ref={dropdownRef}>
                   <button
                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                    className="flex items-center space-x-2 text-gray-700 hover:text-primary-600 py-2 px-3 rounded-lg hover:bg-gray-50 transition-colors"
+                    className="flex items-center space-x-2 text-gray-300 hover:text-orange-400 py-2 px-3 rounded-lg hover:bg-slate-700 transition-colors"
                   >
                     <FiUser size={22} />
                     <span className="max-w-[120px] truncate">{user?.name}</span>
@@ -100,12 +109,12 @@ const Navbar = () => {
 
                   {/* Dropdown Menu */}
                   {isDropdownOpen && (
-                    <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-50">
+                    <div className="absolute right-0 mt-2 w-56 bg-slate-800 rounded-xl shadow-lg border border-slate-600 py-2 z-50">
                       {/* User Info Header */}
-                      <div className="px-4 py-3 border-b border-gray-100">
-                        <p className="text-sm font-medium text-gray-900 truncate">{user?.name}</p>
-                        <p className="text-xs text-gray-500 truncate">{user?.email}</p>
-                        <span className="inline-block mt-1 px-2 py-0.5 text-xs font-medium bg-primary-100 text-primary-700 rounded-full capitalize">
+                      <div className="px-4 py-3 border-b border-slate-600">
+                        <p className="text-sm font-medium text-white truncate">{user?.name}</p>
+                        <p className="text-xs text-gray-400 truncate">{user?.email}</p>
+                        <span className="inline-block mt-1 px-2 py-0.5 text-xs font-medium bg-orange-500 text-white rounded-full capitalize">
                           {userRole}
                         </span>
                       </div>
@@ -113,14 +122,14 @@ const Navbar = () => {
                       <div className="py-1">
                         <Link
                           to="/profile"
-                          className="block px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors"
+                          className="block px-4 py-2 text-gray-300 hover:bg-slate-700 transition-colors"
                           onClick={() => setIsDropdownOpen(false)}
                         >
                           My Profile
                         </Link>
                         <Link
                           to="/orders"
-                          className="block px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors"
+                          className="block px-4 py-2 text-gray-300 hover:bg-slate-700 transition-colors"
                           onClick={() => setIsDropdownOpen(false)}
                         >
                           My Orders
@@ -129,7 +138,7 @@ const Navbar = () => {
                         {userRole === 'customer' && (
                           <Link
                             to="/apply-merchant"
-                            className="block px-4 py-2 text-primary-600 hover:bg-primary-50 font-medium transition-colors"
+                            className="block px-4 py-2 text-orange-400 hover:bg-slate-700 font-medium transition-colors"
                             onClick={() => setIsDropdownOpen(false)}
                           >
                             Become a Merchant
@@ -139,7 +148,7 @@ const Navbar = () => {
                         {userRole === 'merchant' && (
                           <Link
                             to="/merchant/dashboard"
-                            className="block px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors"
+                            className="block px-4 py-2 text-gray-300 hover:bg-slate-700 transition-colors"
                             onClick={() => setIsDropdownOpen(false)}
                           >
                             Merchant Dashboard
@@ -149,7 +158,7 @@ const Navbar = () => {
                         {userRole === 'admin' && (
                           <Link
                             to="/admin/dashboard"
-                            className="block px-4 py-2 text-primary-600 hover:bg-primary-50 font-medium transition-colors"
+                            className="block px-4 py-2 text-orange-400 hover:bg-slate-700 font-medium transition-colors"
                             onClick={() => setIsDropdownOpen(false)}
                           >
                             Admin Dashboard
@@ -159,7 +168,7 @@ const Navbar = () => {
                         {userRole === 'hub_staff' && (
                           <Link
                             to="/hub/dashboard"
-                            className="block px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors"
+                            className="block px-4 py-2 text-gray-300 hover:bg-slate-700 transition-colors"
                             onClick={() => setIsDropdownOpen(false)}
                           >
                             Hub Dashboard
@@ -167,10 +176,10 @@ const Navbar = () => {
                         )}
                       </div>
 
-                      <div className="border-t border-gray-100 pt-1">
+                      <div className="border-t border-slate-600 pt-1">
                         <button
                           onClick={handleLogout}
-                          className="block w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 transition-colors"
+                          className="block w-full text-left px-4 py-2 text-red-400 hover:bg-slate-700 transition-colors"
                         >
                           Logout
                         </button>
@@ -181,10 +190,10 @@ const Navbar = () => {
               </>
             ) : (
               <>
-                <Link to="/login" className="text-gray-700 hover:text-primary-600">
+                <Link to="/login" className="text-gray-300 hover:text-orange-400">
                   Login
                 </Link>
-                <Link to="/register" className="btn-primary">
+                <Link to="/register" className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors">
                   Sign Up
                 </Link>
               </>
@@ -194,7 +203,7 @@ const Navbar = () => {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="md:hidden text-gray-700"
+            className="md:hidden text-gray-300 hover:text-orange-400"
           >
             {isMenuOpen ? <FiX size={24} /> : <FiMenu size={24} />}
           </button>
@@ -215,6 +224,34 @@ const Navbar = () => {
                 <FiSearch className="absolute left-3 top-3 text-gray-400" size={20} />
               </div>
             </form>
+
+            {/* Home Section */}
+            <div className="mb-4">
+              <div className="font-semibold text-gray-900 mb-2">Home</div>
+              <Link to="/" className="block py-2 pl-4 text-gray-700" onClick={() => setIsMenuOpen(false)}>
+                Home Page
+              </Link>
+              <Link to="/login" className="block py-2 pl-4 text-gray-700" onClick={() => setIsMenuOpen(false)}>
+                Login
+              </Link>
+              <Link to="/register" className="block py-2 pl-4 text-primary-600 font-medium" onClick={() => setIsMenuOpen(false)}>
+                Sign Up
+              </Link>
+            </div>
+
+            {/* About Section */}
+            <div className="mb-4">
+              <div className="font-semibold text-gray-900 mb-2">About</div>
+              <Link to="/about" className="block py-2 pl-4 text-gray-700" onClick={() => setIsMenuOpen(false)}>
+                About Us
+              </Link>
+              <Link to="/login" className="block py-2 pl-4 text-gray-700" onClick={() => setIsMenuOpen(false)}>
+                Login
+              </Link>
+              <Link to="/register" className="block py-2 pl-4 text-primary-600 font-medium" onClick={() => setIsMenuOpen(false)}>
+                Sign Up
+              </Link>
+            </div>
 
             <Link to="/products" className="block py-2 text-gray-700" onClick={() => setIsMenuOpen(false)}>
               Products

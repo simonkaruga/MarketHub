@@ -30,11 +30,11 @@ const Cart = () => {
       <Navbar />
       
       <div className="container-custom py-8 flex-1">
-        <h1 className="text-3xl font-bold mb-8">Shopping Cart</h1>
+        <h1 className="text-3xl font-bold mb-8 text-white">Shopping Cart</h1>
 
         {!cart || cart.items?.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-gray-600 text-lg mb-6">Your cart is empty</p>
+            <p className="text-gray-300 text-lg mb-6">Your cart is empty</p>
             <Button onClick={() => navigate('/products')}>
               Continue Shopping
             </Button>
