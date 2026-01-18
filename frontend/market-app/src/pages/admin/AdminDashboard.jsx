@@ -1,6 +1,46 @@
 import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { adminService } from '../../services/adminService';
+import Loading from '../../components/common/Loading';
+import ErrorMessage from '../../components/common/ErrorMessage';
 
 const AdminDashboard = () => {
+  const [analytics, setAnalytics] = useState(null);
+  const [userStats, setUserStats] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        const [analyticsData, userData] = await Promise.all([
+          adminService.getAdminAnalytics('month'),
+          adminService.getAdminUserAnalytics('month')
+        ]);
+        setAnalytics(analyticsData);
+        setUserStats(userData);
+      } catch (err) {
+        if (err.response?.status === 403 || err.response?.status === 422) {
+          setError('Admin access required. Please log in as an administrator.');
+        } else {
+          setError('Failed to load dashboard data');
+        }
+        console.error('Dashboard data fetch error:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
+
+  if (loading) return <Loading />;
+  if (error) return <ErrorMessage message={error} />;
+
+  const totalUsers = userStats?.user_counts?.reduce((sum, role) => sum + role.count, 0) || 0;
+  const totalOrders = analytics?.orders?.total || 0;
+  const totalRevenue = analytics?.revenue?.total || 0;
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
@@ -18,7 +58,7 @@ const AdminDashboard = () => {
                   <div className="ml-5 w-0 flex-1">
                     <dl>
                       <dt className="text-sm font-medium text-gray-500 truncate">Total Users</dt>
-                      <dd className="text-lg font-medium text-gray-900">-</dd>
+                      <dd className="text-lg font-medium text-gray-900">{totalUsers.toLocaleString()}</dd>
                     </dl>
                   </div>
                 </div>
@@ -36,7 +76,7 @@ const AdminDashboard = () => {
                   <div className="ml-5 w-0 flex-1">
                     <dl>
                       <dt className="text-sm font-medium text-gray-500 truncate">Total Orders</dt>
-                      <dd className="text-lg font-medium text-gray-900">-</dd>
+                      <dd className="text-lg font-medium text-gray-900">{totalOrders.toLocaleString()}</dd>
                     </dl>
                   </div>
                 </div>
@@ -54,7 +94,7 @@ const AdminDashboard = () => {
                   <div className="ml-5 w-0 flex-1">
                     <dl>
                       <dt className="text-sm font-medium text-gray-500 truncate">Total Revenue</dt>
-                      <dd className="text-lg font-medium text-gray-900">KES -</dd>
+                      <dd className="text-lg font-medium text-gray-900">KES {totalRevenue.toLocaleString()}</dd>
                     </dl>
                   </div>
                 </div>
@@ -73,14 +113,16 @@ const AdminDashboard = () => {
             </div>
             <div className="border-t border-gray-200">
               <ul className="divide-y divide-gray-200">
-                <li className="px-4 py-4 sm:px-6 hover:bg-gray-50 cursor-pointer">
-                  <div className="flex items-center justify-between">
-                    <p className="text-sm font-medium text-primary-600">Manage Users</p>
-                    <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </div>
-                </li>
+                <Link to="/admin/users">
+                  <li className="px-4 py-4 sm:px-6 hover:bg-gray-50 cursor-pointer">
+                    <div className="flex items-center justify-between">
+                      <p className="text-sm font-medium text-primary-600">Manage Users</p>
+                      <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
+                  </li>
+                </Link>
                 <Link to="/admin/merchant-applications">
                   <li className="px-4 py-4 sm:px-6 hover:bg-gray-50 cursor-pointer">
                     <div className="flex items-center justify-between">

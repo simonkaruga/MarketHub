@@ -16,6 +16,7 @@ import About from '../pages/public/About';
 import Terms from '../pages/public/Terms';
 import Privacy from '../pages/public/Privacy';
 import BecomeMerchant from '../pages/public/BecomeMerchant';
+import SellerGuide from '../pages/public/SellerGuide';
 
 // Customer Pages
 import Cart from '../pages/customer/Cart';
@@ -34,6 +35,7 @@ import MerchantReviews from '../pages/merchant/MerchantReviews';
 
 // Admin Pages
 import AdminDashboard from '../pages/admin/AdminDashboard';
+import AdminUsers from '../pages/admin/AdminUsers';
 import MerchantApplications from '../pages/admin/MerchantApplications';
 import MerchantApplicationDetail from '../pages/admin/MerchantApplicationDetail';
 import AdminOrders from '../pages/admin/AdminOrders';
@@ -61,7 +63,7 @@ const AppRoutes = () => {
       <Route path="/terms" element={<Terms />} />
       <Route path="/privacy" element={<Privacy />} />
       <Route path="/become-merchant" element={<BecomeMerchant />} />
-      <Route path="/seller-guide" element={<BecomeMerchant />} />
+      <Route path="/seller-guide" element={<SellerGuide />} />
 
       {/* Customer Routes */}
       <Route
@@ -161,6 +163,14 @@ const AppRoutes = () => {
         element={
           <RoleRoute allowedRoles={['admin']}>
             <AdminDashboard />
+          </RoleRoute>
+        }
+      />
+      <Route
+        path="/admin/users"
+        element={
+          <RoleRoute allowedRoles={['admin']}>
+            <AdminUsers />
           </RoleRoute>
         }
       />

@@ -35,5 +35,32 @@ export const adminService = {
   getAdminReviewAnalytics: async (period = 'month') => {
     const response = await api.get(`/admin/analytics/reviews?period=${period}`);
     return response.data.data;
+  },
+
+  // User Management
+  getUsers: async (params = '') => {
+    const response = await api.get(`/admin/users?${params}`);
+    return response.data.data;
+  },
+
+  getUser: async (userId) => {
+    const response = await api.get(`/admin/users/${userId}`);
+    return response.data.data;
+  },
+
+  updateUser: async (userId, userData) => {
+    const response = await api.put(`/admin/users/${userId}`, userData);
+    return response.data.data;
+  },
+
+  resetUserPassword: async (userId, newPassword) => {
+    const response = await api.post(`/admin/users/${userId}/reset-password`, { new_password: newPassword });
+    return response.data;
+  },
+
+  deleteUser: async (userId, hardDelete = false) => {
+    const params = hardDelete ? '?hard_delete=true' : '';
+    const response = await api.delete(`/admin/users/${userId}${params}`);
+    return response.data;
   }
 };

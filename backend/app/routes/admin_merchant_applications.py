@@ -9,6 +9,7 @@ from app import db
 from app.models.merchant_application import MerchantApplication, ApplicationStatus
 from app.models.user import User, UserRole
 from app.utils.decorators import admin_required
+from app.services.email_service import send_merchant_application_status_email
 
 # Create blueprint
 bp = Blueprint('admin_merchant_applications', __name__)
@@ -154,11 +155,11 @@ def approve_application(current_user, application_id):
     
     try:
         db.session.commit()
-        
-        # TODO: Send notification to user
-        # - Email user: "Congratulations! Your merchant application has been approved"
-        # - Include next steps (set up shop, upload products)
-        
+
+        # Send email notification to applicant
+        if user:
+            send_merchant_application_status_email(user, application)
+
     except Exception as e:
         db.session.rollback()
         return jsonify({
@@ -168,7 +169,7 @@ def approve_application(current_user, application_id):
                 'message': 'Failed to approve application'
             }
         }), 500
-    
+
     return jsonify({
         'success': True,
         'data': application.to_dict(include_sensitive=True),
@@ -231,12 +232,12 @@ def reject_application(current_user, application_id):
     
     try:
         db.session.commit()
-        
-        # TODO: Send notification to user
-        # - Email user: "Your merchant application needs revision"
-        # - Include rejection reason
-        # - Explain they can reapply
-        
+
+        # Send email notification to applicant
+        user = User.find_by_id(application.user_id)
+        if user:
+            send_merchant_application_status_email(user, application)
+
     except Exception as e:
         db.session.rollback()
         return jsonify({
@@ -246,7 +247,7 @@ def reject_application(current_user, application_id):
                 'message': 'Failed to reject application'
             }
         }), 500
-    
+
     return jsonify({
         'success': True,
         'data': application.to_dict(include_sensitive=True),
