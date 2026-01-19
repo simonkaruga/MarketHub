@@ -23,13 +23,7 @@ const MerchantApplications = () => {
   const fetchApplications = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
-      const response = await axios.get(
-        `${API_BASE_URL}/admin/merchant-applications${filter ? `?status=${filter}` : ''}`,
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      );
+      const response = await api.get(`/admin/merchant-applications${filter ? `?status=${filter}` : ''}`);
 
       if (response.data.success) {
         setApplications(response.data.data);
@@ -63,14 +57,7 @@ const MerchantApplications = () => {
 
     setProcessing(true);
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.post(
-        `${API_BASE_URL}/admin/merchant-applications/${selectedApp.id}/approve`,
-        { admin_notes: adminNotes },
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      );
+      const response = await api.post(`/admin/merchant-applications/${selectedApp.id}/approve`, { admin_notes: adminNotes });
 
       if (response.data.success) {
         toast.success('Application approved successfully!');
@@ -98,17 +85,10 @@ const MerchantApplications = () => {
 
     setProcessing(true);
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.post(
-        `${API_BASE_URL}/admin/merchant-applications/${selectedApp.id}/reject`,
-        {
-          rejection_reason: rejectionReason,
-          admin_notes: adminNotes
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      );
+      const response = await api.post(`/admin/merchant-applications/${selectedApp.id}/reject`, {
+        rejection_reason: rejectionReason,
+        admin_notes: adminNotes
+      });
 
       if (response.data.success) {
         toast.success('Application rejected');

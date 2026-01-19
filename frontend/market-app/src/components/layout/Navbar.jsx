@@ -48,7 +48,7 @@ const Navbar = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-3">
-            <img src="/hub.png" alt="MarketHub Logo" className="h-12 w-12 object-contain" />
+            <img src="/hub2.png" alt="MarketHub Logo" className="h-12 w-12 object-contain" />
             <span className="text-2xl font-bold text-orange-400">MarketHub</span>
           </Link>
 

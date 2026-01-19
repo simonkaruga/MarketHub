@@ -143,7 +143,7 @@ def add_to_cart(current_user):
         
         return jsonify({
             'success': True,
-            'data': existing_item.to_dict(),
+            'data': cart.to_dict(),
             'message': 'Cart updated successfully'
         }), 200
     
@@ -170,7 +170,7 @@ def add_to_cart(current_user):
         
         return jsonify({
             'success': True,
-            'data': cart_item.to_dict(),
+            'data': cart.to_dict(),
             'message': 'Item added to cart successfully'
         }), 201
 
@@ -261,7 +261,7 @@ def update_cart_item(current_user, cart_item_id):
     
     return jsonify({
         'success': True,
-        'data': cart_item.to_dict(),
+        'data': cart_item.cart.to_dict(),
         'message': 'Cart item updated successfully'
     }), 200
 
@@ -296,7 +296,10 @@ def remove_cart_item(current_user, cart_item_id):
                 'message': 'You can only modify your own cart'
             }
         }), 403
-    
+
+    # Get cart before deleting item
+    cart = cart_item.cart
+
     try:
         db.session.delete(cart_item)
         db.session.commit()
@@ -309,9 +312,10 @@ def remove_cart_item(current_user, cart_item_id):
                 'message': 'Failed to remove item from cart'
             }
         }), 500
-    
+
     return jsonify({
         'success': True,
+        'data': cart.to_dict(),
         'message': 'Item removed from cart successfully'
     }), 200
 
@@ -350,5 +354,6 @@ def clear_cart(current_user):
     
     return jsonify({
         'success': True,
+        'data': cart.to_dict(),
         'message': 'Cart cleared successfully'
     }), 200

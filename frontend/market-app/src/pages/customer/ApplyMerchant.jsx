@@ -90,17 +90,11 @@ const ApplyMerchant = () => {
         }
       });
 
-      const token = localStorage.getItem('token');
-      const response = await axios.post(
-        `${API_BASE_URL}/merchant-applications`,
-        formDataToSend,
-        {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'multipart/form-data'
-          }
+      const response = await api.post('/merchant-applications', formDataToSend, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
         }
-      );
+      });
 
       if (response.data.success) {
         toast.success('Application submitted successfully! We will review your application and get back to you soon.');

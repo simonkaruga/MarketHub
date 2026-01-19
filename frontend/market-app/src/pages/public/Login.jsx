@@ -50,7 +50,7 @@ const Login = () => {
         {/* Logo */}
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex flex-col items-center">
-            <img src="/hub.png" alt="MarketHub Logo" className="h-28 w-28 object-contain mb-3" />
+            <img src="/hub2.png" alt="MarketHub Logo" className="h-28 w-28 object-contain mb-3" />
             <span className="text-3xl font-bold text-orange-400">MarketHub</span>
           </Link>
           <h2 className="mt-6 text-2xl font-bold text-white">

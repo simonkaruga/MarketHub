@@ -34,10 +34,10 @@ export const CartProvider = ({ children }) => {
     try {
       const data = await cartService.addItem(productId, quantity);
       setCart(data);
-      toast.success('Added to cart!');
+      toast.success('Item added to your cart!');
       return data;
     } catch (error) {
-      toast.error(error.response?.data?.error?.message || 'Failed to add to cart');
+      toast.error(error.response?.data?.error?.message || 'Unable to add item to cart. Please try again.');
       throw error;
     }
   };
@@ -46,10 +46,10 @@ export const CartProvider = ({ children }) => {
     try {
       const data = await cartService.updateItem(itemId, quantity);
       setCart(data);
-      toast.success('Cart updated!');
+      toast.success('Your cart has been updated!');
       return data;
     } catch (error) {
-      toast.error(error.response?.data?.error?.message || 'Failed to update cart');
+      toast.error(error.response?.data?.error?.message || 'Unable to update cart. Please try again.');
       throw error;
     }
   };
@@ -58,10 +58,10 @@ export const CartProvider = ({ children }) => {
     try {
       const data = await cartService.removeItem(itemId);
       setCart(data);
-      toast.success('Item removed!');
+      toast.success('Item removed from your cart!');
       return data;
     } catch (error) {
-      toast.error('Failed to remove item');
+      toast.error('Unable to remove item from cart. Please try again.');
       throw error;
     }
   };
