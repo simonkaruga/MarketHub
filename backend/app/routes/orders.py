@@ -99,7 +99,7 @@ def create_order(current_user):
             }), 404
     
     # Get user's cart
-    cart = Cart.get_or_create(current_user.id)
+    cart = Cart.get_or_create_cart(current_user.id)
     
     if not cart.items:
         return jsonify({
@@ -148,10 +148,11 @@ def create_order(current_user):
         # Create suborders for each merchant
         for merchant_id, items in items_by_merchant.items():
             # Calculate subtotal for this merchant
-            subtotal = sum(item.product.price * item.quantity for item in items)
-            
+            from decimal import Decimal
+            subtotal = sum(Decimal(str(item.product.price)) * item.quantity for item in items)
+
             # Calculate commission (25%)
-            commission = subtotal * 0.25
+            commission = subtotal * Decimal('0.25')
             merchant_payout = subtotal - commission
             
             # Determine initial status based on payment method
@@ -218,11 +219,13 @@ def create_order(current_user):
         
     except Exception as e:
         db.session.rollback()
+        import traceback
+        traceback.print_exc()
         return jsonify({
             'success': False,
             'error': {
                 'code': 'DATABASE_ERROR',
-                'message': 'Failed to create order'
+                'message': f'Failed to create order: {str(e)}'
             }
         }), 500
     

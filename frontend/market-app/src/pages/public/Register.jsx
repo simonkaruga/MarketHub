@@ -82,7 +82,7 @@ const Register = () => {
           {/* Logo */}
           <div className="flex justify-center mb-6">
             <Link to="/" className="inline-flex flex-col items-center">
-              <img src="/hub.png" alt="MarketHub Logo" className="h-28 w-28 object-contain mb-3" />
+              <img src="/hub2.png" alt="MarketHub Logo" className="h-28 w-28 object-contain mb-3" />
               <span className="text-3xl font-bold text-orange-400">MarketHub</span>
             </Link>
           </div>

@@ -10,7 +10,7 @@ const ProductCard = ({ product }) => {
   const { isAuthenticated, isCustomer } = useAuth();
 
   // Enhanced placeholder for broken images
-  const KETTLE_PLACEHOLDER = 'https://placehold.co/800x800/FFA500/white/png?text=Electric+Kettle';
+  const BLUE_PLACEHOLDER = 'https://placehold.co/800x800/5B7EE5/white/png?text=Premium+Product';
 
   const handleAddToCart = async (e) => {
     e.preventDefault();
@@ -33,17 +33,17 @@ const ProductCard = ({ product }) => {
   };
 
   const handleImageError = (e) => {
-    e.target.src = KETTLE_PLACEHOLDER;
+    e.target.src = BLUE_PLACEHOLDER;
   };
 
   return (
     <Link to={`/products/${product.id}`} className="group relative block">
       {/* Premium Card Container */}
-      <div className="bg-custom-slate rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 border border-gray-100 hover:border-primary-200 overflow-hidden transform hover:-translate-y-2">
+      <div className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 border border-gray-100 hover:border-primary-200 overflow-hidden transform hover:-translate-y-2">
 
         {/* Premium Badge */}
         <div className="absolute top-4 left-4 z-10">
-          <div className="bg-gradient-to-r from-custom-orange to-orange-600 text-white px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 shadow-lg">
+          <div className="bg-gradient-to-r from-primary-500 to-primary-600 text-white px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 shadow-lg">
             <FiAward size={12} />
             Premium
           </div>
@@ -69,7 +69,7 @@ const ProductCard = ({ product }) => {
         {/* Image Container */}
         <div className="relative aspect-square bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden">
           <img
-            src={product.image_url || KETTLE_PLACEHOLDER}
+            src={product.image_url || BLUE_PLACEHOLDER}
             alt={product.name}
             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
             onError={handleImageError}
@@ -91,13 +91,13 @@ const ProductCard = ({ product }) => {
 
           {/* Title */}
           <div>
-            <h3 className="font-bold text-xl text-custom-orange mb-2 line-clamp-2 group-hover:text-primary-700 transition-colors duration-200 leading-tight">
+            <h3 className="font-bold text-xl text-gray-900 mb-2 line-clamp-2 group-hover:text-primary-700 transition-colors duration-200 leading-tight">
               {product.name}
             </h3>
 
             {/* Merchant badge */}
             <div className="flex items-center gap-2 mb-3">
-              <div className="bg-primary-50 text-custom-orange px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1">
+              <div className="bg-primary-50 text-primary-700 px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1">
                 <FiShield size={12} />
                 {product.merchant?.name || 'MarketHub'}
               </div>
@@ -105,7 +105,7 @@ const ProductCard = ({ product }) => {
           </div>
 
           {/* Description */}
-          <p className="text-white text-sm leading-relaxed line-clamp-2">
+          <p className="text-gray-800 text-sm leading-relaxed line-clamp-2">
             {product.description}
           </p>
 
@@ -114,11 +114,11 @@ const ProductCard = ({ product }) => {
             <div className="flex items-center gap-2">
               <div className="flex items-center gap-1">
                 <FiStar className="text-yellow-400 fill-current" size={16} />
-                <span className="font-semibold text-white">
+                <span className="font-semibold text-gray-900">
                   {product.average_rating.toFixed(1)}
                 </span>
               </div>
-              <span className="text-white text-sm">
+              <span className="text-gray-700 text-sm">
                 ({product.review_count} reviews)
               </span>
               <div className="ml-auto flex items-center gap-1 text-green-600 text-xs font-medium">
@@ -131,17 +131,17 @@ const ProductCard = ({ product }) => {
           {/* Price Section */}
           <div className="flex items-center justify-between pt-2">
             <div className="flex flex-col">
-              <span className="text-3xl font-bold text-custom-orange">
+              <span className="text-3xl font-bold text-gray-900">
                 {formatCurrency(product.price)}
               </span>
-              <span className="text-xs text-white font-medium">Free shipping</span>
+              <span className="text-xs text-gray-800 font-medium">Free shipping</span>
             </div>
 
             {/* Add to Cart Button */}
             {product.stock_quantity > 0 && (
               <button
                 onClick={handleAddToCart}
-                className="bg-gradient-to-r from-custom-orange to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white p-3 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group/btn"
+                className="bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white p-3 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group/btn"
                 title="Add to cart"
               >
                 <FiShoppingCart size={20} className="group-hover/btn:rotate-12 transition-transform duration-200" />

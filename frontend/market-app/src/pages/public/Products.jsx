@@ -109,7 +109,7 @@ const Products = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#0f172a]">
+    <div className="min-h-screen flex flex-col">
       <Navbar />
 
       {/* Mobile Filter Drawer */}

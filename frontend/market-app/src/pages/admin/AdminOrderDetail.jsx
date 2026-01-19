@@ -22,9 +22,7 @@ const AdminOrderDetail = () => {
   const fetchOrderDetail = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`${API_BASE_URL}/admin/orders/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.get(`/admin/orders/${id}`);
 
       setOrder(response.data.data);
     } catch (error) {
@@ -42,12 +40,7 @@ const AdminOrderDetail = () => {
     }
 
     try {
-      const token = localStorage.getItem('token');
-      await axios.patch(
-        `${API_BASE_URL}/admin/orders/${id}/status`,
-        { status: newStatus, note: statusNote },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      await api.patch(`/admin/orders/${id}/status`, { status: newStatus, note: statusNote });
 
       toast.success('Order status updated successfully');
       setShowStatusModal(false);
@@ -65,13 +58,7 @@ const AdminOrderDetail = () => {
     }
 
     try {
-      const token = localStorage.getItem('token');
-      await axios.patch(
-        `${API_BASE_URL}/admin/orders/${id}/cancel`,
-        {},
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
+      await api.patch(`/admin/orders/${id}/cancel`, {});
       toast.success('Order cancelled successfully');
       fetchOrderDetail();
     } catch (error) {

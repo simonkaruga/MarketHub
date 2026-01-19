@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import toast from 'react-hot-toast';
-import axios from 'axios';
+import api from '../../services/api';
 import { FiStar, FiEdit2, FiTrash2 } from 'react-icons/fi';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 const ProductReviews = ({ productId }) => {
   const { user } = useAuth();
@@ -29,7 +28,7 @@ const ProductReviews = ({ productId }) => {
   const fetchReviews = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${API_BASE_URL}/products/${productId}/reviews`);
+      const response = await api.get(`/products/${productId}/reviews`);
 
       if (response.data.success) {
         setReviews(response.data.data);
@@ -56,7 +55,6 @@ const ProductReviews = ({ productId }) => {
 
     setSubmitting(true);
     try {
-      const token = localStorage.getItem('token');
       const reviewFormData = new FormData();
 
       reviewFormData.append('product_id', productId);
@@ -70,14 +68,13 @@ const ProductReviews = ({ productId }) => {
       });
 
       const url = editingReview
-        ? `${API_BASE_URL}/reviews/${editingReview.id}`
-        : `${API_BASE_URL}/reviews`;
+        ? `/reviews/${editingReview.id}`
+        : `/reviews`;
 
       const method = editingReview ? 'put' : 'post';
 
-      const response = await axios[method](url, reviewFormData, {
+      const response = await api[method](url, reviewFormData, {
         headers: {
-          Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data'
         }
       });
@@ -114,10 +111,7 @@ const ProductReviews = ({ productId }) => {
     }
 
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.delete(`${API_BASE_URL}/reviews/${reviewId}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.delete(`/reviews/${reviewId}`);
 
       if (response.data.success) {
         toast.success('Review deleted');

@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { FiShoppingCart, FiUser, FiMenu, FiX, FiSearch, FiChevronDown } from 'react-icons/fi';
+import { FiShoppingBag, FiUser, FiMenu, FiX, FiSearch, FiChevronDown } from 'react-icons/fi';
 import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { useCart } from '../../hooks/useCart';
@@ -48,7 +48,7 @@ const Navbar = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-3">
-            <img src="/hub.png" alt="MarketHub Logo" className="h-12 w-12 object-contain" />
+            <img src="/hub2.png" alt="MarketHub Logo" className="h-12 w-12 object-contain" />
             <span className="text-2xl font-bold text-orange-400">MarketHub</span>
           </Link>
 
@@ -85,10 +85,12 @@ const Navbar = () => {
               <>
                 {/* Cart */}
                 <Link to="/cart" className="relative text-gray-300 hover:text-orange-400">
-                  <FiShoppingCart size={32} />
+                  <FiShoppingBag size={24} />
                   {itemCount > 0 && (
                     <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    <span className="absolute -top-3 -right-3 bg-red-500 text-white text-xs rounded-full h-6 w-6 flex items-center justify-center">
                       {itemCount}
+                    </span>
                     </span>
                   )}
                 </Link>
