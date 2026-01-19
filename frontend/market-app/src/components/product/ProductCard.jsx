@@ -10,7 +10,7 @@ const ProductCard = ({ product }) => {
   const { isAuthenticated, isCustomer } = useAuth();
 
   // Enhanced placeholder for broken images
-  const BLUE_PLACEHOLDER = 'https://placehold.co/800x800/5B7EE5/white/png?text=Premium+Product';
+  const KETTLE_PLACEHOLDER = 'https://placehold.co/800x800/FFA500/white/png?text=Electric+Kettle';
 
   const handleAddToCart = async (e) => {
     e.preventDefault();
@@ -33,7 +33,7 @@ const ProductCard = ({ product }) => {
   };
 
   const handleImageError = (e) => {
-    e.target.src = BLUE_PLACEHOLDER;
+    e.target.src = KETTLE_PLACEHOLDER;
   };
 
   return (
@@ -43,7 +43,7 @@ const ProductCard = ({ product }) => {
 
         {/* Premium Badge */}
         <div className="absolute top-4 left-4 z-10">
-          <div className="bg-gradient-to-r from-primary-500 to-primary-600 text-white px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 shadow-lg">
+          <div className="bg-gradient-to-r from-custom-orange to-orange-600 text-white px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 shadow-lg">
             <FiAward size={12} />
             Premium
           </div>
@@ -69,7 +69,7 @@ const ProductCard = ({ product }) => {
         {/* Image Container */}
         <div className="relative aspect-square bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden">
           <img
-            src={product.image_url || BLUE_PLACEHOLDER}
+            src={product.image_url || KETTLE_PLACEHOLDER}
             alt={product.name}
             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
             onError={handleImageError}
@@ -141,7 +141,7 @@ const ProductCard = ({ product }) => {
             {product.stock_quantity > 0 && (
               <button
                 onClick={handleAddToCart}
-                className="bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white p-3 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group/btn"
+                className="bg-gradient-to-r from-custom-orange to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white p-3 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group/btn"
                 title="Add to cart"
               >
                 <FiShoppingCart size={20} className="group-hover/btn:rotate-12 transition-transform duration-200" />
