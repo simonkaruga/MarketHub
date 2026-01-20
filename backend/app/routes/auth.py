@@ -561,9 +561,9 @@ def google_auth():
             db.session.add(user)
             db.session.commit()
 
-        # Generate JWT tokens
-        access_token = create_access_token(identity=user.id)
-        refresh_token = create_refresh_token(identity=user.id)
+        # Generate JWT tokens (use str(user.id) for consistency with other auth routes)
+        access_token = create_access_token(identity=str(user.id))
+        refresh_token = create_refresh_token(identity=str(user.id))
 
         return jsonify({
             'success': True,
