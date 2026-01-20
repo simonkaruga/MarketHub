@@ -21,8 +21,8 @@ class Config:
     
     # JWT
     JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY', 'jwt-secret-key-change-in-production')
-    JWT_ACCESS_TOKEN_EXPIRES = timedelta(minutes=15)
-    JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=7)
+    JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=24)  # Extended from 15 minutes to 24 hours
+    JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=30)  # Extended from 7 days to 30 days
     
     # Cloudinary
     CLOUDINARY_CLOUD_NAME = os.getenv('CLOUDINARY_CLOUD_NAME')
